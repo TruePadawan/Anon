@@ -1,7 +1,7 @@
 import Button from "@/components/Button/Button";
 import InputField from "@/components/InputField/InputField";
 import { ReactElement } from "react";
-import Link from "next/link";
+import Navbar from "@/components/Navbar/Navbar";
 import Head from "next/head";
 
 const SignIn = () => {
@@ -44,11 +44,7 @@ SignIn.getLayout = function getLayout(page: ReactElement) {
 			<Head>
 				<title key="title">Anon | Sign In</title>
 			</Head>
-			<nav className="flex justify-between">
-				<h1 className="font-extrabold text-5xl">
-					<Link href="/">ANON</Link>
-				</h1>
-			</nav>
+			<Navbar />
 			{page}
 		</>
 	);
