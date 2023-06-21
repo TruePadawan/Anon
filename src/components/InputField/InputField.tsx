@@ -10,7 +10,7 @@ export default function InputField(props: InputFieldProps) {
 	const { label, componentID, type, ...extraProps } = props;
 	return (
 		<div className="flex flex-col gap-1">
-			<label htmlFor={componentID} className="text-xl">
+			<label htmlFor={componentID} className="text-xl font-light">
 				{label}
 			</label>
 			<input
