@@ -4,6 +4,9 @@ import { ReactElement } from "react";
 import Navbar from "@/components/Navbar/Navbar";
 import Head from "next/head";
 import { signIn } from "next-auth/react";
+import { GetServerSideProps } from "next";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/utilities/globals";
 
 const SignIn = () => {
 	const { REDIRECT_URL } = process.env;
@@ -55,12 +58,27 @@ SignIn.getLayout = function getLayout(page: ReactElement) {
 	return (
 		<>
 			<Head>
-				<title key="title">Anon | Sign In</title>
+				<title key="title">ANON | Sign In</title>
 			</Head>
 			<Navbar toIndex />
 			{page}
 		</>
 	);
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+	const session = await getServerSession(context.req, context.res, authOptions);
+	if (session) {
+		return {
+			redirect: {
+				destination: "/",
+				permanent: false,
+			},
+		};
+	}
+	return {
+		props: {},
+	};
 };
 
 export default SignIn;
