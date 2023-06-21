@@ -3,8 +3,19 @@ import InputField from "@/components/InputField/InputField";
 import { ReactElement } from "react";
 import Navbar from "@/components/Navbar/Navbar";
 import Head from "next/head";
+import { signIn } from "next-auth/react";
 
 const SignIn = () => {
+	const { REDIRECT_URL } = process.env;
+	
+	function handleGitHubSignIn() {
+		signIn("github", { callbackUrl: REDIRECT_URL });
+	}
+
+	function handleGoogleSignIn() {
+		signIn("google", { callbackUrl: REDIRECT_URL });
+	}
+
 	return (
 		<main className="grow flex justify-center items-center">
 			<form className="mb-10 px-4 py-2 max-w-md w-full" data-cy="signin-form">
@@ -22,12 +33,14 @@ const SignIn = () => {
 						<Button
 							type="button"
 							data-cy="google-signin-btn"
+							onClick={handleGoogleSignIn}
 							icon={<i className="fa-brands fa-google fa-lg text-white"></i>}>
 							Continue with Google
 						</Button>
 						<Button
 							type="button"
 							data-cy="github-signin-btn"
+							onClick={handleGitHubSignIn}
 							icon={<i className="fa-brands fa-github fa-lg text-white"></i>}>
 							Continue with GitHub
 						</Button>
