@@ -1,6 +1,5 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
-import { Open_Sans } from "next/font/google";
 import Script from "next/script";
 import type { ReactElement, ReactNode } from "react";
 import type { NextPage } from "next";
@@ -15,12 +14,6 @@ type AppPropsWithLayout = AppProps & {
 	Component: NextPageWithLayout;
 };
 
-const openSans = Open_Sans({
-	variable: "--font-open-sans",
-	subsets: ["latin"],
-	weight: ["300", "400", "600", "800"],
-});
-
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
 	// Use the layout defined at the page level, if available
 	const getLayout =
@@ -29,9 +22,6 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
 		<>
 			<style jsx global>
 				{`
-					html {
-						font-family: ${openSans.style.fontFamily};
-					}
 					#__next {
 						display: flex;
 						flex-direction: column;

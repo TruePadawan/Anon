@@ -10,8 +10,11 @@
   --accent-color-2: #b3b3b3;
 }
 
+html {
+  font-family: 'Open Sans', sans-serif;
+}
+
 body {
   background-color: var(--primary-color-1);
   color: var(--accent-color-2);
-  font-family: var(--font-open-sans);
 }
