@@ -7,7 +7,7 @@ import { signIn } from "next-auth/react";
 
 const SignIn = () => {
 	const { REDIRECT_URL } = process.env;
-	
+
 	function handleGitHubSignIn() {
 		signIn("github", { callbackUrl: REDIRECT_URL });
 	}
@@ -57,7 +57,7 @@ SignIn.getLayout = function getLayout(page: ReactElement) {
 			<Head>
 				<title key="title">Anon | Sign In</title>
 			</Head>
-			<Navbar />
+			<Navbar toIndex />
 			{page}
 		</>
 	);

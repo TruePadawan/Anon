@@ -2,9 +2,10 @@ import Link from "next/link";
 
 interface NavbarProps {
 	displayName?: string;
+	toIndex?: boolean;
 }
 
-export default function Navbar({ displayName }: NavbarProps) {
+export default function Navbar({ displayName, toIndex }: NavbarProps) {
 	return (
 		<nav className="flex justify-between items-center">
 			<h1 className="font-extrabold text-5xl">
@@ -13,9 +14,9 @@ export default function Navbar({ displayName }: NavbarProps) {
 			{displayName && <span>{displayName}</span>}
 			{!displayName && (
 				<Link
-					href="/sign_in"
+					href={toIndex ? "/" : "/sign_in"}
 					className="text-xl font-semibold hover:text-accent-color-1">
-					SIGN IN
+					{toIndex ? "HOMEPAGE" : "SIGN IN"}
 				</Link>
 			)}
 		</nav>
