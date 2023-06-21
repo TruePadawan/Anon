@@ -36,7 +36,7 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
 						display: flex;
 						flex-direction: column;
 						row-gap: 1rem;
-						padding: 0 1rem;
+						padding: 0.5rem 1rem;
 						min-height: 100vh;
 					}
 				`}
