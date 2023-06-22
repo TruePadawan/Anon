@@ -4,11 +4,8 @@ describe.skip("Signin page", () => {
 		cy.get("a[href='/sign_in']").as("sign-in-link");
 	});
 
-	it("there is a link to sign in page on index page", () => {
+	it("there is a link to sign in page on index page when user is not signed in", () => {
 		cy.get("@sign-in-link");
-		cy.url().then((url) => {
-			console.log(url);
-		});
 	});
 
 	it("focuses on email input when user visits sign in page", () => {
