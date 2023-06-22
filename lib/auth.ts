@@ -21,8 +21,10 @@ export const authOptions: NextAuthOptions = {
 			if (session.user !== undefined) {
 				session.user.id = user.id;
 			}
-			console.log({ session, user });
 			return session;
 		},
+	},
+	pages: {
+		signIn: "/sign_in",
 	},
 };
