@@ -4,6 +4,7 @@ import Script from "next/script";
 import type { ReactElement, ReactNode } from "react";
 import type { NextPage } from "next";
 import RootLayout from "./root-layout";
+import { SessionProvider } from "next-auth/react";
 
 // Extra code to make per-page layout work with TypeScript
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
@@ -14,7 +15,10 @@ type AppPropsWithLayout = AppProps & {
 	Component: NextPageWithLayout;
 };
 
-export default function App({ Component, pageProps }: AppPropsWithLayout) {
+export default function App({
+	Component,
+	pageProps: { session, ...pageProps },
+}: AppPropsWithLayout) {
 	// Use the layout defined at the page level, if available
 	const getLayout =
 		Component.getLayout || ((page) => <RootLayout>{page}</RootLayout>);
@@ -31,7 +35,9 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
 					}
 				`}
 			</style>
-			{getLayout(<Component {...pageProps} />)}
+			<SessionProvider session={session}>
+				{getLayout(<Component {...pageProps} />)}
+			</SessionProvider>
 			<Script
 				src="https://kit.fontawesome.com/9ceb4dfb5e.js"
 				crossOrigin="anonymous"></Script>
