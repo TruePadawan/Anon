@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, models } from "mongoose";
 import { getRandomColor } from "../helpers/global-helpers";
 
 export interface UserProfile {
@@ -19,4 +19,5 @@ const UserProfileSchema = new Schema<UserProfile>({
 	timestamp: { type: Date, default: Date.now() },
 });
 
-export default model<UserProfile>("UserProfile", UserProfileSchema);
+export default models.UserProfile ||
+	model<UserProfile>("UserProfile", UserProfileSchema);
