@@ -7,16 +7,16 @@ import { signIn } from "next-auth/react";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../lib/auth";
+import UserProfile from "../../../models/UserProfile";
+import dbConnect from "../../../lib/db-connect";
 
 const SignIn = () => {
-	const { REDIRECT_URL } = process.env;
-
 	function handleGitHubSignIn() {
-		signIn("github", { callbackUrl: REDIRECT_URL });
+		signIn("github");
 	}
 
 	function handleGoogleSignIn() {
-		signIn("google", { callbackUrl: REDIRECT_URL });
+		signIn("google");
 	}
 
 	return (
@@ -67,15 +67,31 @@ SignIn.getLayout = function getLayout(page: ReactElement) {
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+	// check if user attached to session has a profile
+	// if no, route to complete-auth which creates a default profile | else route to index page
 	const session = await getServerSession(context.req, context.res, authOptions);
 	if (session) {
-		return {
-			redirect: {
-				destination: "/",
-				permanent: false,
-			},
-		};
+		const userID = session.user.id;
+		await dbConnect();
+		const userHasProfile = (await UserProfile.findById(userID)) !== null;
+
+		if (userHasProfile) {
+			return {
+				redirect: {
+					destination: "/",
+					permanent: false,
+				},
+			};
+		} else {
+			return {
+				redirect: {
+					destination: "/api/complete-auth",
+					permanent: false,
+				},
+			};
+		}
 	}
+	// unsigned user - render sign in page
 	return {
 		props: {},
 	};
