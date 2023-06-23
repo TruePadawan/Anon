@@ -1,20 +1,24 @@
 import Navbar from "@/components/Navbar/Navbar";
-import { authOptions } from "@/utilities/globals";
+import { authOptions } from "../../lib/auth";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import Head from "next/head";
 import { ReactElement } from "react";
+import UserProfile from "../../models/UserProfile";
+import dbConnect from "../../lib/db-connect";
 
 interface HomeProps {
-	displayName?: string;
+	user?: {
+		displayName: string;
+		accountName: string;
+	};
 }
 
 const Home = (props: HomeProps) => {
-	const { displayName } = props;
+	const { user } = props;
 	return (
 		<>
-			<Navbar displayName={displayName} />
-			<main></main>
+			<Navbar user={user} />
 		</>
 	);
 };
@@ -32,10 +36,26 @@ Home.getLayout = function getLayout(page: ReactElement) {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
 	const session = await getServerSession(context.req, context.res, authOptions);
+	await dbConnect();
+
+	if (session) {
+		const userID = session.user.id;
+		const profile = await UserProfile.findById(
+			userID,
+			"display_name account_name"
+		).exec();
+
+		return {
+			props: {
+				user: {
+					displayName: profile?.display_name,
+					accountName: profile?.account_name,
+				},
+			},
+		};
+	}
 	return {
-		props: {
-			displayName: session?.user?.name || "",
-		},
+		props: {},
 	};
 };
 
