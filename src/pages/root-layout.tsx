@@ -9,7 +9,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
 	return (
 		<>
 			<Head>
-				<title key="title">Anon</title>
+				<title key="title">ANON</title>
 			</Head>
 			<Navbar />
 			{children}
