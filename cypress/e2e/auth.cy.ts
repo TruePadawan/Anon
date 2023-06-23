@@ -1,4 +1,4 @@
-describe.skip("Signin page", () => {
+describe("Signin page", () => {
 	beforeEach(() => {
 		cy.visit("/");
 		cy.get("a[href='/sign_in']").as("sign-in-link");
@@ -22,7 +22,7 @@ describe.skip("Signin page", () => {
 	});
 });
 
-describe.skip("Protected pages", () => {
+describe("Protected pages", () => {
 	it("unauthenticated users should only be able to visit signin and public posts page", () => {
 		cy.visit("/groups");
 		cy.url().should("contain", "/signin");
