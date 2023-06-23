@@ -5,6 +5,7 @@ import type { ReactElement, ReactNode } from "react";
 import type { NextPage } from "next";
 import RootLayout from "./root-layout";
 import { SessionProvider } from "next-auth/react";
+import { ThemeProvider, createTheme } from "@mui/material";
 
 // Extra code to make per-page layout work with TypeScript
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
@@ -19,6 +20,14 @@ export default function App({
 	Component,
 	pageProps: { session, ...pageProps },
 }: AppPropsWithLayout) {
+	// override default Roboto Font
+	const theme = createTheme({
+		typography: {
+			allVariants: {
+				fontFamily: "inherit",
+			},
+		},
+	});
 	// Use the layout defined at the page level, if available
 	const getLayout =
 		Component.getLayout || ((page) => <RootLayout>{page}</RootLayout>);
@@ -35,9 +44,11 @@ export default function App({
 					}
 				`}
 			</style>
-			<SessionProvider session={session}>
-				{getLayout(<Component {...pageProps} />)}
-			</SessionProvider>
+			<ThemeProvider theme={theme}>
+				<SessionProvider session={session}>
+					{getLayout(<Component {...pageProps} />)}
+				</SessionProvider>
+			</ThemeProvider>
 			<Script
 				src="https://kit.fontawesome.com/9ceb4dfb5e.js"
 				crossOrigin="anonymous"></Script>
