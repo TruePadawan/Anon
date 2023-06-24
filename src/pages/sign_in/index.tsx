@@ -9,6 +9,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../../lib/auth";
 import UserProfile from "../../../models/UserProfile";
 import dbConnect from "../../../lib/db-connect";
+import { GitHub, Google } from "@mui/icons-material";
 
 const SignIn = () => {
 	function handleGitHubSignIn() {
@@ -21,33 +22,36 @@ const SignIn = () => {
 
 	return (
 		<main className="grow flex justify-center items-center">
-			<form className="mb-10 px-4 py-2 max-w-md w-full" data-cy="signin-form">
+			<form
+				className="mb-10 px-4 py-2 max-w-md w-full flex flex-col gap-1"
+				data-cy="signin-form">
 				<h2 className="text-4xl text-center">Who are you?...</h2>
-				<div className="mt-6 flex flex-col gap-6">
+				<div className="mt-6 flex flex-col gap-1.5">
+					<Button
+						type="button"
+						data-cy="google-signin-btn"
+						onClick={handleGoogleSignIn}
+						icon={<Google />}>
+						Continue with Google
+					</Button>
+					<Button
+						type="button"
+						data-cy="github-signin-btn"
+						onClick={handleGitHubSignIn}
+						icon={<GitHub />}>
+						Continue with GitHub
+					</Button>
+				</div>
+				<div className="mt-2 flex flex-col gap-6">
 					<InputField
 						label="Email"
 						type="email"
 						componentID="email"
 						data-cy="signin-email-input"
-						autoFocus={true}
+						autoFocus
+						required
 					/>
 					<Button type="submit">Sign In</Button>
-					<div className="flex flex-col gap-1.5">
-						<Button
-							type="button"
-							data-cy="google-signin-btn"
-							onClick={handleGoogleSignIn}
-							icon={<i className="fa-brands fa-google fa-lg text-white"></i>}>
-							Continue with Google
-						</Button>
-						<Button
-							type="button"
-							data-cy="github-signin-btn"
-							onClick={handleGitHubSignIn}
-							icon={<i className="fa-brands fa-github fa-lg text-white"></i>}>
-							Continue with GitHub
-						</Button>
-					</div>
 				</div>
 			</form>
 		</main>
