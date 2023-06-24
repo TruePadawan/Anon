@@ -4,10 +4,19 @@
 
 :root {
   --primary-color-1: #111111;
+  --primary-color-1-light: #282828;
+
   --primary-color-2: #161616;
+  --primary-color-2-light: #2D2D2D;
+
   --secondary-color: #232323;
+  --secondary-color-light: #393939;
+
   --accent-color-1: #3e3e3e;
+  --accent-color-1-light: #515151;
+
   --accent-color-2: #b3b3b3;
+  --accent-color-2-light: #B9B9B9;
 }
 
 html {
