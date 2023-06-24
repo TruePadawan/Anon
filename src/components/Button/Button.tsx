@@ -5,9 +5,9 @@ interface ButtonProps extends React.ComponentPropsWithoutRef<"button"> {
 }
 export default function Button(props: ButtonProps) {
 	const { icon, className, children, ...extraProps } = props;
-	const componentClassName = `${
+	const componentClassName = `p-1.5 font-semibold text-base bg-accent-color-1 rounded text-white flex justify-center items-center hover:bg-accent-color-1-l ${
 		className || ""
-	} p-1.5 font-semibold text-base bg-accent-color-1 rounded text-white`;
+	}`;
 	if (icon) {
 		return (
 			<button className={componentClassName} {...extraProps}>
