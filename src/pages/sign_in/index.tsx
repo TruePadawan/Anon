@@ -10,8 +10,13 @@ import { authOptions } from "../../../lib/auth";
 import UserProfile from "../../../models/UserProfile";
 import dbConnect from "../../../lib/db-connect";
 import { GitHub, Google } from "@mui/icons-material";
+import { Alert } from "@mui/material";
 
-const SignIn = () => {
+interface SignInPageProps {
+	errorMessage: string | null;
+}
+
+const SignIn = ({ errorMessage }: SignInPageProps) => {
 	function handleGitHubSignIn() {
 		signIn("github");
 	}
@@ -23,10 +28,22 @@ const SignIn = () => {
 	return (
 		<main className="grow flex justify-center items-center">
 			<form
-				className="mb-10 px-4 py-2 max-w-md w-full flex flex-col gap-1"
+				className="mb-10 px-4 py-2 max-w-lg w-full flex flex-col gap-1"
 				data-cy="signin-form">
 				<h2 className="text-4xl text-center">Who are you?...</h2>
 				<div className="mt-6 flex flex-col gap-1.5">
+					{errorMessage && (
+						<Alert
+							severity="error"
+							variant="filled"
+							className="font-semibold">{`Error occurred: ${errorMessage}`}</Alert>
+					)}
+					{!errorMessage && (
+						<Alert
+							severity="warning"
+							variant="filled"
+							className="font-semibold">{`Can't sign in with Google and Github if linked to same Email`}</Alert>
+					)}
 					<Button
 						type="button"
 						data-cy="google-signin-btn"
@@ -97,7 +114,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	}
 	// unsigned user - render sign in page
 	return {
-		props: {},
+		props: {
+			errorMessage: context.query?.error || null,
+		},
 	};
 };
 
