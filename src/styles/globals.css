@@ -27,3 +27,7 @@ body {
   background-color: var(--primary-color-1);
   color: var(--accent-color-2);
 }
+
+button:disabled {
+  cursor: not-allowed;
+}
