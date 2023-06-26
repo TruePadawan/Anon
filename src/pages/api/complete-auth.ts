@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 import dbConnect from "../../../lib/db-connect";
 import UserProfile from "../../../models/UserProfile";
+import { getRandomInt } from "../../../helpers/global-helpers";
 
 export default async function handler(
 	req: NextApiRequest,
@@ -15,7 +16,9 @@ export default async function handler(
 		await dbConnect();
 
 		const displayName = session?.user.name;
-		const accountName = session?.user.email?.split("@").at(0);
+		const accountName = `${session?.user.email?.split("@").at(0)}${getRandomInt(
+			100000000
+		)}`;
 		const defaultProfile = new UserProfile({
 			_id: userID,
 			account_name: accountName,
