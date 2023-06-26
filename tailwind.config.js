@@ -18,6 +18,8 @@ module.exports = {
 				"secondary-color-l": "#393939",
 				"accent-color-1-l": "#515151",
 				"accent-color-2-l": "#B9B9B9",
+				"dark-red": "#8B0000",
+				"dark-green": "#006400",
 			},
 			boxShadow: {
 				"input-shadow": "inset 0px 2px 2px rgba(69, 69, 69, 0.25)",
