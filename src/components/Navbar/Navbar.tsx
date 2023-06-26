@@ -44,7 +44,7 @@ export default function Navbar({ user, toIndex }: NavbarProps) {
 			{!user && (
 				<Link
 					href={toIndex ? "/" : "/sign_in"}
-					className="text-xl font-semibold hover:text-accent-color-1">
+					className="text-lg font-semibold hover:text-accent-color-1">
 					{toIndex ? "HOMEPAGE" : "SIGN IN"}
 				</Link>
 			)}
