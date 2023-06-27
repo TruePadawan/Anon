@@ -5,7 +5,8 @@ import { useRouter } from "next/router";
 import HomeIcon from "@mui/icons-material/Home";
 import GroupIcon from "@mui/icons-material/Group";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
-import { HTMLAttributes } from "react";
+import { Alert, Snackbar } from "@mui/material";
+import { useState } from "react";
 
 interface NavbarProps {
 	user?: {
@@ -16,7 +17,12 @@ interface NavbarProps {
 }
 
 export default function Navbar({ user, toIndex }: NavbarProps) {
+	const [snackbarIsOpen, setSnackbarIsOpen] = useState(false);
 	const router = useRouter();
+
+	function closeSnackbar() {
+		setSnackbarIsOpen(false);
+	}
 
 	function routeToProfile() {
 		router.push(`/users/${user?.accountName}`);
@@ -27,8 +33,7 @@ export default function Navbar({ user, toIndex }: NavbarProps) {
 			const { url } = await signOut({ redirect: false, callbackUrl: "/" });
 			router.push(url);
 		} catch (error) {
-			// this should show error message on a snackbar
-			alert("Problem Signing out");
+			setSnackbarIsOpen(true);
 			console.error(error);
 		}
 	}
@@ -37,6 +42,15 @@ export default function Navbar({ user, toIndex }: NavbarProps) {
 		"flex flex-col flex-1 items-center gap-1 p-3 bg-primary-color-2 text-accent-color-2-l hover:text-white rounded-md";
 	return (
 		<nav className="flex flex-col items-stretch gap-4">
+			<Snackbar open={snackbarIsOpen} onClose={closeSnackbar}>
+				<Alert
+					variant="filled"
+					onClose={closeSnackbar}
+					severity="error"
+					sx={{ width: "100%" }}>
+					Failed to sign out!
+				</Alert>
+			</Snackbar>
 			<div className="flex justify-between items-center">
 				<h1 className="font-extrabold text-5xl">
 					<Link href="/">ANON</Link>
