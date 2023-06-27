@@ -2,7 +2,6 @@ import Navbar from "@/components/Navbar/Navbar";
 import { authOptions } from "../../lib/auth";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
-import Head from "next/head";
 import { ReactElement } from "react";
 import UserProfile from "../../models/UserProfile";
 import dbConnect from "../../lib/db-connect";
@@ -19,17 +18,6 @@ const Home = (props: HomeProps) => {
 	return (
 		<>
 			<Navbar user={user} />
-		</>
-	);
-};
-
-Home.getLayout = function getLayout(page: ReactElement) {
-	return (
-		<>
-			<Head>
-				<title key="title">ANON</title>
-			</Head>
-			{page}
 		</>
 	);
 };

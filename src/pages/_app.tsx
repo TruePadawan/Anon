@@ -3,9 +3,9 @@ import type { AppProps } from "next/app";
 import Script from "next/script";
 import type { ReactElement, ReactNode } from "react";
 import type { NextPage } from "next";
-import RootLayout from "./root-layout";
 import { SessionProvider } from "next-auth/react";
 import { ThemeProvider, createTheme } from "@mui/material";
+import Head from "next/head";
 
 // Extra code to make per-page layout work with TypeScript
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
@@ -28,9 +28,7 @@ export default function App({
 			},
 		},
 	});
-	// Use the layout defined at the page level, if available
-	const getLayout =
-		Component.getLayout || ((page) => <RootLayout>{page}</RootLayout>);
+
 	return (
 		<>
 			<style jsx global>
@@ -46,7 +44,10 @@ export default function App({
 			</style>
 			<ThemeProvider theme={theme}>
 				<SessionProvider session={session}>
-					{getLayout(<Component {...pageProps} />)}
+					<Head>
+						<title key="title">ANON</title>
+					</Head>
+					<Component {...pageProps} />
 				</SessionProvider>
 			</ThemeProvider>
 			<Script

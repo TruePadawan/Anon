@@ -25,46 +25,40 @@ const SignIn = ({ errorMessage }: SignInPageProps) => {
 	}
 
 	return (
-		<main className="grow flex justify-center items-center">
-			<div className="mb-10 px-4 py-2 max-w-lg w-full flex flex-col gap-1">
-				<h2 className="text-4xl text-center">Who are you?...</h2>
-				<div className="mt-6 flex flex-col gap-1.5">
-					<Alert
-						severity="warning"
-						variant="filled">{`Can't sign in with both Google and Github if linked to same Email`}</Alert>
-					{errorMessage && (
-						<Alert
-							severity="error"
-							variant="filled">{`Error occurred: ${errorMessage}`}</Alert>
-					)}
-					<Button
-						type="button"
-						data-cy="google-signin-btn"
-						onClick={handleGoogleSignIn}
-						icon={<Google />}>
-						Continue with Google
-					</Button>
-					<Button
-						type="button"
-						data-cy="github-signin-btn"
-						onClick={handleGitHubSignIn}
-						icon={<GitHub />}>
-						Continue with GitHub
-					</Button>
-				</div>
-			</div>
-		</main>
-	);
-};
-
-SignIn.getLayout = function getLayout(page: ReactElement) {
-	return (
 		<>
 			<Head>
 				<title key="title">ANON | Sign In</title>
 			</Head>
 			<Navbar toIndex />
-			{page}
+			<main className="grow flex justify-center items-center">
+				<div className="mb-10 px-4 py-2 max-w-lg w-full flex flex-col gap-1">
+					<h2 className="text-4xl text-center">Who are you?...</h2>
+					<div className="mt-6 flex flex-col gap-1.5">
+						<Alert
+							severity="warning"
+							variant="filled">{`Can't sign in with both Google and Github if linked to same Email`}</Alert>
+						{errorMessage && (
+							<Alert
+								severity="error"
+								variant="filled">{`Error occurred: ${errorMessage}`}</Alert>
+						)}
+						<Button
+							type="button"
+							data-cy="google-signin-btn"
+							onClick={handleGoogleSignIn}
+							icon={<Google />}>
+							Continue with Google
+						</Button>
+						<Button
+							type="button"
+							data-cy="github-signin-btn"
+							onClick={handleGitHubSignIn}
+							icon={<GitHub />}>
+							Continue with GitHub
+						</Button>
+					</div>
+				</div>
+			</main>
 		</>
 	);
 };
