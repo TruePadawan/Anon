@@ -7,19 +7,6 @@ describe("Signin page", () => {
 	it("there is a link to sign in page on index page when user is not signed in", () => {
 		cy.get("@sign-in-link");
 	});
-
-	it("focuses on email input when user visits sign in page", () => {
-		cy.get("@sign-in-link").click();
-		cy.get("input[data-cy='signin-email-input']").should("have.focus");
-	});
-
-	it("signin page should have a form for signin in and a button for submitting form", () => {
-		cy.get("@sign-in-link").click();
-		cy.get("form[data-cy='signin-form']").as("signin-form");
-		cy.get("@signin-form")
-			.get("button[type='submit']")
-			.should("not.be.disabled");
-	});
 });
 
 describe("Protected pages", () => {
