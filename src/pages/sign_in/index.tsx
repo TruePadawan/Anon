@@ -1,5 +1,4 @@
 import Button from "@/components/Button/Button";
-import InputField from "@/components/InputField/InputField";
 import { ReactElement } from "react";
 import Navbar from "@/components/Navbar/Navbar";
 import Head from "next/head";
@@ -27,22 +26,18 @@ const SignIn = ({ errorMessage }: SignInPageProps) => {
 
 	return (
 		<main className="grow flex justify-center items-center">
-			<form
-				className="mb-10 px-4 py-2 max-w-lg w-full flex flex-col gap-1"
-				data-cy="signin-form">
+			<div className="mb-10 px-4 py-2 max-w-lg w-full flex flex-col gap-1">
 				<h2 className="text-4xl text-center">Who are you?...</h2>
 				<div className="mt-6 flex flex-col gap-1.5">
 					{errorMessage && (
 						<Alert
 							severity="error"
-							variant="filled"
-							className="font-semibold">{`Error occurred: ${errorMessage}`}</Alert>
+							variant="filled">{`Error occurred: ${errorMessage}`}</Alert>
 					)}
 					{!errorMessage && (
 						<Alert
 							severity="warning"
-							variant="filled"
-							className="font-semibold">{`Can't sign in with Google and Github if linked to same Email`}</Alert>
+							variant="filled">{`Can't sign in with both Google and Github if linked to same Email`}</Alert>
 					)}
 					<Button
 						type="button"
@@ -59,18 +54,7 @@ const SignIn = ({ errorMessage }: SignInPageProps) => {
 						Continue with GitHub
 					</Button>
 				</div>
-				<div className="mt-2 flex flex-col gap-6">
-					<InputField
-						label="Email"
-						type="email"
-						componentID="email"
-						data-cy="signin-email-input"
-						autoFocus
-						required
-					/>
-					<Button type="submit">Sign In</Button>
-				</div>
-			</form>
+			</div>
 		</main>
 	);
 };
