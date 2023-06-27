@@ -2,7 +2,6 @@ import Navbar from "@/components/Navbar/Navbar";
 import { authOptions } from "../../lib/auth";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
-import { ReactElement } from "react";
 import UserProfile from "../../models/UserProfile";
 import dbConnect from "../../lib/db-connect";
 

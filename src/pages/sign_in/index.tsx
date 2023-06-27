@@ -1,13 +1,10 @@
 import Button from "@/components/Button/Button";
-import { ReactElement } from "react";
 import Navbar from "@/components/Navbar/Navbar";
 import Head from "next/head";
 import { signIn } from "next-auth/react";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../lib/auth";
-import UserProfile from "../../../models/UserProfile";
-import dbConnect from "../../../lib/db-connect";
 import { GitHub, Google } from "@mui/icons-material";
 import { Alert } from "@mui/material";
 

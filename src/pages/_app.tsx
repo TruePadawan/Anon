@@ -1,25 +1,17 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import Script from "next/script";
-import type { ReactElement, ReactNode } from "react";
-import type { NextPage } from "next";
 import { SessionProvider } from "next-auth/react";
 import { ThemeProvider, createTheme } from "@mui/material";
 import Head from "next/head";
+import { Session } from "next-auth";
 
-// Extra code to make per-page layout work with TypeScript
-export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
-	getLayout?: (page: ReactElement) => ReactNode;
-};
-
-type AppPropsWithLayout = AppProps & {
-	Component: NextPageWithLayout;
-};
+type AppPropsWithSession = AppProps<{ session: Session }>;
 
 export default function App({
 	Component,
 	pageProps: { session, ...pageProps },
-}: AppPropsWithLayout) {
+}: AppPropsWithSession) {
 	// override default Roboto Font
 	const theme = createTheme({
 		typography: {
