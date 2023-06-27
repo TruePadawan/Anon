@@ -29,15 +29,13 @@ const SignIn = ({ errorMessage }: SignInPageProps) => {
 			<div className="mb-10 px-4 py-2 max-w-lg w-full flex flex-col gap-1">
 				<h2 className="text-4xl text-center">Who are you?...</h2>
 				<div className="mt-6 flex flex-col gap-1.5">
+					<Alert
+						severity="warning"
+						variant="filled">{`Can't sign in with both Google and Github if linked to same Email`}</Alert>
 					{errorMessage && (
 						<Alert
 							severity="error"
 							variant="filled">{`Error occurred: ${errorMessage}`}</Alert>
-					)}
-					{!errorMessage && (
-						<Alert
-							severity="warning"
-							variant="filled">{`Can't sign in with both Google and Github if linked to same Email`}</Alert>
 					)}
 					<Button
 						type="button"
@@ -72,31 +70,16 @@ SignIn.getLayout = function getLayout(page: ReactElement) {
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-	// check if user attached to session has a profile
-	// if no, route to complete-auth which creates a default profile | else route to index page
+	// redirect to complete-auth route if there is a session | else render sign in page
 	const session = await getServerSession(context.req, context.res, authOptions);
 	if (session) {
-		const userID = session.user.id;
-		await dbConnect();
-		const userHasProfile = (await UserProfile.findById(userID)) !== null;
-
-		if (userHasProfile) {
-			return {
-				redirect: {
-					destination: "/",
-					permanent: false,
-				},
-			};
-		} else {
-			return {
-				redirect: {
-					destination: "/api/complete-auth",
-					permanent: false,
-				},
-			};
-		}
+		return {
+			redirect: {
+				destination: "/api/complete-auth",
+				permanent: false,
+			},
+		};
 	}
-	// unsigned user - render sign in page
 	return {
 		props: {
 			errorMessage: context.query?.error || null,
