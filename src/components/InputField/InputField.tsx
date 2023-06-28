@@ -14,7 +14,7 @@ export default function InputField(props: InputFieldProps) {
 				{label}
 			</label>
 			<input
-				className="p-0.5 rounded h-8 bg-accent-color-2 shadow-input-shadow text-primary-color-1 font-normal"
+				className="p-0.5 rounded h-8 bg-accent-color-2 shadow-input-shadow text-primary-color-1 font-semibold read-only:text-primary-color-2-l"
 				id={inputElementID}
 				type={type}
 				{...extraProps}
