@@ -1,15 +1,15 @@
 import { HTMLInputTypeAttribute } from "react";
 
-interface InputFieldProps extends React.HTMLProps<HTMLInputElement> {
+export interface InputFieldProps extends React.HTMLProps<HTMLInputElement> {
 	label: string;
 	type: HTMLInputTypeAttribute;
 	inputElementID: string;
 }
 
 export default function InputField(props: InputFieldProps) {
-	const { label, inputElementID, type, ...extraProps } = props;
+	const { label, inputElementID, type, className = "", ...extraProps } = props;
 	return (
-		<div className="flex flex-col gap-1">
+		<div className={`flex flex-col gap-1 ${className}`}>
 			<label htmlFor={inputElementID} className="text-xl font-light">
 				{label}
 			</label>
