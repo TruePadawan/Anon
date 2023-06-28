@@ -38,6 +38,6 @@ describe("<Navbar />", () => {
 
 	it("renders a sign in link if no user is passed", () => {
 		cy.mount(<Navbar />);
-		cy.get("a[href='/sign_in']");
+		cy.get("a[href='/sign-in']");
 	});
 });

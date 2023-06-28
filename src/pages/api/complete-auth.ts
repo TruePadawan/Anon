@@ -39,6 +39,6 @@ export default async function handler(
 			res.redirect("/");
 		}
 	} else {
-		res.redirect("/sign_in");
+		res.redirect("/sign-in");
 	}
 }

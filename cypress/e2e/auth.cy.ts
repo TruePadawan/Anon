@@ -1,7 +1,7 @@
 describe("Signin page", () => {
 	beforeEach(() => {
 		cy.visit("/");
-		cy.get("a[href='/sign_in']").as("sign-in-link");
+		cy.get("a[href='/sign-in']").as("sign-in-link");
 	});
 
 	it("there is a link to sign in page on index page when user is not signed in", () => {
