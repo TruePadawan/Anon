@@ -23,9 +23,10 @@ const Home = (props: HomeProps) => {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
 	const session = await getServerSession(context.req, context.res, authOptions);
-	await dbConnect();
 
 	if (session) {
+		await dbConnect();
+		
 		const userID = session.user.id;
 		const profile = await UserProfile.findById(
 			userID,
