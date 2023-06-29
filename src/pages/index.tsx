@@ -1,15 +1,12 @@
-import Navbar from "@/components/Navbar/Navbar";
+import Navbar, { NavbarUserProp } from "@/components/Navbar/Navbar";
 import { authOptions } from "../../lib/auth";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
-import UserProfile from "../../models/UserProfile";
 import dbConnect from "../../lib/db-connect";
+import { getNavbarUserProp } from "../../helpers/global-helpers";
 
 interface HomeProps {
-	user?: {
-		displayName: string;
-		accountName: string;
-	};
+	user: NavbarUserProp | null;
 }
 
 const Home = (props: HomeProps) => {
@@ -26,24 +23,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 	if (session) {
 		await dbConnect();
-		
-		const userID = session.user.id;
-		const profile = await UserProfile.findById(
-			userID,
-			"display_name account_name"
-		).exec();
 
+		const navbarUserProp = await getNavbarUserProp(session.user.id);
 		return {
 			props: {
-				user: {
-					displayName: profile?.display_name,
-					accountName: profile?.account_name,
-				},
+				user: navbarUserProp,
 			},
 		};
 	}
 	return {
-		props: {},
+		props: { user: null },
 	};
 };
 
