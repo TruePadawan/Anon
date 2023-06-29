@@ -3,11 +3,12 @@ import UserProfile from "../../../../models/UserProfile";
 import { GetServerSideProps } from "next";
 import dbConnect from "../../../../lib/db-connect";
 import Head from "next/head";
-import ProfileDetails from "@/components/ProfileDetails/ProfileDetails";
+import ProfileInfo from "@/components/ProfileInfo/ProfileInfo";
 import { UserProfileData } from "../../../../lib/types";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../../lib/auth";
 import { getNavbarUserProp } from "../../../../helpers/global-helpers";
+import Button from "@/components/Button/Button";
 
 export interface ProfileProps {
 	profileData: UserProfileData | null;
@@ -31,14 +32,28 @@ const Profile = (props: ProfileProps) => {
 		);
 	}
 
+	function onEditButtonClicked() {
+		// handle start of editing profile process
+	}
+
+	const isEditingAllowed =
+		profileData.accountName === props.navbarUserProp?.accountName;
 	return (
 		<>
 			<Head>
 				<title key="title">{`ANON | ${profileData.displayName}`}</title>
 			</Head>
 			<Navbar user={navbarUserProp} />
-			<main className="grow flex justify-center pt-8">
-				<ProfileDetails {...profileData} />
+			<main className="grow flex flex-col gap-4 items-center pt-8">
+				<ProfileInfo {...profileData} />
+				{isEditingAllowed && (
+					<Button
+						onClick={onEditButtonClicked}
+						className="max-w-lg w-full"
+						type="button">
+						Edit
+					</Button>
+				)}
 			</main>
 		</>
 	);

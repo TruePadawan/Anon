@@ -3,7 +3,7 @@ import InputField from "../InputField/InputField";
 import { UserProfileData } from "../../../lib/types";
 import TextArea from "../TextArea/TextArea";
 
-const ProfileDetails = (props: UserProfileData) => {
+const ProfileInfo = (props: UserProfileData) => {
 	return (
 		<div className="flex flex-col items-center gap-4 max-w-lg w-full">
 			{props.avatarUrl ? (
@@ -50,4 +50,4 @@ const ProfileDetails = (props: UserProfileData) => {
 	);
 };
 
-export default ProfileDetails;
+export default ProfileInfo;
