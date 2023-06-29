@@ -8,11 +8,13 @@ import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import { Alert, Snackbar } from "@mui/material";
 import { useState } from "react";
 
+export interface NavbarUserProp {
+	displayName: string;
+	accountName: string;
+}
+
 interface NavbarProps {
-	user?: {
-		displayName: string;
-		accountName: string;
-	};
+	user?: NavbarUserProp | null;
 	toIndex?: boolean;
 }
 
