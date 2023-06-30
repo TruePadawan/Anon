@@ -9,6 +9,9 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../../../lib/auth";
 import { getNavbarUserProp } from "../../../../helpers/global-helpers";
 import Button from "@/components/Button/Button";
+import { useState } from "react";
+import EditProfileInfo from "@/components/ProfileInfo/EditProfileInfo";
+import { useRouter } from "next/router";
 
 export interface ProfileProps {
 	profileData: UserProfileData | null;
@@ -16,6 +19,8 @@ export interface ProfileProps {
 }
 
 const Profile = (props: ProfileProps) => {
+	const [isEditingProfile, setIsEditingProfile] = useState(false);
+	const router = useRouter();
 	const { profileData, navbarUserProp } = props;
 
 	if (profileData === null) {
@@ -31,13 +36,9 @@ const Profile = (props: ProfileProps) => {
 			</>
 		);
 	}
-
-	function onEditButtonClicked() {
-		// handle start of editing profile process
-	}
-
 	const isEditingAllowed =
 		profileData.accountName === props.navbarUserProp?.accountName;
+
 	return (
 		<>
 			<Head>
@@ -45,14 +46,25 @@ const Profile = (props: ProfileProps) => {
 			</Head>
 			<Navbar user={navbarUserProp} />
 			<main className="grow flex flex-col gap-4 items-center pt-8">
-				<ProfileInfo {...profileData} />
-				{isEditingAllowed && (
-					<Button
-						onClick={onEditButtonClicked}
-						className="max-w-lg w-full"
-						type="button">
-						Edit
-					</Button>
+				{isEditingProfile && (
+					<EditProfileInfo
+						profileData={profileData}
+						onCancel={() => setIsEditingProfile(false)}
+						onUpdate={() => router.reload()}
+					/>
+				)}
+				{!isEditingProfile && (
+					<>
+						<ProfileInfo {...profileData} />
+						{isEditingAllowed && (
+							<Button
+								onClick={() => setIsEditingProfile(true)}
+								className="max-w-lg w-full"
+								type="button">
+								Edit
+							</Button>
+						)}
+					</>
 				)}
 			</main>
 		</>
