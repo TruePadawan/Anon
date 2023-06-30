@@ -71,17 +71,18 @@ const Profile = (props: ProfileProps) => {
 	);
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps<ProfileProps> = async (
+	context
+) => {
 	// get profile data, allow editing if profile is signed in users own profile
 	if (context.params === undefined) throw new Error("No account name in URL");
 	await dbConnect();
 
 	// Get signed in user data for navbar
 	const session = await getServerSession(context.req, context.res, authOptions);
-	let navbarUserProp = null;
-	if (session) {
-		navbarUserProp = await getNavbarUserProp(session.user.id);
-	}
+	const navbarUserProp = session
+		? await getNavbarUserProp(session.user.id)
+		: null;
 
 	// Get profile data that belongs to what [account-name] resolves to.
 	const accountName = context.params["account-name"];
@@ -93,6 +94,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 		return {
 			props: {
 				profileData: null,
+				navbarUserProp,
 			},
 		};
 	}
