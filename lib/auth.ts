@@ -1,11 +1,11 @@
-import mongodbClientPromise from "@/mongodb-client";
+import MongoClientPromise from "./mongodb";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import type { NextAuthOptions } from "next-auth";
 import { Adapter } from "next-auth/adapters";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 
-const mongodbAdapter = MongoDBAdapter(mongodbClientPromise, {
+const mongodbAdapter = MongoDBAdapter(MongoClientPromise, {
 	databaseName: "anon",
 });
 
