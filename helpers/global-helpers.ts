@@ -1,5 +1,5 @@
 import randomColor from "randomcolor";
-import UserProfile from "../models/UserProfile";
+import { prisma } from "../lib/prisma-client";
 
 export function getRandomColor() {
 	return randomColor({
@@ -13,16 +13,14 @@ export function getRandomInt(max: number) {
 }
 
 export async function getNavbarUserProp(userID: string) {
-	const userProfile = await UserProfile.findById(
-		userID,
-		"display_name account_name"
-	).exec();
-
-	if (userProfile === null) {
-		return null;
-	}
-	return {
-		accountName: userProfile.account_name,
-		displayName: userProfile.display_name,
-	};
+	const profile = await prisma.userProfile.findUnique({
+		where: {
+			id: userID,
+		},
+		select: {
+			displayName: true,
+			accountName: true,
+		},
+	});
+	return profile;
 }

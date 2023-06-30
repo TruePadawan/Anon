@@ -1,10 +1,8 @@
 import Navbar, { NavbarUserProp } from "@/components/Navbar/Navbar";
-import UserProfile from "../../../../models/UserProfile";
 import { GetServerSideProps } from "next";
-import dbConnect from "../../../../lib/db-connect";
 import Head from "next/head";
 import ProfileInfo from "@/components/ProfileInfo/ProfileInfo";
-import { UserProfileData } from "../../../../lib/types";
+import { UserProfileType } from "../../../../lib/types";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../../lib/auth";
 import { getNavbarUserProp } from "../../../../helpers/global-helpers";
@@ -12,18 +10,19 @@ import Button from "@/components/Button/Button";
 import { useState } from "react";
 import EditProfileInfo from "@/components/ProfileInfo/EditProfileInfo";
 import { useRouter } from "next/router";
+import { prisma } from "../../../../lib/prisma-client";
 
 export interface ProfileProps {
-	profileData: UserProfileData | null;
+	profile: UserProfileType | null;
 	navbarUserProp: NavbarUserProp | null;
 }
 
 const Profile = (props: ProfileProps) => {
 	const [isEditingProfile, setIsEditingProfile] = useState(false);
 	const router = useRouter();
-	const { profileData, navbarUserProp } = props;
+	const { profile, navbarUserProp } = props;
 
-	if (profileData === null) {
+	if (profile === null) {
 		return (
 			<>
 				<Head>
@@ -37,25 +36,25 @@ const Profile = (props: ProfileProps) => {
 		);
 	}
 	const isEditingAllowed =
-		profileData.accountName === props.navbarUserProp?.accountName;
+		profile.accountName === props.navbarUserProp?.accountName;
 
 	return (
 		<>
 			<Head>
-				<title key="title">{`ANON | ${profileData.displayName}`}</title>
+				<title key="title">{`ANON | ${profile.displayName}`}</title>
 			</Head>
 			<Navbar user={navbarUserProp} />
 			<main className="grow flex flex-col gap-4 items-center pt-8">
 				{isEditingProfile && (
 					<EditProfileInfo
-						profileData={profileData}
+						profileData={profile}
 						onCancel={() => setIsEditingProfile(false)}
 						onUpdate={() => router.reload()}
 					/>
 				)}
 				{!isEditingProfile && (
 					<>
-						<ProfileInfo {...profileData} />
+						<ProfileInfo {...profile} />
 						{isEditingAllowed && (
 							<Button
 								onClick={() => setIsEditingProfile(true)}
@@ -71,12 +70,9 @@ const Profile = (props: ProfileProps) => {
 	);
 };
 
-export const getServerSideProps: GetServerSideProps<ProfileProps> = async (
-	context
-) => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
 	// get profile data, allow editing if profile is signed in users own profile
 	if (context.params === undefined) throw new Error("No account name in URL");
-	await dbConnect();
 
 	// Get signed in user data for navbar
 	const session = await getServerSession(context.req, context.res, authOptions);
@@ -85,28 +81,16 @@ export const getServerSideProps: GetServerSideProps<ProfileProps> = async (
 		: null;
 
 	// Get profile data that belongs to what [account-name] resolves to.
-	const accountName = context.params["account-name"];
-	const profile = await UserProfile.findOne({
-		account_name: accountName,
-	}).exec();
+	const accountName = context.params["account-name"] as string;
+	const profile = await prisma.userProfile.findUnique({
+		where: {
+			accountName,
+		},
+	});
 
-	if (profile === null) {
-		return {
-			props: {
-				profileData: null,
-				navbarUserProp,
-			},
-		};
-	}
 	return {
 		props: {
-			profileData: {
-				accountName: profile.account_name,
-				displayName: profile.display_name,
-				bio: profile.bio,
-				color: profile.color,
-				avatarUrl: profile.avatar_url,
-			},
+			profile,
 			navbarUserProp,
 		},
 	};

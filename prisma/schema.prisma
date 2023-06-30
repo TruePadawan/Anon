@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  access_token      String  @db.String
+  expires_at        Int?
+  refresh_token     String? @db.String
+  id_token          String? @db.String
+  provider          String
+  providerAccountId String
+  scope             String?
+  token_type        String?
+  session_state     String?
+  type              String
+  userId            String  @db.ObjectId
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  expires      DateTime @db.Date
+  sessionToken String   @unique
+  userId       String   @db.ObjectId
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserProfile {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  accountName String  @unique
+  avatarUrl   String?
+  bio         String? @default("Hello, I just joined ANON")
+  color       String
+  displayName String
+  createdAt   Int
+}
+
+model User {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  email         String?   @unique
+  /// Could not determine type: the field only had null or empty values in the sample set.
+  emailVerified DateTime?
+  image         String?
+  name          String?
+  Account       Account[]
+  Session       Session[]
+}

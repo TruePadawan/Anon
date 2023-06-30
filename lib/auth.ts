@@ -1,16 +1,12 @@
-import MongoClientPromise from "./mongodb";
-import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import type { NextAuthOptions } from "next-auth";
 import { Adapter } from "next-auth/adapters";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
-
-const mongodbAdapter = MongoDBAdapter(MongoClientPromise, {
-	databaseName: "anon",
-});
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { prisma } from "./prisma-client";
 
 export const authOptions: NextAuthOptions = {
-	adapter: mongodbAdapter as Adapter,
+	adapter: PrismaAdapter(prisma) as Adapter,
 	providers: [
 		GitHubProvider({
 			clientId: process.env.GITHUB_ID as string,

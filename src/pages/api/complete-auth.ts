@@ -1,13 +1,12 @@
 import { authOptions } from "../../../lib/auth";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
-import dbConnect from "../../../lib/db-connect";
-import UserProfile from "../../../models/UserProfile";
-import { getRandomInt } from "../../../helpers/global-helpers";
+import { getRandomColor, getRandomInt } from "../../../helpers/global-helpers";
+import { prisma } from "../../../lib/prisma-client";
 
 /*	If there is a session
 		create default profile for user if none,
-		else redirect to profile page
+	else redirect to profile page
 */
 export default async function handler(
 	req: NextApiRequest,
@@ -17,26 +16,29 @@ export default async function handler(
 
 	if (session) {
 		const userID = session.user.id;
-		await dbConnect();
-
-		const profile = await UserProfile.findById(userID, "account_name");
-		if (profile !== null) {
+		const profile = await prisma.userProfile.findUnique({
+			where: { id: userID },
+			select: { accountName: true },
+		});
+		if (profile) {
 			res.redirect("/");
 		} else {
-			const displayName = session?.user.name;
-			const accountName = `${session?.user.email
+			const displayName = session.user.name || "New User";
+			const accountName = `${session.user.email
 				?.split("@")
 				.at(0)}${getRandomInt(100000000)}`;
-
-			const defaultProfile = new UserProfile({
-				_id: userID,
-				account_name: accountName,
-				display_name: displayName,
+			await prisma.userProfile.create({
+				data: {
+					id: userID,
+					accountName,
+					displayName,
+					color: getRandomColor(),
+					createdAt: Date.now(),
+				},
 			});
-			await defaultProfile.save();
+
 			// should redirect to user profile
-			// res.redirect(`/users/${profile.account_name}`);
-			res.redirect("/");
+			res.redirect(`/users/${accountName}`);
 		}
 	} else {
 		res.redirect("/sign-in");

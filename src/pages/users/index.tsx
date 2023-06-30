@@ -1,9 +1,8 @@
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../lib/auth";
-import dbConnect from "../../../lib/db-connect";
-import UserProfile from "../../../models/UserProfile";
 import { Fragment } from "react";
+import { prisma } from "../../../lib/prisma-client";
 
 // Empty component to shut nextjs up
 export default function Users() {
@@ -16,14 +15,13 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
 	let redirectDestination = "/sign-in";
 
 	if (session) {
-		await dbConnect();
 		const userID = session.user.id;
-		const userProfile = await UserProfile.findById(
-			userID,
-			"account_name"
-		).exec();
-		if (userProfile) {
-			redirectDestination = `/users/${userProfile.account_name}`;
+		const profile = await prisma.userProfile.findUnique({
+			where: { id: userID },
+			select: { accountName: true },
+		});
+		if (profile) {
+			redirectDestination = `/users/${profile.accountName}`;
 		}
 	}
 

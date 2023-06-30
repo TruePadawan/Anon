@@ -1,9 +1,9 @@
 import Image from "next/image";
 import InputField from "../InputField/InputField";
-import { UserProfileData } from "../../../lib/types";
+import { UserProfileType } from "../../../lib/types";
 import TextArea from "../TextArea/TextArea";
 
-const ProfileInfo = (props: UserProfileData) => {
+const ProfileInfo = (props: UserProfileType) => {
 	return (
 		<div className="flex flex-col items-center gap-4 max-w-lg w-full">
 			{props.avatarUrl ? (

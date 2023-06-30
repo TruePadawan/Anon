@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import InputField from "../InputField/InputField";
-import { UserProfileData } from "../../../lib/types";
+import { UserProfileType } from "../../../lib/types";
 import TextArea from "../TextArea/TextArea";
 import { useEffect, useRef, useState } from "react";
 import Button from "../Button/Button";
@@ -8,7 +8,7 @@ import useInput from "@/hooks/useInput";
 import { validateAccountName } from "./utils";
 
 interface EditProfileInfoProps {
-	profileData: UserProfileData;
+	profileData: UserProfileType;
 	onCancel?: () => void;
 	onUpdate?: () => void;
 }
