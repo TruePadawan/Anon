@@ -49,7 +49,7 @@ const Profile = (props: ProfileProps) => {
 					<EditProfileInfo
 						profileData={profile}
 						onCancel={() => setIsEditingProfile(false)}
-						onUpdate={() => router.reload()}
+						onUpdate={() => router.replace("/users")}
 					/>
 				)}
 				{!isEditingProfile && (
