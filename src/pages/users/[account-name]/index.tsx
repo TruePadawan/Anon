@@ -2,7 +2,7 @@ import Navbar, { NavbarUserProp } from "@/components/Navbar/Navbar";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
 import ProfileInfo from "@/components/ProfileInfo/ProfileInfo";
-import { UserProfileType } from "../../../../lib/types";
+import { UserProfileType } from "../../../types/types";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../../lib/auth";
 import { getNavbarUserProp } from "../../../../helpers/global-helpers";

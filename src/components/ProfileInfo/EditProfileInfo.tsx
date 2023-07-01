@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import InputField from "../InputField/InputField";
-import { UserProfileType } from "../../../lib/types";
+import { UserProfileType } from "../../types/types";
 import TextArea from "../TextArea/TextArea";
 import { useEffect, useRef, useState } from "react";
 import Button from "../Button/Button";

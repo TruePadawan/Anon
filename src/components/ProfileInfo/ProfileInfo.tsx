@@ -1,6 +1,6 @@
 import Image from "next/image";
 import InputField from "../InputField/InputField";
-import { UserProfileType } from "../../../lib/types";
+import { UserProfileType } from "../../types/types";
 import TextArea from "../TextArea/TextArea";
 
 const ProfileInfo = (props: UserProfileType) => {
