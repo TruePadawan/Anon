@@ -17,19 +17,23 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 	const [formIsValid, setFormIsValid] = useState(false);
 	const [displayName, setDisplayName] = useState(props.profileData.displayName);
 	const bioRef = useRef<HTMLTextAreaElement>(null);
-	const accountNameInput = useInput(
-		validateAccountName,
-		props.profileData.accountName
-	);
+	const accountNameInput = useInput(validateAccountName, {
+		defaultValue: props.profileData.accountName,
+		transform: (value) => value?.toString().replaceAll(" ", ""),
+	});
 
 	// update formIsValid state when input states change
+	// account name is valid if its the same as signed in users' or is unique in db
 	useEffect(() => {
+		const accountNameIsValid =
+			accountNameInput.inputValue === props.profileData.accountName ||
+			accountNameInput.isInputValid;
 		setFormIsValid(
 			accountNameInput.checkingValidity === false &&
-				accountNameInput.isInputValid === true &&
+				accountNameIsValid &&
 				displayName.trim().length > 0
 		);
-	}, [accountNameInput, displayName]);
+	}, [accountNameInput, displayName, props.profileData.accountName]);
 
 	function onFormSubmit(event: React.FormEvent) {
 		event.preventDefault();
@@ -77,7 +81,9 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 			<InputField
 				className="w-full"
 				inputElementID="account_name"
-				label="Account name"
+				title="Account name should not have whitespace"
+				label="Account name (no whitespace)"
+				pattern="/^\S*$/"
 				value={accountNameInput.inputValue}
 				onChange={accountNameInput.changeEventHandler}
 				required
@@ -98,6 +104,9 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 				textareaRef={bioRef}
 				required
 			/>
+			{accountNameInput.checkingValidity && (
+				<p className="text-dark-green-l">Validating values</p>
+			)}
 			<div className="flex flex-col gap-2 self-stretch">
 				<Button
 					type="submit"
