@@ -16,6 +16,7 @@ interface EditProfileInfoProps {
 const EditProfileInfo = (props: EditProfileInfoProps) => {
 	const [formIsValid, setFormIsValid] = useState(false);
 	const [displayName, setDisplayName] = useState(props.profileData.displayName);
+	const [isUpdating, setIsUpdating] = useState(false);
 	const bioRef = useRef<HTMLTextAreaElement>(null);
 	const accountNameInput = useInput(validateAccountName, {
 		defaultValue: props.profileData.accountName,
@@ -35,14 +36,28 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 		);
 	}, [accountNameInput, displayName, props.profileData.accountName]);
 
-	function onFormSubmit(event: React.FormEvent) {
+	async function onFormSubmit(event: React.FormEvent) {
 		event.preventDefault();
 		// update profile data
-
-		// after update
-		if (props.onUpdate) {
-			props.onUpdate();
+		const data = {
+			accountName: accountNameInput.inputValue,
+			displayName,
+			bio: bioRef.current?.value,
+		};
+		setIsUpdating(true);
+		const response = await fetch("/api/update-profile", {
+			method: "POST",
+			body: JSON.stringify(data),
+		});
+		if (response.ok) {
+			// after update
+			if (props.onUpdate) {
+				props.onUpdate();
+			}
+		} else {
+			// handle error
 		}
+		setIsUpdating(false);
 	}
 
 	function onDisplayNameChanged(event: React.ChangeEvent<HTMLInputElement>) {
@@ -57,6 +72,7 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 	}
 
 	const { profileData } = props;
+	const updateIsDisabled = !formIsValid || isUpdating;
 	return (
 		<form
 			className="flex flex-col items-center gap-4 max-w-lg w-full"
@@ -83,7 +99,7 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 				inputElementID="account_name"
 				title="Account name should not have whitespace"
 				label="Account name (no whitespace)"
-				pattern="/^\S*$/"
+				pattern="^\S*$"
 				value={accountNameInput.inputValue}
 				onChange={accountNameInput.changeEventHandler}
 				required
@@ -105,19 +121,23 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 				required
 			/>
 			{accountNameInput.checkingValidity && (
-				<p className="text-dark-green-l">Validating values</p>
+				<p className="text-dark-green-l text-sm">Validating values</p>
+			)}
+			{isUpdating && (
+				<p className="text-dark-green-l text-sm">Updating profile</p>
 			)}
 			<div className="flex flex-col gap-2 self-stretch">
 				<Button
 					type="submit"
 					className="bg-dark-green disabled:hover:bg-dark-green hover:bg-dark-green-l"
-					disabled={!formIsValid}>
+					disabled={updateIsDisabled}>
 					Update
 				</Button>
 				<Button
 					type="button"
 					className="bg-dark-red disabled:hover:bg-dark-red hover:bg-dark-red-l"
-					onClick={onCancelBtnClicked}>
+					onClick={onCancelBtnClicked}
+					disabled={isUpdating}>
 					Cancel
 				</Button>
 			</div>
