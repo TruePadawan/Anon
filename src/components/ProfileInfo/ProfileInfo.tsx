@@ -2,6 +2,7 @@ import Image from "next/image";
 import InputField from "../InputField/InputField";
 import { UserProfileType } from "../../types/types";
 import TextArea from "../TextArea/TextArea";
+import { IMG_HEIGHT, IMG_WIDTH } from "./utils";
 
 const ProfileInfo = (props: UserProfileType) => {
 	return (
@@ -20,8 +21,8 @@ const ProfileInfo = (props: UserProfileType) => {
 					className="rounded-full"
 					style={{
 						background: props.color,
-						width: "120px",
-						height: "120px",
+						width: `${IMG_WIDTH}px`,
+						height: `${IMG_HEIGHT}px`,
 					}}></span>
 			)}
 

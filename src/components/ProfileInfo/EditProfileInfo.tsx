@@ -5,7 +5,7 @@ import TextArea from "../TextArea/TextArea";
 import { useEffect, useRef, useState } from "react";
 import Button from "../Button/Button";
 import useInput from "@/hooks/useInput";
-import { validateAccountName } from "./utils";
+import { IMG_HEIGHT, IMG_WIDTH, validateAccountName } from "./utils";
 
 interface EditProfileInfoProps {
 	profileData: UserProfileType;
@@ -90,8 +90,8 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 					className="rounded-full"
 					style={{
 						background: profileData.color,
-						width: "120px",
-						height: "120px",
+						width: `${IMG_WIDTH}px`,
+						height: `${IMG_HEIGHT}px`,
 					}}></span>
 			)}
 			<InputField
