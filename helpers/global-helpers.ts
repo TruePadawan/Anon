@@ -24,3 +24,6 @@ export async function getNavbarUserProp(userID: string) {
 	});
 	return profile;
 }
+
+export const CLOUDINARY_UPLOAD_URL =
+	"https://api.cloudinary.com/v1_1/cloudinary-freeplan/image/upload";
