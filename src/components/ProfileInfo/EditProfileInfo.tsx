@@ -38,6 +38,7 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 
 	async function onFormSubmit(event: React.FormEvent) {
 		event.preventDefault();
+		console.log(event.target);
 		// update profile data
 		const data = {
 			accountName: accountNameInput.inputValue,
@@ -71,29 +72,26 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 		}
 	}
 
+	function fileInputChangeHandler(event: React.ChangeEvent<HTMLInputElement>) {
+		console.log(event.target.files);
+		// validate that file is less than 1mb and is an image
+		// valid file - upload to cloudinary and retrieve public url
+	}
+
 	const { profileData } = props;
 	const updateIsDisabled = !formIsValid || isUpdating;
 	return (
 		<form
 			className="flex flex-col items-center gap-4 max-w-lg w-full"
 			onSubmit={onFormSubmit}>
-			{profileData.avatarUrl ? (
-				<img
-					className="rounded-full"
-					src={profileData.avatarUrl}
-					alt="avatar"
-					width={120}
-					height={120}
-				/>
-			) : (
-				<span
-					className="rounded-full"
-					style={{
-						background: profileData.color,
-						width: `${IMG_WIDTH}px`,
-						height: `${IMG_HEIGHT}px`,
-					}}></span>
-			)}
+			<InputField
+				type="file"
+				className="w-full"
+				inputElementID="profile_pic"
+				label="Select profile picture (<= 1MB)"
+				accept="image/*"
+				onChange={fileInputChangeHandler}
+			/>
 			<InputField
 				className="w-full"
 				inputElementID="account_name"
