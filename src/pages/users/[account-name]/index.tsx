@@ -5,7 +5,6 @@ import ProfileInfo from "@/components/ProfileInfo/ProfileInfo";
 import { UserProfileType } from "../../../types/types";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../../lib/auth";
-import { getNavbarUserProp } from "../../../../helpers/global-helpers";
 import Button from "@/components/Button/Button";
 import { useState } from "react";
 import EditProfileInfo from "@/components/ProfileInfo/EditProfileInfo";
@@ -78,9 +77,20 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 	// Get signed in user data for navbar
 	const session = await getServerSession(context.req, context.res, authOptions);
-	const navbarUserProp = session
-		? await getNavbarUserProp(session.user.id)
-		: null;
+	let navbarUserProp;
+
+	// get navbar user prop
+	if (session) {
+		navbarUserProp = await prisma.userProfile.findUnique({
+			where: {
+				id: session.user.id,
+			},
+			select: {
+				displayName: true,
+				accountName: true,
+			},
+		});
+	}
 
 	// Get profile data that belongs to what [account-name] resolves to.
 	const accountName = context.params["account-name"] as string;
