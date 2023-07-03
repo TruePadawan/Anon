@@ -23,6 +23,6 @@ export function validateFileAsImage(file: File) {
 	}
 	return {
 		isValid: errorMessages.length === 0,
-		message: "Selected file ",
+		messages: errorMessages,
 	};
 }
