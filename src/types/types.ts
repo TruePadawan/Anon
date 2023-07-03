@@ -1,5 +1,5 @@
 export interface UserProfileType {
-	_id: string;
+	id: string;
 	avatarUrl?: string;
 	color: string;
 	accountName: string;
