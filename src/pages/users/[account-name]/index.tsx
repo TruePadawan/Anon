@@ -99,7 +99,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 			accountName,
 		},
 	});
-
+	
 	return {
 		props: {
 			profile,
