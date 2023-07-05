@@ -13,3 +13,17 @@ export function getRandomInt(max: number) {
 
 export const CLOUDINARY_UPLOAD_URL =
 	"https://api.cloudinary.com/v1_1/cloudinary-freeplan/image/upload";
+
+export function validateFileAsImage(file: File) {
+	const errorMessages = [];
+	if (file.size / 1000 >= 1024) {
+		errorMessages.push("Selected file must be less than or equal to 1MB");
+	}
+	if (file.type.split("/").at(0) !== "image") {
+		errorMessages.push("Selected file must be an image");
+	}
+	return {
+		isValid: errorMessages.length === 0,
+		messages: errorMessages,
+	};
+}
