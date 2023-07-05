@@ -1,4 +1,4 @@
-import Image from "next/image";
+/* eslint-disable @next/next/no-img-element */
 import InputField from "../InputField/InputField";
 import { UserProfileType } from "../../types/types";
 import TextArea from "../TextArea/TextArea";
@@ -8,13 +8,10 @@ const ProfileInfo = (props: UserProfileType) => {
 	return (
 		<div className="flex flex-col items-center gap-4 max-w-lg w-full">
 			{props.avatarUrl ? (
-				<Image
+				<img
 					className="rounded-full"
 					src={props.avatarUrl}
-					alt="avatar"
-					width={120}
-					height={120}
-					quality={100}
+					alt={props.accountName}
 				/>
 			) : (
 				<span
