@@ -29,7 +29,7 @@ export function validateFileAsImage(file: File) {
 }
 
 export async function generateUploadSignature(uploadParams: object) {
-	const response = await fetch("/api/upload-signature", {
+	const response = await fetch("/api/get-auth-signature", {
 		method: "POST",
 		body: JSON.stringify({
 			params: uploadParams,
