@@ -1,3 +1,4 @@
+import { UploadApiResponse } from "cloudinary";
 import randomColor from "randomcolor";
 
 export function getRandomColor() {
@@ -68,6 +69,6 @@ export async function uploadImage(imageFile: File, uploadParams: FormData) {
 		throw new Error(response.statusText);
 	}
 
-	const data = await response.json();
+	const data: UploadApiResponse = await response.json();
 	return data;
 }
