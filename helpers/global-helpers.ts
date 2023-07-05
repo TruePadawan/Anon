@@ -27,3 +27,14 @@ export function validateFileAsImage(file: File) {
 		messages: errorMessages,
 	};
 }
+
+export async function generateUploadSignature(uploadOptions: object) {
+	const response = await fetch("/api/upload-signature", {
+		method: "POST",
+		body: JSON.stringify({
+			params: uploadOptions,
+		}),
+	});
+	const data = await response.json();
+	return data;
+}
