@@ -1,4 +1,4 @@
-import { UploadApiResponse } from "cloudinary";
+import { UploadApiOptions, UploadApiResponse } from "cloudinary";
 import randomColor from "randomcolor";
 
 export function getRandomColor() {
@@ -49,20 +49,22 @@ export function getBase64(file: File): Promise<string | ArrayBuffer | null> {
 	});
 }
 
-export async function uploadImage(imageFile: File, uploadParams: FormData) {
-	const { isValid } = validateFileAsImage(imageFile);
+export async function uploadImage(file: File, uploadParams: UploadApiOptions) {
+	const { isValid } = validateFileAsImage(file);
 	if (!isValid) {
 		throw new Error("Could not verify that file is an image");
 	}
-	const fileBase64 = await getBase64(imageFile);
+	const fileBase64 = await getBase64(file);
 	if (!fileBase64) {
 		throw new Error("Failed to convert file to base64");
 	}
 
-	uploadParams.append("file", fileBase64.toString());
-	const response = await fetch(CLOUDINARY_UPLOAD_URL, {
+	const response = await fetch("/api/upload-image", {
 		method: "POST",
-		body: uploadParams,
+		body: JSON.stringify({
+			file: fileBase64,
+			options: uploadParams,
+		}),
 	});
 
 	if (!response.ok) {
