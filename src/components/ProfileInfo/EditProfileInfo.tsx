@@ -60,7 +60,7 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 		const uploadOptions: UploadApiOptions = {
 			upload_preset: "profile_pic_preset",
 			public_id: `${props.profileData.id}`,
-			folder: "anon/profile_pictures/main",
+			folder: "anon/profile_pictures",
 			overwrite: true,
 		};
 
