@@ -74,3 +74,5 @@ export async function uploadImage(file: File, uploadParams: UploadApiOptions) {
 	const data: UploadApiResponse = await response.json();
 	return data;
 }
+
+export const TINYMCE_API_KEY = "hjg5uaircq1op1ph89dxgds7lho2m56ubvjczx6dhxgdqd6e";
