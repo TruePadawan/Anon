@@ -44,12 +44,35 @@ model UserProfile {
 }
 
 model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  email         String?   @unique
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  email         String?      @unique
   /// Could not determine type: the field only had null or empty values in the sample set.
   emailVerified DateTime?
   image         String?
   name          String?
   Account       Account[]
   Session       Session[]
+  PublicPost    PublicPost[]
+  Comment       Comment[]
+}
+
+model PublicPost {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  content   String
+  author    User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  String @db.ObjectId
+  createdAt Int
+}
+
+model Comment {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  commentGroupId  String
+  parentComment   Comment?  @relation("ParentComment", fields: [parentCommentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  parentCommentId String?   @db.ObjectId
+  Comment         Comment[] @relation("ParentComment")
+  content         String
+  author          User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId        String    @db.ObjectId
+  createdAt       Int
+  editedAt        Int?      @default(0)
 }
