@@ -78,7 +78,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 	// Get signed in user data for navbar
 	const session = await getServerSession(context.req, context.res, authOptions);
-	let navbarUserProp;
+	let navbarUserProp = null;
 
 	// get navbar user prop
 	if (session) {
