@@ -37,7 +37,7 @@ export default function CreatePost(props: CreatePostProps) {
 	}
 
 	return (
-		<div className={`max-w-3xl flex flex-col gap-1 ${props.className || ""}`}>
+		<div className={`max-w-3xl w-full flex flex-col gap-2 ${props.className || ""}`}>
 			<RichTextEditor editor={editor}>
 				<RichTextEditor.Toolbar sticky stickyOffset={60}>
 					<RichTextEditor.ControlsGroup>
