@@ -3,14 +3,14 @@ import InputField from "../InputField/InputField";
 import { UserProfileType } from "../../types/types";
 import TextArea from "../TextArea/TextArea";
 import { useEffect, useRef, useState } from "react";
-import { Button } from "@mantine/core";
+import { Button, Notification } from "@mantine/core";
 import useInput from "@/hooks/useInput";
 import { validateAccountName } from "./utils";
 import {
 	validateFileAsImage,
 	uploadImage,
 } from "../../../helpers/global-helpers";
-import { Alert, Snackbar } from "@mui/material";
+import { Snackbar } from "@mui/material";
 import { UploadApiOptions } from "cloudinary";
 
 interface EditProfileInfoProps {
@@ -153,12 +153,13 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 	return (
 		<>
 			<Snackbar open={errorSnackbarOpen} onClose={closeSnackbar}>
-				<Alert
-					severity="warning"
+				<Notification
+					color="orange"
+					title="Error"
 					sx={{ width: "100%" }}
 					onClose={closeSnackbar}>
 					{errorText}
-				</Alert>
+				</Notification>
 			</Snackbar>
 			<form
 				className="flex flex-col items-center gap-4 max-w-lg w-full"

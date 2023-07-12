@@ -5,7 +5,8 @@ import { useRouter } from "next/router";
 import HomeIcon from "@mui/icons-material/Home";
 import GroupIcon from "@mui/icons-material/Group";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
-import { Alert, Snackbar } from "@mui/material";
+import { Snackbar } from "@mui/material";
+import { Notification } from "@mantine/core";
 import { useState } from "react";
 
 export interface NavbarUserProp {
@@ -45,13 +46,13 @@ export default function Navbar({ user, toIndex }: NavbarProps) {
 	return (
 		<nav className="flex flex-col items-stretch gap-4">
 			<Snackbar open={snackbarIsOpen} onClose={closeSnackbar}>
-				<Alert
-					variant="filled"
+				<Notification
+					color="red"
 					onClose={closeSnackbar}
-					severity="error"
+					title="Error"
 					sx={{ width: "100%" }}>
 					Failed to sign out!
-				</Alert>
+				</Notification>
 			</Snackbar>
 			<div className="flex justify-between items-center">
 				<h1 className="font-extrabold text-5xl">

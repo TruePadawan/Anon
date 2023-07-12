@@ -6,7 +6,8 @@ import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../lib/auth";
 import { GitHub, Google } from "@mui/icons-material";
-import { Alert } from "@mui/material";
+import { Alert } from "@mantine/core";
+import { IconAlertCircle } from "@tabler/icons-react";
 
 interface SignInPageProps {
 	errorMessage: string | null;
@@ -28,15 +29,21 @@ const SignIn = ({ errorMessage }: SignInPageProps) => {
 			</Head>
 			<Navbar toIndex />
 			<main className="grow flex justify-center items-center">
-				<div className="mb-10 px-4 py-2 max-w-lg w-full flex flex-col gap-1">
+				<div className="mb-10 px-4 py-2 w-max flex flex-col gap-1">
 					<h2 className="text-4xl text-center">Who are you?...</h2>
 					<div className="mt-6 flex flex-col gap-1.5">
 						<Alert
-							severity="warning"
-							variant="filled">{`Can't sign in with both Google and Github if linked to same Email`}</Alert>
+							icon={<IconAlertCircle />}
+							color="orange"
+							title="Note"
+							variant="filled">
+							{`Can't sign in with both Google and Github if they're linked to the same Email`}
+						</Alert>
 						{errorMessage && (
 							<Alert
-								severity="error"
+								icon={<IconAlertCircle />}
+								color="red"
+								title="Error"
 								variant="filled">{`Error occurred: ${errorMessage}`}</Alert>
 						)}
 						<Button
