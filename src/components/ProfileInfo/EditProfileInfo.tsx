@@ -35,21 +35,18 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 	const bioRef = useRef<HTMLTextAreaElement>(null);
 	const profilePictureRef = useRef<File | undefined>();
 
+	// account name is valid if its the same as signed in users' or is unique in db
 	const accountNameInput = useInput(validateAccountName, {
 		defaultValue: props.profileData.accountName,
 		transform: (value) => value?.toString().replaceAll(" ", ""),
 	});
 
 	// update formIsValid state when input states change
-	// account name is valid if its the same as signed in users' or is unique in db
 	useEffect(() => {
-		const accountNameIsValid =
-			accountNameInput.inputValue === props.profileData.accountName ||
-			accountNameInput.isInputValid;
 		setFormIsValid(
 			profilePicIsValid &&
 				accountNameInput.checkingValidity === false &&
-				accountNameIsValid &&
+				accountNameInput.isInputValid &&
 				displayName.trim().length > 0
 		);
 	}, [
