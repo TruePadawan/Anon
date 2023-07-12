@@ -17,7 +17,7 @@ import {
 } from "../../../helpers/global-helpers";
 import { Snackbar } from "@mui/material";
 import { UploadApiOptions } from "cloudinary";
-import { IconUpload, IconLoader2 } from "@tabler/icons-react";
+import { IconUpload } from "@tabler/icons-react";
 
 interface EditProfileInfoProps {
 	profileData: UserProfileType;
