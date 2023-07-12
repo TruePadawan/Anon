@@ -58,7 +58,7 @@ model User {
 
 model PublicPost {
   id        String @id @default(auto()) @map("_id") @db.ObjectId
-  content   String
+  content   Json
   author    User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  String @db.ObjectId
   createdAt Int

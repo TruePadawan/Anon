@@ -1,54 +1,87 @@
-import { Editor } from "@tinymce/tinymce-react";
-import { Editor as TinyMCEEditor } from "tinymce";
-import { useRef, useState } from "react";
-import Button from "../Button/Button";
-import { TINYMCE_API_KEY } from "../../../helpers/global-helpers";
+import { useState } from "react";
+import { RichTextEditor } from "@mantine/tiptap";
+import { JSONContent, useEditor } from "@tiptap/react";
+import Placeholder from "@tiptap/extension-placeholder";
+import { EditorExtensions } from "../../../helpers/global-helpers";
+import { Button } from "@mantine/core";
 
 interface CreatePostProps {
 	anonymous?: boolean;
 	className?: string;
-	onClick: (content: string, onSubmit: () => void) => void;
+	handlePostSubmit: (content: JSONContent, onSubmit: () => void) => void;
 }
 
 export default function CreatePost(props: CreatePostProps) {
 	const [isSubmittingPost, setIsSubmittingPost] = useState(false);
-	const editorRef = useRef<TinyMCEEditor | null>(null);
+	const editor = useEditor({
+		extensions: [
+			...EditorExtensions,
+			Placeholder.configure({ placeholder: "Share your thoughts" }),
+		],
+	});
 
+	// pass editor content to post submit handler and clear the editor after post is submitted
 	function btnClickHandler() {
-		setIsSubmittingPost(true);
-		const editorContent = editorRef.current?.getContent();
-		if (editorContent) {
-			props.onClick(editorContent, () => {
+		if (editor === null) return;
+		const NoPostContent =
+			editor.isEmpty || editor.getText().trim().length === 0;
+
+		if (!NoPostContent) {
+			setIsSubmittingPost(true);
+			const editorContent = editor.getJSON();
+			props.handlePostSubmit(editorContent, () => {
 				setIsSubmittingPost(false);
-				editorRef.current?.resetContent();
+				editor.commands.clearContent();
 			});
 		}
 	}
 
 	return (
 		<div className={`max-w-3xl flex flex-col gap-1 ${props.className || ""}`}>
-			<Editor
-				apiKey={TINYMCE_API_KEY}
-				onInit={(evt, editor) => (editorRef.current = editor)}
-				init={{
-					readonly: true,
-					skin: "oxide-dark",
-					content_css: "dark",
-					height: 500,
-					menubar: false,
-					plugins: ["lists", "link", "codesample", "autoresize"],
-					toolbar:
-						"undo redo | link |" +
-						"bold italic forecolor underline strikethrough | alignleft aligncenter " +
-						"alignright alignjustify | bullist numlist | codesample",
-					statusbar: false,
-					autoresize_bottom_margin: 10,
-				}}
-			/>
+			<RichTextEditor editor={editor}>
+				<RichTextEditor.Toolbar sticky stickyOffset={60}>
+					<RichTextEditor.ControlsGroup>
+						<RichTextEditor.Bold />
+						<RichTextEditor.Italic />
+						<RichTextEditor.Underline />
+						<RichTextEditor.Strikethrough />
+						<RichTextEditor.ClearFormatting />
+						<RichTextEditor.Code />
+					</RichTextEditor.ControlsGroup>
+
+					<RichTextEditor.ControlsGroup>
+						<RichTextEditor.H1 />
+						<RichTextEditor.H2 />
+						<RichTextEditor.H3 />
+						<RichTextEditor.H4 />
+					</RichTextEditor.ControlsGroup>
+
+					<RichTextEditor.ControlsGroup>
+						<RichTextEditor.Blockquote />
+						<RichTextEditor.BulletList />
+						<RichTextEditor.OrderedList />
+					</RichTextEditor.ControlsGroup>
+
+					<RichTextEditor.ControlsGroup>
+						<RichTextEditor.Link />
+						<RichTextEditor.Unlink />
+					</RichTextEditor.ControlsGroup>
+
+					<RichTextEditor.ControlsGroup>
+						<RichTextEditor.AlignLeft />
+						<RichTextEditor.AlignCenter />
+						<RichTextEditor.AlignJustify />
+						<RichTextEditor.AlignRight />
+					</RichTextEditor.ControlsGroup>
+				</RichTextEditor.Toolbar>
+
+				<RichTextEditor.Content />
+			</RichTextEditor>
 			<Button
-				onClick={btnClickHandler}
 				type="button"
-				className="self-end py-2 px-5"
+				color="gray"
+				size="md"
+				onClick={btnClickHandler}
 				disabled={isSubmittingPost}>
 				{props.anonymous ? "Create anonymous post" : "Create post"}
 			</Button>

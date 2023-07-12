@@ -1,4 +1,7 @@
-@tailwind base;
+@layer {
+  @tailwind base;
+}
+
 @tailwind components;
 @tailwind utilities;
 
@@ -21,6 +24,14 @@
 
 html {
   font-family: 'Open Sans', sans-serif;
+}
+
+ul {
+  list-style: disc;
+}
+
+ol {
+  list-style: decimal;
 }
 
 body {
