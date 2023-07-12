@@ -5,7 +5,7 @@ import ProfileInfo from "@/components/ProfileInfo/ProfileInfo";
 import { UserProfileType } from "../../../types/types";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../../lib/auth";
-import Button from "@/components/Button/Button";
+import { Button } from "@mantine/core";
 import { useState } from "react";
 import EditProfileInfo from "@/components/ProfileInfo/EditProfileInfo";
 import { useRouter } from "next/router";
@@ -58,9 +58,10 @@ const Profile = (props: ProfileProps) => {
 						<ProfileInfo {...profile} />
 						{isEditingAllowed && (
 							<Button
+								type="button"
+								color="gray"
 								onClick={() => setIsEditingProfile(true)}
-								className="max-w-lg w-full"
-								type="button">
+								className="max-w-lg w-full">
 								Edit
 							</Button>
 						)}
@@ -99,7 +100,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 			accountName,
 		},
 	});
-	
+
 	return {
 		props: {
 			profile,

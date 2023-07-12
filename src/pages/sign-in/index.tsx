@@ -1,4 +1,4 @@
-import Button from "@/components/Button/Button";
+import { Button } from "@mantine/core";
 import Navbar from "@/components/Navbar/Navbar";
 import Head from "next/head";
 import { signIn } from "next-auth/react";
@@ -41,16 +41,18 @@ const SignIn = ({ errorMessage }: SignInPageProps) => {
 						)}
 						<Button
 							type="button"
+							color="gray"
 							data-cy="google-signin-btn"
 							onClick={handleGoogleSignIn}
-							icon={<Google />}>
+							leftIcon={<Google />}>
 							Continue with Google
 						</Button>
 						<Button
 							type="button"
+							color="gray"
 							data-cy="github-signin-btn"
 							onClick={handleGitHubSignIn}
-							icon={<GitHub />}>
+							leftIcon={<GitHub />}>
 							Continue with GitHub
 						</Button>
 					</div>

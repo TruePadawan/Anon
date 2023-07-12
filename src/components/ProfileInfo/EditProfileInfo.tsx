@@ -3,7 +3,7 @@ import InputField from "../InputField/InputField";
 import { UserProfileType } from "../../types/types";
 import TextArea from "../TextArea/TextArea";
 import { useEffect, useRef, useState } from "react";
-import Button from "../Button/Button";
+import { Button } from "@mantine/core";
 import useInput from "@/hooks/useInput";
 import { validateAccountName } from "./utils";
 import {
