@@ -1,8 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
-import InputField from "../InputField/InputField";
 import { UserProfileType } from "../../types/types";
-import TextArea from "../TextArea/TextArea";
 import { IMG_HEIGHT, IMG_WIDTH } from "./utils";
+import { TextInput, Textarea } from "@mantine/core";
 
 const ProfileInfo = (props: UserProfileType) => {
 	return (
@@ -22,26 +21,26 @@ const ProfileInfo = (props: UserProfileType) => {
 						height: `${IMG_HEIGHT}px`,
 					}}></span>
 			)}
-
-			<InputField
+			<TextInput
 				className="w-full"
-				inputElementID="account_name"
+				size="md"
 				label="Account name"
 				value={props.accountName}
 				readOnly
 			/>
-			<InputField
+			<TextInput
 				className="w-full"
-				inputElementID="display_name"
+				size="md"
 				label="Display name"
 				value={props.displayName}
 				readOnly
 			/>
-			<TextArea
+			<Textarea
 				className="w-full"
-				textareaID="bio"
+				size="md"
 				label="Bio"
 				value={props.bio}
+				autosize
 				readOnly
 			/>
 		</div>

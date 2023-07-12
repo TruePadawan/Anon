@@ -1,9 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
-import InputField from "../InputField/InputField";
 import { UserProfileType } from "../../types/types";
-import TextArea from "../TextArea/TextArea";
 import { useEffect, useRef, useState } from "react";
-import { Button, Notification } from "@mantine/core";
+import {
+	Button,
+	FileInput,
+	Loader,
+	Notification,
+	TextInput,
+	Textarea,
+} from "@mantine/core";
 import useInput from "@/hooks/useInput";
 import { validateAccountName } from "./utils";
 import {
@@ -12,6 +17,7 @@ import {
 } from "../../../helpers/global-helpers";
 import { Snackbar } from "@mui/material";
 import { UploadApiOptions } from "cloudinary";
+import { IconUpload, IconLoader2 } from "@tabler/icons-react";
 
 interface EditProfileInfoProps {
 	profileData: UserProfileType;
@@ -118,18 +124,14 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 		}
 	}
 
-	async function fileInputChangeHandler(
-		event: React.ChangeEvent<HTMLInputElement>
-	) {
+	async function fileInputChangeHandler(file: File | null) {
 		profilePictureRef.current = undefined;
-		const files = event.target.files;
-
 		// validate that file is less than 1MB and is an image
-		if (files !== null && files.length === 1) {
-			const result = validateFileAsImage(files[0]);
+		if (file !== null) {
+			const result = validateFileAsImage(file);
 			if (result.isValid) {
 				// valid file - keep track of selected file
-				profilePictureRef.current = files[0];
+				profilePictureRef.current = file;
 				setProfilePicIsValid(true);
 			} else {
 				// notify user to give correct data
@@ -137,7 +139,7 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 				setProfilePicIsValid(false);
 			}
 		}
-		if (files?.length === 0) {
+		if (file === null) {
 			// file input for selecting profile pic is valid if no file is selected or if a valid pic is selected
 			setProfilePicIsValid(true);
 		}
@@ -164,39 +166,51 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 			<form
 				className="flex flex-col items-center gap-4 max-w-lg w-full"
 				onSubmit={formSubmitHandler}>
-				<InputField
-					type="file"
-					className="w-full"
-					inputElementID="profile_pic"
-					label="Select profile picture (<= 1MB)"
+				<FileInput
 					accept="image/*"
+					size="md"
+					className="w-full"
+					icon={<IconUpload />}
+					label="Profile picture (<= 1MB)"
+					placeholder="Select image"
+					error={errorText}
 					onChange={fileInputChangeHandler}
 				/>
-				<InputField
+				<TextInput
 					className="w-full"
-					inputElementID="account_name"
-					title="Account name should not have whitespace"
+					rightSection={
+						accountNameInput.checkingValidity ? <Loader size="sm" /> : undefined
+					}
+					size="md"
 					label="Account name (no whitespace)"
 					pattern="^\S*$"
 					value={accountNameInput.inputValue}
 					onChange={accountNameInput.changeEventHandler}
+					error={
+						!accountNameInput.isInputValid
+							? `${accountNameInput.inputValue} is taken`
+							: ""
+					}
+					spellCheck={false}
 					required
 				/>
-				<InputField
+				<TextInput
 					className="w-full"
-					inputElementID="display_name"
+					size="md"
 					label="Display name"
 					value={displayName}
 					onChange={displayNameChangeHandler}
+					spellCheck={false}
 					required
 				/>
-				<TextArea
+				<Textarea
 					className="w-full"
-					textareaID="bio"
+					size="md"
 					label="Bio"
 					defaultValue={profileData.bio}
-					textareaRef={bioRef}
+					ref={bioRef}
 					required
+					autosize
 				/>
 				{accountNameInput.checkingValidity && (
 					<p className="text-dark-green-l text-sm">Validating values</p>
