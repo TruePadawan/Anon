@@ -2,7 +2,7 @@ import { useState } from "react";
 import { RichTextEditor } from "@mantine/tiptap";
 import { JSONContent, useEditor } from "@tiptap/react";
 import Placeholder from "@tiptap/extension-placeholder";
-import { EditorExtensions } from "../../../helpers/global-helpers";
+import { PostEditorExtensions } from "../../../helpers/global-helpers";
 import { Button } from "@mantine/core";
 
 interface CreatePostProps {
@@ -15,7 +15,7 @@ export default function CreatePost(props: CreatePostProps) {
 	const [isSubmittingPost, setIsSubmittingPost] = useState(false);
 	const editor = useEditor({
 		extensions: [
-			...EditorExtensions,
+			...PostEditorExtensions,
 			Placeholder.configure({ placeholder: "Share your thoughts" }),
 		],
 	});
@@ -37,8 +37,11 @@ export default function CreatePost(props: CreatePostProps) {
 	}
 
 	return (
-		<div className={`max-w-3xl w-full flex flex-col gap-2 ${props.className || ""}`}>
-			<RichTextEditor editor={editor}>
+		<div
+			className={`max-w-3xl w-full flex flex-col gap-2 ${
+				props.className || ""
+			}`}>
+			<RichTextEditor editor={editor} spellCheck={false}>
 				<RichTextEditor.Toolbar sticky stickyOffset={60}>
 					<RichTextEditor.ControlsGroup>
 						<RichTextEditor.Bold />
@@ -46,7 +49,11 @@ export default function CreatePost(props: CreatePostProps) {
 						<RichTextEditor.Underline />
 						<RichTextEditor.Strikethrough />
 						<RichTextEditor.ClearFormatting />
+					</RichTextEditor.ControlsGroup>
+
+					<RichTextEditor.ControlsGroup>
 						<RichTextEditor.Code />
+						<RichTextEditor.CodeBlock />
 					</RichTextEditor.ControlsGroup>
 
 					<RichTextEditor.ControlsGroup>

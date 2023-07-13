@@ -1,6 +1,6 @@
 import { RichTextEditor } from "@mantine/tiptap";
 import { Content, useEditor } from "@tiptap/react";
-import { EditorExtensions } from "../../../helpers/global-helpers";
+import { PostEditorExtensions } from "../../../helpers/global-helpers";
 import { Avatar, useMantineTheme } from "@mantine/core";
 import { PublicPostFull } from "@/types/types";
 import moment from "moment";
@@ -14,7 +14,7 @@ export default function PostItem({ postData }: PostItemProps) {
 	const { author } = postData;
 	const editor = useEditor({
 		editable: false,
-		extensions: EditorExtensions,
+		extensions: PostEditorExtensions,
 		content: postData.content as Content,
 	});
 	const creationDate = moment(postData.createdAt).fromNow(true);

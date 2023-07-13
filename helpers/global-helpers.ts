@@ -79,10 +79,9 @@ export async function uploadImage(file: File, uploadParams: UploadApiOptions) {
 	return data;
 }
 
-export const EditorExtensions = [
+export const PostEditorExtensions = [
 	StarterKit.configure({
 		horizontalRule: false,
-		codeBlock: false,
 		dropcursor: false,
 		gapcursor: false,
 		hardBreak: false,
