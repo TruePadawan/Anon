@@ -4,14 +4,13 @@ import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { prisma } from "../../lib/prisma-client";
 import { useMemo, useState } from "react";
-import { UserProfileType } from "@/types/types";
-import { PublicPost } from "@prisma/client";
+import { PublicPost, UserProfile } from "@prisma/client";
 import PostItem from "@/components/PostItem/PostItem";
 import CreatePost from "@/components/CreatePost/CreatePost";
 import { JSONContent } from "@tiptap/react";
 
 interface HomeProps {
-	user: UserProfileType | null;
+	user: UserProfile | null;
 	publicPosts: PublicPost[];
 }
 
@@ -59,27 +58,24 @@ const Home = ({ user, publicPosts }: HomeProps) => {
 	);
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps<HomeProps> = async (
+	context
+) => {
 	const session = await getServerSession(context.req, context.res, authOptions);
+	const publicPosts = await prisma.publicPost.findMany();
 	if (session) {
-		// get navbar user prop
+		// get current signed in user
 		const user = await prisma.userProfile.findUnique({
 			where: {
 				id: session.user.id,
 			},
-			select: {
-				id: true,
-				displayName: true,
-				accountName: true,
-			},
 		});
-		const publicPosts = await prisma.publicPost.findMany();
 		return {
 			props: { user, publicPosts },
 		};
 	}
 	return {
-		props: {},
+		props: { user: null, publicPosts },
 	};
 };
 
