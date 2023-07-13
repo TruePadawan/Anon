@@ -77,7 +77,7 @@ export default function Navbar({ user, toIndex }: NavbarProps) {
 				<div className="flex gap-1.5">
 					<Link className={linkElClasses} href="/" data-cy="home-page-link">
 						<HomeIcon fontSize="large" sx={{ color: "inherit" }} />
-						<span className="font-semibold text-inherit">Home</span>
+						<span className="font-semibold text-inherit">Public Posts</span>
 					</Link>
 					<Link
 						className={linkElClasses}
