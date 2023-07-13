@@ -30,7 +30,7 @@ export default function ProfileMenu(props: ProfileMenuProps) {
 	return (
 		<div data-cy="profile-dropdown">
 			<Button
-				className="font-semibold text-lg text-inherit"
+				sx={{ fontWeight: 600, fontSize: "1.125rem", color: "inherit" }}
 				id="profile-dropdown-btn"
 				data-cy="profile-dropdown-btn"
 				variant="text"
