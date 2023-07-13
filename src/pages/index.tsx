@@ -49,7 +49,7 @@ const Home = ({ user, publicPosts }: HomeProps) => {
 	return (
 		<>
 			<Navbar user={user} />
-			<main className="flex flex-col gap-2 items-center">
+			<main className={`flex flex-col gap-2 items-center ${!user && "mt-4"}`}>
 				{user && <CreatePost handlePostSubmit={handlePostSubmit} />}
 				{postsData && (
 					<ul className="max-w-3xl w-full flex flex-col gap-2 list-none">
