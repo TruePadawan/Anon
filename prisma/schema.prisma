@@ -37,7 +37,7 @@ model UserProfile {
   id          String  @id @default(auto()) @map("_id") @db.ObjectId
   accountName String  @unique
   avatarUrl   String?
-  bio         String? @default("Hello, I just joined ANON")
+  bio         String  @default("Hello, I just joined ANON")
   color       String
   displayName String
   createdAt   Int
@@ -74,5 +74,5 @@ model Comment {
   author          User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId        String    @db.ObjectId
   createdAt       Int
-  editedAt        Int?      @default(0)
+  editedAt        Int       @default(0)
 }
