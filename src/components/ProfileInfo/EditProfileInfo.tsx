@@ -1,5 +1,4 @@
 /* eslint-disable @next/next/no-img-element */
-import { UserProfileType } from "../../types/types";
 import { useEffect, useRef, useState } from "react";
 import {
 	Button,
@@ -18,9 +17,10 @@ import {
 import { Snackbar } from "@mui/material";
 import { UploadApiOptions } from "cloudinary";
 import { IconUpload } from "@tabler/icons-react";
+import { UserProfile } from "@prisma/client";
 
 interface EditProfileInfoProps {
-	profileData: UserProfileType;
+	profileData: UserProfile;
 	onCancel?: () => void;
 	onUpdate?: () => void;
 }

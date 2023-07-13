@@ -1,9 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
-import { UserProfileType } from "../../types/types";
+import { UserProfile } from "@prisma/client";
 import { IMG_HEIGHT, IMG_WIDTH } from "./utils";
 import { TextInput, Textarea } from "@mantine/core";
 
-const ProfileInfo = (props: UserProfileType) => {
+const ProfileInfo = (props: UserProfile) => {
 	return (
 		<div className="flex flex-col items-center gap-4 max-w-lg w-full">
 			{props.avatarUrl ? (

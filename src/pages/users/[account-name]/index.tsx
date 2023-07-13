@@ -2,7 +2,6 @@ import Navbar, { NavbarUserProp } from "@/components/Navbar/Navbar";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
 import ProfileInfo from "@/components/ProfileInfo/ProfileInfo";
-import { UserProfileType } from "../../../types/types";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../../lib/auth";
 import { Button } from "@mantine/core";
@@ -10,9 +9,10 @@ import { useState } from "react";
 import EditProfileInfo from "@/components/ProfileInfo/EditProfileInfo";
 import { useRouter } from "next/router";
 import { prisma } from "../../../../lib/prisma-client";
+import { UserProfile } from "@prisma/client";
 
 export interface ProfileProps {
-	profile: UserProfileType | null;
+	profile: UserProfile | null;
 	navbarUserProp: NavbarUserProp | null;
 }
 
