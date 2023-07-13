@@ -52,7 +52,9 @@ const Home = ({ user, publicPosts }: HomeProps) => {
 			<main className="flex flex-col gap-2 items-center">
 				{user && <CreatePost handlePostSubmit={handlePostSubmit} />}
 				{postsData && (
-					<ul className="max-w-3xl w-full flex flex-col gap-2 list-none">{posts}</ul>
+					<ul className="max-w-3xl w-full flex flex-col gap-2 list-none">
+						{posts}
+					</ul>
 				)}
 			</main>
 		</>
@@ -65,6 +67,9 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async (
 	const session = await getServerSession(context.req, context.res, authOptions);
 	const publicPosts = await prisma.publicPost.findMany({
 		include: { author: true },
+		orderBy: {
+			createdAt: "desc",
+		},
 	});
 	if (session) {
 		// get current signed in user
