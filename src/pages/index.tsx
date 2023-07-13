@@ -20,9 +20,9 @@ const Home = ({ user, publicPosts }: HomeProps) => {
 
 	const posts = useMemo(() => {
 		return postsData.map((post) => {
-			return <PostItem key={post.id} postData={post} />;
+			return <PostItem key={post.id} postData={post} currentUser={user} />;
 		});
-	}, [postsData]);
+	}, [postsData, user]);
 
 	async function handlePostSubmit(content: JSONContent, onSubmit: () => void) {
 		const postDocument = {
