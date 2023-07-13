@@ -52,7 +52,7 @@ const Home = ({ user, publicPosts }: HomeProps) => {
 			<main className="flex flex-col gap-2 items-center">
 				{user && <CreatePost handlePostSubmit={handlePostSubmit} />}
 				{postsData && (
-					<ul className="max-w-3xl w-full flex flex-col list-none">{posts}</ul>
+					<ul className="max-w-3xl w-full flex flex-col gap-2 list-none">{posts}</ul>
 				)}
 			</main>
 		</>
