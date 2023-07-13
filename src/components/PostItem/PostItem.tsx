@@ -1,26 +1,46 @@
 import { RichTextEditor } from "@mantine/tiptap";
-import { PublicPost } from "@prisma/client";
 import { Content, useEditor } from "@tiptap/react";
 import { EditorExtensions } from "../../../helpers/global-helpers";
+import { Avatar, useMantineTheme } from "@mantine/core";
+import { PublicPostFull } from "@/types/types";
+import moment from "moment";
 
 interface PostItemProps {
-	postData: PublicPost;
+	postData: PublicPostFull;
 }
 
 export default function PostItem({ postData }: PostItemProps) {
+	const theme = useMantineTheme();
+	const { author } = postData;
 	const editor = useEditor({
 		editable: false,
 		extensions: EditorExtensions,
 		content: postData.content as Content,
 	});
-	const creationDate = new Date(postData.createdAt).toLocaleDateString();
-
+	const creationDate = moment(postData.createdAt).fromNow(true);
 	return (
-		<li className="d-flex flex-col gap-1">
-			<p>{`Post created on ${creationDate}`}</p>
-			<RichTextEditor editor={editor}>
-				<RichTextEditor.Content />
-			</RichTextEditor>
+		<li
+			className="flex gap-1 py-1.5 px-2 rounded-md"
+			style={{ backgroundColor: theme.colors.dark[7] }}>
+			<Avatar
+				variant="filled"
+				radius="xl"
+				color={author.color}
+				src={author.avatarUrl}
+			/>
+			<div className="flex flex-col gap-0.5">
+				<div className="flex items-center gap-0.5">
+					<span className="font-semibold">{author.displayName}</span>
+					<span className="text-gray-500 text-sm">{`@${author.accountName}`}</span>
+					<span>·</span>
+					<span className="text-gray-500 text-sm">{creationDate}</span>
+				</div>
+				<RichTextEditor
+					editor={editor}
+					sx={{ border: "none", ".ProseMirror": { padding: "0" } }}>
+					<RichTextEditor.Content />
+				</RichTextEditor>
+			</div>
 		</li>
 	);
 }
