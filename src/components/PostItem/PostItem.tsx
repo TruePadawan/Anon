@@ -4,6 +4,7 @@ import { PostEditorExtensions } from "../../../helpers/global-helpers";
 import { Avatar, useMantineTheme } from "@mantine/core";
 import { PublicPostFull } from "@/types/types";
 import moment from "moment";
+import Link from "next/link";
 
 interface PostItemProps {
 	postData: PublicPostFull;
@@ -20,7 +21,7 @@ export default function PostItem({ postData }: PostItemProps) {
 	const creationDate = moment(postData.createdAt).fromNow(true);
 	return (
 		<li
-			className="flex gap-1 py-1.5 px-2 rounded-md"
+			className="flex gap-1.5 py-1.5 px-2 rounded-md"
 			style={{ backgroundColor: theme.colors.dark[7] }}>
 			<Avatar
 				variant="filled"
@@ -30,8 +31,12 @@ export default function PostItem({ postData }: PostItemProps) {
 			/>
 			<div className="flex flex-col gap-0.5">
 				<div className="flex items-center gap-0.5">
-					<span className="font-semibold">{author.displayName}</span>
-					<span className="text-gray-500 text-sm">{`@${author.accountName}`}</span>
+					<Link href={`/users/${author.accountName}`}>
+						<span className="font-semibold">{author.displayName}</span>
+					</Link>
+					<Link href={`/users/${author.accountName}`}>
+						<span className="text-gray-500 text-sm">{`@${author.accountName}`}</span>
+					</Link>
 					<span>·</span>
 					<span className="text-gray-500 text-sm">{creationDate}</span>
 				</div>
