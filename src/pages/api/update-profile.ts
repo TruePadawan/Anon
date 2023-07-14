@@ -26,7 +26,7 @@ export default async function handler(
 				res.status(200).json({ message: "Update successful" });
 			} catch (error: any) {
 				res.status(500).json({
-					message: `Failed to update profile - ${error.message}`,
+					message: error.message,
 				});
 			}
 		}

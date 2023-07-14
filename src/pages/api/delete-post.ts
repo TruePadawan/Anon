@@ -44,12 +44,12 @@ export default async function handler(
 					res.status(200).json({ message: "Post deleted successfully" });
 				} catch (error: any) {
 					res.status(500).json({
-						message: `Failed to delete post - ${error.message}`,
+						message: error.message,
 					});
 				}
 			} else {
 				res.status(403).json({
-					message: "Cannot delete post - current user is not the author",
+					message: "Current user is not the author",
 				});
 			}
 		}

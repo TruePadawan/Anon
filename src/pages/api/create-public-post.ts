@@ -26,7 +26,7 @@ export default async function handler(
 				res.status(200).json(createdPost);
 			} catch (error: any) {
 				res.status(500).json({
-					message: `Failed to create post - ${error.message}`,
+					message: error.message,
 				});
 			}
 		}

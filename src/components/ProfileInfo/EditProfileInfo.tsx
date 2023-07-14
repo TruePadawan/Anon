@@ -102,9 +102,9 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 				// handle failed update
 				throw new Error(response.statusText);
 			}
-		} catch (error) {
+		} catch (error: any) {
 			console.error(error);
-			setErrorText("Failed to update profile data");
+			setErrorText(`Failed to update profile - ${error.message}`);
 		}
 		setIsUpdating(false);
 	}
