@@ -72,7 +72,8 @@ export async function uploadImage(file: File, uploadParams: UploadApiOptions) {
 	});
 
 	if (!response.ok) {
-		throw new Error(response.statusText);
+		const error = await response.json();
+		throw new Error(error.message);
 	}
 
 	const data: UploadApiResponse = await response.json();

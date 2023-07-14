@@ -2,12 +2,12 @@ import Link from "next/link";
 import ProfileMenu from "../ProfileMenu/ProfileMenu";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/router";
-import HomeIcon from "@mui/icons-material/Home";
-import GroupIcon from "@mui/icons-material/Group";
-import GroupAddIcon from "@mui/icons-material/GroupAdd";
-import { Snackbar } from "@mui/material";
-import { Notification } from "@mantine/core";
-import { useState } from "react";
+import {
+	IconUsersGroup,
+	IconUsersPlus,
+	IconListDetails,
+} from "@tabler/icons-react";
+import { notifications } from "@mantine/notifications";
 
 export interface NavbarUserProp {
 	displayName: string;
@@ -20,12 +20,7 @@ interface NavbarProps {
 }
 
 export default function Navbar({ user, toIndex }: NavbarProps) {
-	const [snackbarIsOpen, setSnackbarIsOpen] = useState(false);
 	const router = useRouter();
-
-	function closeSnackbar() {
-		setSnackbarIsOpen(false);
-	}
 
 	function routeToProfile() {
 		router.push(`/users/${user?.accountName}`);
@@ -35,8 +30,12 @@ export default function Navbar({ user, toIndex }: NavbarProps) {
 		try {
 			const { url } = await signOut({ redirect: false, callbackUrl: "/" });
 			router.push(url);
-		} catch (error) {
-			setSnackbarIsOpen(true);
+		} catch (error: any) {
+			notifications.show({
+				color: "red",
+				title: "Signout Failed",
+				message: error.message,
+			});
 			console.error(error);
 		}
 	}
@@ -45,15 +44,6 @@ export default function Navbar({ user, toIndex }: NavbarProps) {
 		"flex flex-col flex-1 items-center gap-1 p-3 bg-primary-color-2 text-accent-color-2-l hover:text-white rounded-md";
 	return (
 		<nav className="flex flex-col items-stretch gap-4">
-			<Snackbar open={snackbarIsOpen} onClose={closeSnackbar}>
-				<Notification
-					color="red"
-					onClose={closeSnackbar}
-					title="Error"
-					sx={{ width: "100%" }}>
-					Failed to sign out!
-				</Notification>
-			</Snackbar>
 			<div className="flex justify-between items-center">
 				<h1 className="font-extrabold text-5xl">
 					<Link href="/">ANON</Link>
@@ -76,21 +66,21 @@ export default function Navbar({ user, toIndex }: NavbarProps) {
 			{user && (
 				<div className="flex gap-1.5">
 					<Link className={linkElClasses} href="/" data-cy="home-page-link">
-						<HomeIcon fontSize="large" sx={{ color: "inherit" }} />
+						<IconListDetails size={35} />
 						<span className="font-semibold text-inherit">Public Posts</span>
 					</Link>
 					<Link
 						className={linkElClasses}
 						href="/groups"
 						data-cy="groups-page-link">
-						<GroupIcon fontSize="large" sx={{ color: "inherit" }} />
+						<IconUsersGroup size={35} />
 						<span className="font-semibold text-inherit">Groups</span>
 					</Link>
 					<Link
 						className={linkElClasses}
 						href="/join-group"
 						data-cy="join-group-page-link">
-						<GroupAddIcon fontSize="large" sx={{ color: "inherit" }} />
+						<IconUsersPlus size={35} />
 						<span className="font-semibold text-inherit">Join Group</span>
 					</Link>
 				</div>

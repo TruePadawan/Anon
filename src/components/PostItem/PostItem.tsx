@@ -17,6 +17,7 @@ import { IconDots, IconCheck, IconEdit, IconTrash } from "@tabler/icons-react";
 import { UserProfile } from "@prisma/client";
 import { useDisclosure } from "@mantine/hooks";
 import { useState } from "react";
+import { notifications } from "@mantine/notifications";
 
 interface PostItemProps {
 	postData: PublicPostFull;
@@ -47,7 +48,12 @@ export default function PostItem(props: PostItemProps) {
 		if (response.ok) {
 			setPostDeleted(true);
 		} else {
-			// show negative notification
+			const error = await response.json();
+			notifications.show({
+				color: "red",
+				title: "Failed to delete post",
+				message: error.message,
+			});
 		}
 		closeConfirmDeleteModal();
 	}
@@ -128,7 +134,10 @@ export default function PostItem(props: PostItemProps) {
 						</div>
 						<RichTextEditor
 							editor={editor}
-							sx={{ border: "none", ".ProseMirror": { padding: "0" } }}>
+							styles={{
+								root: { border: "none" },
+								content: { "& .ProseMirror": { padding: "0" } },
+							}}>
 							<RichTextEditor.Content />
 						</RichTextEditor>
 					</div>

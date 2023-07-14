@@ -5,9 +5,9 @@ import { signIn } from "next-auth/react";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../lib/auth";
-import { GitHub, Google } from "@mui/icons-material";
 import { Alert } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
+import { IconBrandGoogle, IconBrandGithub } from "@tabler/icons-react";
 
 interface SignInPageProps {
 	errorMessage: string | null;
@@ -51,7 +51,7 @@ const SignIn = ({ errorMessage }: SignInPageProps) => {
 							color="gray"
 							data-cy="google-signin-btn"
 							onClick={handleGoogleSignIn}
-							leftIcon={<Google />}>
+							leftIcon={<IconBrandGoogle />}>
 							Continue with Google
 						</Button>
 						<Button
@@ -59,7 +59,7 @@ const SignIn = ({ errorMessage }: SignInPageProps) => {
 							color="gray"
 							data-cy="github-signin-btn"
 							onClick={handleGitHubSignIn}
-							leftIcon={<GitHub />}>
+							leftIcon={<IconBrandGithub />}>
 							Continue with GitHub
 						</Button>
 					</div>

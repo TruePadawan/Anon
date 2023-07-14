@@ -2,10 +2,10 @@ import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import Script from "next/script";
 import { SessionProvider } from "next-auth/react";
-import { ThemeProvider, createTheme } from "@mui/material";
 import Head from "next/head";
 import { Session } from "next-auth";
 import { MantineProvider } from "@mantine/core";
+import { Notifications } from "@mantine/notifications";
 
 type AppPropsWithSession = AppProps<{ session: Session }>;
 
@@ -13,15 +13,6 @@ export default function App({
 	Component,
 	pageProps: { session, ...pageProps },
 }: AppPropsWithSession) {
-	// override default Roboto Font
-	const theme = createTheme({
-		typography: {
-			allVariants: {
-				fontFamily: "inherit",
-			},
-		},
-	});
-
 	return (
 		<>
 			<style jsx global>
@@ -36,14 +27,13 @@ export default function App({
 				`}
 			</style>
 			<MantineProvider theme={{ colorScheme: "dark" }}>
-				<ThemeProvider theme={theme}>
-					<SessionProvider session={session}>
-						<Head>
-							<title key="title">ANON</title>
-						</Head>
-						<Component {...pageProps} />
-					</SessionProvider>
-				</ThemeProvider>
+				<SessionProvider session={session}>
+					<Head>
+						<title key="title">ANON</title>
+					</Head>
+					<Component {...pageProps} />
+					<Notifications />
+				</SessionProvider>
 			</MantineProvider>
 			<Script
 				src="https://kit.fontawesome.com/9ceb4dfb5e.js"

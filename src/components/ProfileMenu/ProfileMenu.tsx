@@ -1,5 +1,5 @@
 import { Button, Menu } from "@mantine/core";
-import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
+import { IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 import { useState } from "react";
 import { IconLogout, IconUser } from "@tabler/icons-react";
 
@@ -24,7 +24,7 @@ export default function ProfileMenu(props: ProfileMenuProps) {
 						id={dropdownTargetID}
 						variant="subtle"
 						data-cy="profile-dropdown-btn"
-						rightIcon={menuOpened ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+						rightIcon={menuOpened ? <IconChevronUp /> : <IconChevronDown />}
 						aria-controls={menuOpened ? dropdownID : undefined}
 						aria-haspopup="menu"
 						aria-expanded={menuOpened ? "true" : undefined}

@@ -1,23 +1,16 @@
 /* eslint-disable @next/next/no-img-element */
 import { useEffect, useRef, useState } from "react";
-import {
-	Button,
-	FileInput,
-	Loader,
-	Notification,
-	TextInput,
-	Textarea,
-} from "@mantine/core";
+import { Button, FileInput, Loader, TextInput, Textarea } from "@mantine/core";
 import useInput from "@/hooks/useInput";
 import { validateAccountName } from "./utils";
 import {
 	validateFileAsImage,
 	uploadImage,
 } from "../../../helpers/global-helpers";
-import { Snackbar } from "@mui/material";
 import { UploadApiOptions } from "cloudinary";
 import { IconUpload } from "@tabler/icons-react";
 import { UserProfile } from "@prisma/client";
+import { notifications } from "@mantine/notifications";
 
 interface EditProfileInfoProps {
 	profileData: UserProfile;
@@ -30,7 +23,7 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 	const [displayName, setDisplayName] = useState(props.profileData.displayName);
 	const [isUpdating, setIsUpdating] = useState(false);
 	const [profilePicIsValid, setProfilePicIsValid] = useState(true);
-	const [errorText, setErrorText] = useState("");
+	const [imageValidationErrorText, setImageValidationErrorText] = useState("");
 
 	const bioRef = useRef<HTMLTextAreaElement>(null);
 	const profilePictureRef = useRef<File | undefined>();
@@ -100,11 +93,16 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 				props.onUpdate();
 			} else if (!response.ok) {
 				// handle failed update
-				throw new Error(response.statusText);
+				const error = await response.json();
+				throw new Error(error.message);
 			}
 		} catch (error: any) {
+			notifications.show({
+				color: "red",
+				title: "Failed to update profile",
+				message: error.message,
+			});
 			console.error(error);
-			setErrorText(`Failed to update profile - ${error.message}`);
 		}
 		setIsUpdating(false);
 	}
@@ -132,7 +130,7 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 				setProfilePicIsValid(true);
 			} else {
 				// notify user to give correct data
-				setErrorText(result.messages.join("\n"));
+				setImageValidationErrorText(result.messages.join("\n"));
 				setProfilePicIsValid(false);
 			}
 		}
@@ -142,24 +140,10 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 		}
 	}
 
-	function closeSnackbar() {
-		setErrorText("");
-	}
-
-	const errorSnackbarOpen = Boolean(errorText);
 	const { profileData } = props;
 	const updateIsDisabled = !formIsValid || isUpdating;
 	return (
 		<>
-			<Snackbar open={errorSnackbarOpen} onClose={closeSnackbar}>
-				<Notification
-					color="orange"
-					title="Error"
-					sx={{ width: "100%" }}
-					onClose={closeSnackbar}>
-					{errorText}
-				</Notification>
-			</Snackbar>
 			<form
 				className="flex flex-col items-center gap-4 max-w-lg w-full"
 				onSubmit={formSubmitHandler}>
@@ -170,7 +154,7 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 					icon={<IconUpload />}
 					label="Profile picture (<= 1MB)"
 					placeholder="Select image"
-					error={errorText}
+					error={imageValidationErrorText}
 					onChange={fileInputChangeHandler}
 				/>
 				<TextInput
