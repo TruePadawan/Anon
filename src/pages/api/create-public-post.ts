@@ -19,6 +19,9 @@ export default async function handler(
 			try {
 				const createdPost = await prisma.publicPost.create({
 					data: JSON.parse(req.body),
+					include: {
+						author: true,
+					},
 				});
 				res.status(200).json(createdPost);
 			} catch (error: any) {
