@@ -14,16 +14,16 @@ export default async function handler(
 	} else {
 		const session = await getServerSession(req, res, authOptions);
 		if (!session) {
-			res.status(400).json({ message: "WHO ARE YOU?" });
+			res.status(401).json({ message: "Client not authenticated!" });
 		} else {
 			try {
 				const createdPost = await prisma.publicPost.create({
 					data: JSON.parse(req.body),
 				});
 				res.status(200).json(createdPost);
-			} catch (error) {
+			} catch (error: any) {
 				res.status(500).json({
-					message: "Failed to create post",
+					message: `Failed to create post - ${error.message}`,
 				});
 			}
 		}

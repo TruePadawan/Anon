@@ -20,7 +20,7 @@ export default async function handler(
 	} else {
 		const session = await getServerSession(req, res, authOptions);
 		if (!session) {
-			res.status(400).json({ message: "WHO ARE YOU?" });
+			res.status(401).json({ message: "Client not authenticated!?" });
 		} else {
 			const requestBody: DeletePostRequestBody = JSON.parse(req.body);
 			const { postType, postData } = requestBody;
@@ -48,7 +48,7 @@ export default async function handler(
 					});
 				}
 			} else {
-				res.status(400).json({
+				res.status(403).json({
 					message: "Cannot delete post - current user is not the author",
 				});
 			}
