@@ -13,13 +13,10 @@ import {
 import { PublicPostFull } from "@/types/types";
 import moment from "moment";
 import Link from "next/link";
-import { IconDots } from "@tabler/icons-react";
-import { IconEdit } from "@tabler/icons-react";
-import { IconTrash } from "@tabler/icons-react";
+import { IconDots, IconCheck, IconEdit, IconTrash } from "@tabler/icons-react";
 import { UserProfile } from "@prisma/client";
 import { useDisclosure } from "@mantine/hooks";
 import { useState } from "react";
-import { IconCheck } from "@tabler/icons-react";
 
 interface PostItemProps {
 	postData: PublicPostFull;
@@ -62,7 +59,11 @@ export default function PostItem(props: PostItemProps) {
 			className="flex gap-1.5 py-1.5 px-2 rounded-md"
 			style={{ backgroundColor: theme.colors.dark[7] }}>
 			{postDeleted && (
-				<Alert className="grow" icon={<IconCheck size="1rem" />} color="dark" variant="filled">
+				<Alert
+					className="grow"
+					icon={<IconCheck size="1rem" />}
+					color="dark"
+					variant="filled">
 					Post deleted successfully
 				</Alert>
 			)}
