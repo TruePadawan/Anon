@@ -1,7 +1,14 @@
 import { RichTextEditor } from "@mantine/tiptap";
 import { Content, useEditor } from "@tiptap/react";
 import { PostEditorExtensions } from "../../../helpers/global-helpers";
-import { ActionIcon, Avatar, Menu, useMantineTheme } from "@mantine/core";
+import {
+	ActionIcon,
+	Avatar,
+	Button,
+	Menu,
+	Modal,
+	useMantineTheme,
+} from "@mantine/core";
 import { PublicPostFull } from "@/types/types";
 import moment from "moment";
 import Link from "next/link";
@@ -9,6 +16,7 @@ import { IconDots } from "@tabler/icons-react";
 import { IconEdit } from "@tabler/icons-react";
 import { IconTrash } from "@tabler/icons-react";
 import { UserProfile } from "@prisma/client";
+import { useDisclosure } from "@mantine/hooks";
 
 interface PostItemProps {
 	postData: PublicPostFull;
@@ -16,8 +24,12 @@ interface PostItemProps {
 }
 
 export default function PostItem(props: PostItemProps) {
-	const { postData, currentUser } = props;
+	const [
+		confirmDeleteModalOpened,
+		{ open: openConfirmDeleteModal, close: closeConfirmDeleteModal },
+	] = useDisclosure(false);
 	const theme = useMantineTheme();
+	const { postData, currentUser } = props;
 	const { author } = postData;
 	const editor = useEditor({
 		editable: false,
@@ -49,20 +61,40 @@ export default function PostItem(props: PostItemProps) {
 						<span className="text-gray-500 text-sm">{creationDate}</span>
 					</div>
 					{currentUserIsAuthor && (
-						<Menu>
-							<Menu.Target>
-								<ActionIcon>
-									<IconDots />
-								</ActionIcon>
-							</Menu.Target>
-							<Menu.Dropdown>
-								<Menu.Label>Manage</Menu.Label>
-								<Menu.Item icon={<IconEdit size={16} />}>Edit</Menu.Item>
-								<Menu.Item color="red" icon={<IconTrash size={16} />}>
-									Delete
-								</Menu.Item>
-							</Menu.Dropdown>
-						</Menu>
+						<>
+							<Menu>
+								<Menu.Target>
+									<ActionIcon>
+										<IconDots />
+									</ActionIcon>
+								</Menu.Target>
+								<Menu.Dropdown>
+									<Menu.Label>Manage</Menu.Label>
+									<Menu.Item icon={<IconEdit size={16} />}>Edit</Menu.Item>
+									<Menu.Item
+										color="red"
+										icon={<IconTrash size={16} />}
+										onClick={openConfirmDeleteModal}>
+										Delete
+									</Menu.Item>
+								</Menu.Dropdown>
+							</Menu>
+							<Modal
+								opened={confirmDeleteModalOpened}
+								onClose={closeConfirmDeleteModal}
+								title="Confirm Action"
+								centered>
+								<div className="flex flex-col gap-1.5">
+									<p>Are you sure you want to delete this post?</p>
+									<div className="flex flex-col gap-1">
+										<Button color="green">Yes</Button>
+										<Button color="red" onClick={closeConfirmDeleteModal}>
+											No
+										</Button>
+									</div>
+								</div>
+							</Modal>
+						</>
 					)}
 				</div>
 				<RichTextEditor
