@@ -20,7 +20,14 @@ const Home = ({ user, publicPosts }: HomeProps) => {
 
 	const posts = useMemo(() => {
 		return postsData.map((post) => {
-			return <PostItem key={post.id} postData={post} currentUser={user} />;
+			return (
+				<PostItem
+					key={post.id}
+					postData={post}
+					currentUser={user}
+					postType="public"
+				/>
+			);
 		});
 	}, [postsData, user]);
 
