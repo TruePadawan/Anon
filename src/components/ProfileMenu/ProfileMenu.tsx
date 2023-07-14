@@ -1,6 +1,7 @@
+import { Button, Menu } from "@mantine/core";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
-import { Button, Menu, MenuItem } from "@mui/material";
 import { useState } from "react";
+import { IconLogout, IconUser } from "@tabler/icons-react";
 
 export interface ProfileMenuProps {
 	displayName: string;
@@ -9,72 +10,58 @@ export interface ProfileMenuProps {
 }
 
 export default function ProfileMenu(props: ProfileMenuProps) {
+	const [menuOpened, setMenuOpened] = useState(false);
 	const { displayName } = props;
-	const [anchorElement, setAnchorElement] = useState<null | HTMLElement>(null);
 
-	function onDropdownButtonClicked(event: React.MouseEvent<HTMLElement>) {
-		setAnchorElement(event.currentTarget);
-	}
-
-	function closeMenu() {
-		setAnchorElement(null);
-	}
-
-	function handleMenuClose() {
-		setAnchorElement(null);
-	}
-
-	const menuOpen = Boolean(anchorElement);
-	const menuItemClasses =
-		"font-semibold text-base text-white hover:text-accent-color-2";
+	const menuItemClasses = "font-semibold text-base";
+	const dropdownTargetID = "profile-dropdown-btn";
+	const dropdownID = "profile-dropdown-menu";
 	return (
 		<div data-cy="profile-dropdown">
-			<Button
-				sx={{ fontWeight: 600, fontSize: "1.125rem", color: "inherit" }}
-				id="profile-dropdown-btn"
-				data-cy="profile-dropdown-btn"
-				variant="text"
-				endIcon={menuOpen ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
-				onClick={onDropdownButtonClicked}
-				aria-controls={menuOpen ? "profile-dropdown-menu" : undefined}
-				aria-haspopup="true"
-				aria-expanded={menuOpen ? "true" : undefined}>
-				{displayName}
-			</Button>
-			<Menu
-				id="profile-dropdown-menu"
-				anchorEl={anchorElement}
-				MenuListProps={{
-					"aria-labelledby": "profile-dropdown-btn",
-				}}
-				open={menuOpen}
-				anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-				onClose={handleMenuClose}
-				sx={{
-					"& .MuiPaper-root": {
-						bgcolor: "var(--secondary-color);",
-					},
-				}}>
-				<MenuItem
-					className={menuItemClasses}
-					data-cy="profile-menu-item"
-					onClick={() => {
-						closeMenu();
-						props.onProfileMenuItemClicked();
-					}}
-					disableRipple>
-					Profile
-				</MenuItem>
-				<MenuItem
-					className={menuItemClasses}
-					data-cy="signout-menu-item"
-					onClick={() => {
-						closeMenu();
-						props.onSignoutMenuItemClicked();
-					}}
-					disableRipple>
-					Sign Out
-				</MenuItem>
+			<Menu opened={menuOpened} onChange={setMenuOpened} withArrow>
+				<Menu.Target>
+					<Button
+						id={dropdownTargetID}
+						variant="subtle"
+						data-cy="profile-dropdown-btn"
+						rightIcon={menuOpened ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+						aria-controls={menuOpened ? dropdownID : undefined}
+						aria-haspopup="menu"
+						aria-expanded={menuOpened ? "true" : undefined}
+						sx={{
+							fontWeight: 600,
+							fontSize: "1.125rem",
+							fontFamily: "inherit",
+							color: "inherit",
+						}}>
+						{displayName}
+					</Button>
+				</Menu.Target>
+
+				<Menu.Dropdown
+					id={dropdownID}
+					role="menu"
+					aria-labelledby={dropdownTargetID}>
+					<Menu.Label>User</Menu.Label>
+					<Menu.Item
+						className={menuItemClasses}
+						role="menuitem"
+						data-cy="profile-menu-item"
+						icon={<IconUser size={16} />}
+						onClick={props.onProfileMenuItemClicked}>
+						Profile
+					</Menu.Item>
+					<Menu.Label>Application</Menu.Label>
+					<Menu.Item
+						className={menuItemClasses}
+						role="menuitem"
+						color="red"
+						data-cy="signout-menu-item"
+						icon={<IconLogout size={16} />}
+						onClick={props.onSignoutMenuItemClicked}>
+						Sign Out
+					</Menu.Item>
+				</Menu.Dropdown>
 			</Menu>
 		</div>
 	);
