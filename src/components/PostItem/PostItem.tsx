@@ -18,6 +18,7 @@ import { UserProfile } from "@prisma/client";
 import { useDisclosure } from "@mantine/hooks";
 import { useState } from "react";
 import { notifications } from "@mantine/notifications";
+import PostEditor from "../PostEditor/PostEditor";
 
 interface PostItemProps {
 	postData: PublicPostFull;
@@ -38,6 +39,7 @@ export default function PostItem(props: PostItemProps) {
 		extensions: PostEditorExtensions,
 		content: postData.content as Content,
 	});
+	const [editingPost, setEditingPost] = useState(false);
 	const [postDeleted, setPostDeleted] = useState(false);
 
 	async function deletePost() {
@@ -56,6 +58,18 @@ export default function PostItem(props: PostItemProps) {
 			});
 		}
 		closeConfirmDeleteModal();
+	}
+
+	async function updatePost() {}
+
+	function startEditMode() {
+		editor?.setEditable(true);
+		setEditingPost(true);
+	}
+
+	function stopEditMode() {
+		editor?.setEditable(false);
+		setEditingPost(false);
 	}
 
 	const creationDate = moment(postData.createdAt).fromNow(true);
@@ -103,7 +117,11 @@ export default function PostItem(props: PostItemProps) {
 										</Menu.Target>
 										<Menu.Dropdown>
 											<Menu.Label>Manage</Menu.Label>
-											<Menu.Item icon={<IconEdit size={16} />}>Edit</Menu.Item>
+											<Menu.Item
+												icon={<IconEdit size={16} />}
+												onClick={startEditMode}>
+												Edit
+											</Menu.Item>
 											<Menu.Item
 												color="red"
 												icon={<IconTrash size={16} />}
@@ -132,14 +150,35 @@ export default function PostItem(props: PostItemProps) {
 								</>
 							)}
 						</div>
-						<RichTextEditor
-							editor={editor}
-							styles={{
-								root: { border: "none" },
-								content: { "& .ProseMirror": { padding: "0" } },
-							}}>
-							<RichTextEditor.Content />
-						</RichTextEditor>
+						{editingPost && (
+							<div className="flex flex-col gap-1">
+								<PostEditor editor={editor} />
+								<div className="flex flex-col gap-0.5">
+									<Button
+										type="button"
+										className="bg-dark-green disabled:hover:bg-dark-green hover:bg-dark-green-l"
+										onClick={updatePost}>
+										Save
+									</Button>
+									<Button
+										type="button"
+										className="bg-dark-red disabled:hover:bg-dark-red hover:bg-dark-red-l"
+										onClick={stopEditMode}>
+										Cancel
+									</Button>
+								</div>
+							</div>
+						)}
+						{!editingPost && (
+							<RichTextEditor
+								editor={editor}
+								styles={{
+									root: { border: "none" },
+									content: { "& .ProseMirror": { padding: "0" } },
+								}}>
+								<RichTextEditor.Content />
+							</RichTextEditor>
+						)}
 					</div>
 				</>
 			)}
