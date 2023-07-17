@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { RichTextEditor } from "@mantine/tiptap";
 import { JSONContent, useEditor } from "@tiptap/react";
 import Placeholder from "@tiptap/extension-placeholder";
 import { PostEditorExtensions } from "../../../helpers/global-helpers";
