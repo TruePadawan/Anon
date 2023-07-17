@@ -37,7 +37,6 @@ export default function Navbar({ user, toIndex }: NavbarProps) {
 				title: "Signout Failed",
 				message: error.message,
 			});
-			console.error(error);
 		}
 	}
 

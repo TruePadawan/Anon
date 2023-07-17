@@ -102,7 +102,6 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 				title: "Failed to update profile",
 				message: error.message,
 			});
-			console.error(error);
 		}
 		setIsUpdating(false);
 	}
