@@ -16,7 +16,7 @@ import Link from "next/link";
 import { IconDots, IconCheck, IconEdit, IconTrash } from "@tabler/icons-react";
 import { UserProfile } from "@prisma/client";
 import { useDisclosure } from "@mantine/hooks";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { notifications } from "@mantine/notifications";
 import PostEditor from "../PostEditor/PostEditor";
 
@@ -39,8 +39,29 @@ export default function PostItem(props: PostItemProps) {
 		extensions: PostEditorExtensions,
 		content: postData.content as Content,
 	});
-	const [editingPost, setEditingPost] = useState(false);
+	const [inEditMode, setInEditMode] = useState(false);
+	const [isUpdatingPost, setIsUpdatingPost] = useState(false);
 	const [postDeleted, setPostDeleted] = useState(false);
+	const editorContentRef = useRef(editor?.getHTML());
+
+	function startEditMode() {
+		editorContentRef.current = editor?.getHTML();
+		editor?.setEditable(true);
+		setInEditMode(true);
+	}
+
+	function stopEditMode() {
+		editor?.setEditable(false);
+		setInEditMode(false);
+	}
+
+	// restore editor content to what it was pre-edit before stopping edit mode
+	function cancelEditMode() {
+		if (editorContentRef.current) {
+			editor?.commands.setContent(editorContentRef.current);
+		}
+		stopEditMode();
+	}
 
 	async function deletePost() {
 		const response = await fetch("/api/delete-post", {
@@ -60,16 +81,44 @@ export default function PostItem(props: PostItemProps) {
 		closeConfirmDeleteModal();
 	}
 
-	async function updatePost() {}
+	async function updatePost() {
+		if (editor === null) return;
+		const NoPostContent =
+			editor.isEmpty || editor.getText().trim().length === 0;
+		if (NoPostContent) {
+			notifications.show({
+				color: "red",
+				title: "Invalid data",
+				message: "Cannot update post with empty content",
+			});
+			return;
+		}
 
-	function startEditMode() {
-		editor?.setEditable(true);
-		setEditingPost(true);
-	}
-
-	function stopEditMode() {
+		// set the editor to read-only while post is being updated
+		setIsUpdatingPost(true);
 		editor?.setEditable(false);
-		setEditingPost(false);
+
+		const response = await fetch("/api/update-public-post", {
+			method: "POST",
+			body: JSON.stringify({
+				id: postData.id,
+				userID: currentUser?.id,
+				content: editor.getJSON(),
+			}),
+		});
+		if (response.ok) {
+			await response.json();
+			stopEditMode();
+		} else {
+			const error = await response.json();
+			notifications.show({
+				color: "red",
+				title: "Failed to update post",
+				message: error.message,
+			});
+			cancelEditMode();
+		}
+		setIsUpdatingPost(false);
 	}
 
 	const creationDate = moment(postData.createdAt).fromNow(true);
@@ -119,13 +168,15 @@ export default function PostItem(props: PostItemProps) {
 											<Menu.Label>Manage</Menu.Label>
 											<Menu.Item
 												icon={<IconEdit size={16} />}
-												onClick={startEditMode}>
+												onClick={startEditMode}
+												disabled={isUpdatingPost}>
 												Edit
 											</Menu.Item>
 											<Menu.Item
 												color="red"
 												icon={<IconTrash size={16} />}
-												onClick={openConfirmDeleteModal}>
+												onClick={openConfirmDeleteModal}
+												disabled={isUpdatingPost}>
 												Delete
 											</Menu.Item>
 										</Menu.Dropdown>
@@ -150,26 +201,28 @@ export default function PostItem(props: PostItemProps) {
 								</>
 							)}
 						</div>
-						{editingPost && (
+						{inEditMode && (
 							<div className="flex flex-col gap-1">
 								<PostEditor editor={editor} />
 								<div className="flex flex-col gap-0.5">
 									<Button
 										type="button"
 										className="bg-dark-green disabled:hover:bg-dark-green hover:bg-dark-green-l"
-										onClick={updatePost}>
+										onClick={updatePost}
+										disabled={isUpdatingPost}>
 										Save
 									</Button>
 									<Button
 										type="button"
 										className="bg-dark-red disabled:hover:bg-dark-red hover:bg-dark-red-l"
-										onClick={stopEditMode}>
+										onClick={cancelEditMode}
+										disabled={isUpdatingPost}>
 										Cancel
 									</Button>
 								</div>
 							</div>
 						)}
-						{!editingPost && (
+						{!inEditMode && (
 							<RichTextEditor
 								editor={editor}
 								styles={{
