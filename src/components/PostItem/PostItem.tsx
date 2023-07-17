@@ -1,5 +1,5 @@
 import { RichTextEditor } from "@mantine/tiptap";
-import { Content, useEditor } from "@tiptap/react";
+import { Content, Editor, useEditor } from "@tiptap/react";
 import { PostEditorExtensions } from "../../../helpers/global-helpers";
 import {
 	ActionIcon,
@@ -18,7 +18,7 @@ import { UserProfile } from "@prisma/client";
 import { useDisclosure } from "@mantine/hooks";
 import { useRef, useState } from "react";
 import { notifications } from "@mantine/notifications";
-import PostEditor from "../PostEditor/PostEditor";
+import UpdatePost from "./UpdatePost";
 
 interface PostItemProps {
 	postData: PublicPostFull;
@@ -79,46 +79,6 @@ export default function PostItem(props: PostItemProps) {
 			});
 		}
 		closeConfirmDeleteModal();
-	}
-
-	async function updatePost() {
-		if (editor === null) return;
-		const NoPostContent =
-			editor.isEmpty || editor.getText().trim().length === 0;
-		if (NoPostContent) {
-			notifications.show({
-				color: "red",
-				title: "Invalid data",
-				message: "Cannot update post with empty content",
-			});
-			return;
-		}
-
-		// set the editor to read-only while post is being updated
-		setIsUpdatingPost(true);
-		editor?.setEditable(false);
-
-		const response = await fetch("/api/update-public-post", {
-			method: "POST",
-			body: JSON.stringify({
-				id: postData.id,
-				userID: currentUser?.id,
-				content: editor.getJSON(),
-			}),
-		});
-		if (response.ok) {
-			await response.json();
-			stopEditMode();
-		} else {
-			const error = await response.json();
-			notifications.show({
-				color: "red",
-				title: "Failed to update post",
-				message: error.message,
-			});
-			cancelEditMode();
-		}
-		setIsUpdatingPost(false);
 	}
 
 	const creationDate = moment(postData.createdAt).fromNow(true);
@@ -202,25 +162,16 @@ export default function PostItem(props: PostItemProps) {
 							)}
 						</div>
 						{inEditMode && (
-							<div className="flex flex-col gap-1">
-								<PostEditor editor={editor} />
-								<div className="flex flex-col gap-0.5">
-									<Button
-										type="button"
-										className="bg-dark-green disabled:hover:bg-dark-green hover:bg-dark-green-l"
-										onClick={updatePost}
-										disabled={isUpdatingPost}>
-										Save
-									</Button>
-									<Button
-										type="button"
-										className="bg-dark-red disabled:hover:bg-dark-red hover:bg-dark-red-l"
-										onClick={cancelEditMode}
-										disabled={isUpdatingPost}>
-										Cancel
-									</Button>
-								</div>
-							</div>
+							<UpdatePost
+								editor={editor as Editor}
+								postID={postData.id}
+								currentUserID={currentUser?.id as string}
+								isUpdating={isUpdatingPost}
+								setIsUpdatingState={setIsUpdatingPost}
+								onUpdate={stopEditMode}
+								onFailedUpdate={cancelEditMode}
+								cancelUpdate={cancelEditMode}
+							/>
 						)}
 						{!inEditMode && (
 							<RichTextEditor
