@@ -3,7 +3,7 @@ import { JSONContent, useEditor } from "@tiptap/react";
 import Placeholder from "@tiptap/extension-placeholder";
 import { PostEditorExtensions } from "../../../helpers/global-helpers";
 import { Button } from "@mantine/core";
-import PostEditor from "../PostEditor/PostEditor";
+import PostEditor from "../Editor/PostEditor";
 
 interface CreatePostProps {
 	anonymous?: boolean;

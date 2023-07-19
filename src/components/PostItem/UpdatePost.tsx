@@ -1,5 +1,5 @@
 import { Button } from "@mantine/core";
-import PostEditor from "../PostEditor/PostEditor";
+import PostEditor from "../Editor/PostEditor";
 import { Editor } from "@tiptap/react";
 import { notifications } from "@mantine/notifications";
 import { Dispatch, SetStateAction } from "react";
