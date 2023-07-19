@@ -91,3 +91,15 @@ export const PostEditorExtensions = [
 	Link,
 	TextAlign.configure({ types: ["heading", "paragraph"] }),
 ];
+
+export const CommentEditorExtensions = [
+	StarterKit.configure({
+		horizontalRule: false,
+		dropcursor: false,
+		gapcursor: false,
+		hardBreak: false,
+		heading: false,
+	}),
+	Underline,
+	Link,
+];
