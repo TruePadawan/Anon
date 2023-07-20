@@ -118,15 +118,17 @@ export default function PostItem(props: PostItemProps) {
 								<span>·</span>
 								<span className="text-gray-500 text-sm">{creationDate}</span>
 							</div>
-							{currentUserIsAuthor && (
-								<>
-									<Menu>
-										<Menu.Target>
-											<ActionIcon>
-												<IconDots />
-											</ActionIcon>
-										</Menu.Target>
-										<Menu.Dropdown>
+							<Menu>
+								<Menu.Target>
+									<ActionIcon>
+										<IconDots />
+									</ActionIcon>
+								</Menu.Target>
+								<Menu.Dropdown>
+									<Menu.Label>General</Menu.Label>
+									<Menu.Item>View full post</Menu.Item>
+									{currentUserIsAuthor && (
+										<>
 											<Menu.Label>Manage</Menu.Label>
 											<Menu.Item
 												icon={<IconEdit size={16} />}
@@ -141,26 +143,28 @@ export default function PostItem(props: PostItemProps) {
 												disabled={isUpdatingPost}>
 												Delete
 											</Menu.Item>
-										</Menu.Dropdown>
-									</Menu>
-									<Modal
-										opened={confirmDeleteModalOpened}
-										onClose={closeConfirmDeleteModal}
-										title="Confirm Action"
-										centered>
-										<div className="flex flex-col gap-1.5">
-											<p>Are you sure you want to delete this post?</p>
-											<div className="flex flex-col gap-1">
-												<Button color="green" onClick={deletePost}>
-													Yes
-												</Button>
-												<Button color="red" onClick={closeConfirmDeleteModal}>
-													No
-												</Button>
-											</div>
+										</>
+									)}
+								</Menu.Dropdown>
+							</Menu>
+							{currentUserIsAuthor && (
+								<Modal
+									opened={confirmDeleteModalOpened}
+									onClose={closeConfirmDeleteModal}
+									title="Confirm Action"
+									centered>
+									<div className="flex flex-col gap-1.5">
+										<p>Are you sure you want to delete this post?</p>
+										<div className="flex flex-col gap-1">
+											<Button color="green" onClick={deletePost}>
+												Yes
+											</Button>
+											<Button color="red" onClick={closeConfirmDeleteModal}>
+												No
+											</Button>
 										</div>
-									</Modal>
-								</>
+									</div>
+								</Modal>
 							)}
 						</div>
 						{inEditMode && (
