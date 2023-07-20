@@ -38,7 +38,7 @@ export default function CreatePost(props: CreatePostProps) {
 
 	return (
 		<div
-			className={`max-w-3xl w-full flex flex-col gap-2 ${
+			className={`flex flex-col gap-2 ${
 				props.className || ""
 			}`}>
 			<PostEditor editor={editor} />

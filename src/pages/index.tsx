@@ -57,9 +57,9 @@ const Home = ({ user, publicPosts }: HomeProps) => {
 		<>
 			<Navbar user={user} />
 			<main className={`flex flex-col gap-3 items-center ${!user && "mt-4"}`}>
-				{user && <CreatePost handlePostSubmit={handlePostSubmit} />}
+				{user && <CreatePost className="max-w-4xl w-full" handlePostSubmit={handlePostSubmit} />}
 				{postsData && (
-					<ul className="max-w-3xl w-full flex flex-col gap-2 list-none">
+					<ul className="max-w-4xl w-full flex flex-col gap-2 list-none">
 						{posts}
 					</ul>
 				)}
