@@ -57,11 +57,12 @@ model User {
 }
 
 model PublicPost {
-  id        String      @id @default(auto()) @map("_id") @db.ObjectId
-  content   Json
-  author    UserProfile @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId  String      @db.ObjectId
-  createdAt Int
+  id              String      @id @default(auto()) @map("_id") @db.ObjectId
+  content         Json
+  author          UserProfile @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId        String      @db.ObjectId
+  commentsAllowed Boolean     @default(true)
+  createdAt       Int
 }
 
 model Comment {
