@@ -19,6 +19,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { useRef, useState } from "react";
 import { notifications } from "@mantine/notifications";
 import UpdatePost from "./UpdatePost";
+import Comments from "../Comments/Comments";
 
 interface PostItemProps {
 	postData: PublicPostFull;
@@ -83,6 +84,7 @@ export default function PostItem(props: PostItemProps) {
 
 	const creationDate = moment(postData.createdAt).fromNow(true);
 	const currentUserIsAuthor = currentUser?.id === author.id;
+	const commentsAllowed = postData.commentsAllowed || currentUserIsAuthor;
 	return (
 		<li
 			className="flex gap-1.5 py-1.5 px-2 rounded-md"
@@ -174,14 +176,21 @@ export default function PostItem(props: PostItemProps) {
 							/>
 						)}
 						{!inEditMode && (
-							<RichTextEditor
-								editor={editor}
-								styles={{
-									root: { border: "none" },
-									content: { "& .ProseMirror": { padding: "0" } },
-								}}>
-								<RichTextEditor.Content />
-							</RichTextEditor>
+							<>
+								<RichTextEditor
+									editor={editor}
+									styles={{
+										root: { border: "none" },
+										content: { "& .ProseMirror": { padding: "0" } },
+									}}>
+									<RichTextEditor.Content />
+								</RichTextEditor>
+								<Comments
+									currentUser={currentUser}
+									commentGroupID={postData.id}
+									commentsAllowed={commentsAllowed}
+								/>
+							</>
 						)}
 					</div>
 				</>
