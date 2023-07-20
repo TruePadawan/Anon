@@ -8,6 +8,7 @@ import { UserProfile } from "@prisma/client";
 interface CommentsProps {
 	commentGroupID: string;
 	currentUser: UserProfile | null;
+	commentsAllowed: boolean;
 	initialCommentsCount?: number;
 }
 
@@ -26,7 +27,7 @@ export default function Comments(props: CommentsProps) {
 
 	return (
 		<div className="w-full flex flex-col gap-2">
-			{currentUser && <CommentEditor editor={editor} />}
+			{props.commentsAllowed && <CommentEditor editor={editor} />}
 			<ul>{comments}</ul>
 		</div>
 	);
