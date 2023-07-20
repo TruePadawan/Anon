@@ -26,6 +26,7 @@ const Home = ({ user, publicPosts }: HomeProps) => {
 					postData={post}
 					currentUser={user}
 					postType="public"
+					full={false}
 				/>
 			);
 		});

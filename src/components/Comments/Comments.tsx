@@ -10,6 +10,7 @@ interface CommentsProps {
 	currentUser: UserProfile | null;
 	commentsAllowed: boolean;
 	initialCommentsCount?: number;
+	showOnlyCommentsCount?: boolean;
 }
 
 export default function Comments(props: CommentsProps) {
@@ -25,6 +26,14 @@ export default function Comments(props: CommentsProps) {
 		return commentIDs.map((id) => <CommentItem key={id} id={id} />);
 	}, [commentIDs]);
 
+	const commentsCount = commentIDs.length;
+	if (props.showOnlyCommentsCount) {
+		return (
+			<p className="w-full text-center font-semibold">{`${commentsCount} comment${
+				commentsCount === 1 ? "" : "s"
+			}`}</p>
+		);
+	}
 	return (
 		<div className="w-full flex flex-col gap-2">
 			{props.commentsAllowed && <CommentEditor editor={editor} />}

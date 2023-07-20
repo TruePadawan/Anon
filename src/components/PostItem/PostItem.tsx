@@ -25,6 +25,7 @@ interface PostItemProps {
 	postData: PublicPostFull;
 	currentUser: UserProfile | null;
 	postType: "public" | "group";
+	full: boolean;
 }
 
 export default function PostItem(props: PostItemProps) {
@@ -193,6 +194,7 @@ export default function PostItem(props: PostItemProps) {
 									currentUser={currentUser}
 									commentGroupID={postData.id}
 									commentsAllowed={commentsAllowed}
+									showOnlyCommentsCount={!props.full}
 								/>
 							</>
 						)}
