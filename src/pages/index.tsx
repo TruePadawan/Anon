@@ -9,6 +9,7 @@ import PostItem from "@/components/PostItem/PostItem";
 import CreatePost from "@/components/CreatePost/CreatePost";
 import { JSONContent } from "@tiptap/react";
 import { PublicPostFull } from "@/types/types";
+import { notifications } from "@mantine/notifications";
 
 interface HomeProps {
 	user: UserProfile | null;
@@ -51,7 +52,10 @@ const Home = ({ user, publicPosts }: HomeProps) => {
 				return [...postsData];
 			});
 		} else {
-			// error submitting post
+			notifications.show({
+				color: "red",
+				message: "Failed to create post",
+			});
 		}
 	}
 
