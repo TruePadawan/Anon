@@ -22,6 +22,7 @@ import UpdatePost from "./UpdatePost";
 import Comments from "../Comments/Comments";
 
 interface PostItemProps {
+	className?: string;
 	postData: PublicPostFull;
 	currentUser: UserProfile | null;
 	postType: "public" | "group";
@@ -88,7 +89,7 @@ export default function PostItem(props: PostItemProps) {
 	const commentsAllowed = postData.commentsAllowed || currentUserIsAuthor;
 	return (
 		<li
-			className="flex gap-1.5 py-1.5 px-2 rounded-md"
+			className={`flex gap-1.5 py-1.5 px-2 rounded-md ${props.className || ""}`}
 			style={{ backgroundColor: theme.colors.dark[7] }}>
 			{postDeleted && (
 				<Alert
