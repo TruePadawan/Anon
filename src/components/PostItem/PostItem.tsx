@@ -88,9 +88,7 @@ export default function PostItem(props: PostItemProps) {
 	const currentUserIsAuthor = currentUser?.id === author.id;
 	const commentsAllowed = postData.commentsAllowed || currentUserIsAuthor;
 	return (
-		<li
-			className={`flex gap-1.5 py-1.5 px-2 rounded-md ${props.className || ""}`}
-			style={{ backgroundColor: theme.colors.dark[7] }}>
+		<div className={`flex flex-col gap-2 ${props.className || ""}`}>
 			{postDeleted && (
 				<Alert
 					className="grow"
@@ -102,108 +100,132 @@ export default function PostItem(props: PostItemProps) {
 			)}
 			{!postDeleted && (
 				<>
-					<Avatar
-						variant="filled"
-						radius="xl"
-						color={author.color}
-						src={author.avatarUrl}
-					/>
-					<div className="flex grow flex-col gap-1.5">
-						<div className="flex justify-between">
-							<div className="flex items-center gap-0.5">
-								<Link href={`/users/${author.accountName}`}>
-									<span className="font-semibold">{author.displayName}</span>
-								</Link>
-								<Link href={`/users/${author.accountName}`}>
-									<span className="text-gray-500 text-sm">{`@${author.accountName}`}</span>
-								</Link>
-								<span>·</span>
-								<span className="text-gray-500 text-sm">{creationDate}</span>
-							</div>
-							<Menu>
-								<Menu.Target>
-									<ActionIcon>
-										<IconDots />
-									</ActionIcon>
-								</Menu.Target>
-								<Menu.Dropdown>
-									<Menu.Label>General</Menu.Label>
-									<Menu.Item component={Link} href={`/posts/${postData.id}`}>
-										View full post
-									</Menu.Item>
-									{currentUserIsAuthor && (
-										<>
-											<Menu.Label>Manage</Menu.Label>
-											<Menu.Item
-												icon={<IconEdit size={16} />}
-												onClick={startEditMode}
-												disabled={isUpdatingPost}>
-												Edit
-											</Menu.Item>
-											<Menu.Item
-												color="red"
-												icon={<IconTrash size={16} />}
-												onClick={openConfirmDeleteModal}
-												disabled={isUpdatingPost}>
-												Delete
-											</Menu.Item>
-										</>
-									)}
-								</Menu.Dropdown>
-							</Menu>
-							{currentUserIsAuthor && (
-								<Modal
-									opened={confirmDeleteModalOpened}
-									onClose={closeConfirmDeleteModal}
-									title="Confirm Action"
-									centered>
-									<div className="flex flex-col gap-1.5">
-										<p>Are you sure you want to delete this post?</p>
-										<div className="flex flex-col gap-1">
-											<Button color="green" onClick={deletePost}>
-												Yes
-											</Button>
-											<Button color="red" onClick={closeConfirmDeleteModal}>
-												No
-											</Button>
-										</div>
+					<div
+						className="flex flex-col p-1 rounded-md"
+						style={{ backgroundColor: theme.colors.dark[7] }}>
+						<div className="flex gap-1.5 py-1 px-1">
+							<Avatar
+								variant="filled"
+								radius="xl"
+								color={author.color}
+								src={author.avatarUrl}
+							/>
+							<div className="flex grow flex-col gap-1.5">
+								<div className="flex justify-between">
+									<div className="flex items-center gap-0.5">
+										<Link href={`/users/${author.accountName}`}>
+											<span className="font-semibold">
+												{author.displayName}
+											</span>
+										</Link>
+										<Link href={`/users/${author.accountName}`}>
+											<span className="text-gray-500 text-sm">{`@${author.accountName}`}</span>
+										</Link>
+										<span>·</span>
+										<span className="text-gray-500 text-sm">
+											{creationDate}
+										</span>
 									</div>
-								</Modal>
-							)}
+									<Menu>
+										<Menu.Target>
+											<ActionIcon>
+												<IconDots />
+											</ActionIcon>
+										</Menu.Target>
+										<Menu.Dropdown>
+											{!props.full && (
+												<>
+													<Menu.Label>General</Menu.Label>
+													<Menu.Item
+														component={Link}
+														href={`/posts/${postData.id}`}>
+														View full post
+													</Menu.Item>
+												</>
+											)}
+											{currentUserIsAuthor && (
+												<>
+													<Menu.Label>Manage</Menu.Label>
+													<Menu.Item
+														icon={<IconEdit size={16} />}
+														onClick={startEditMode}
+														disabled={isUpdatingPost}>
+														Edit
+													</Menu.Item>
+													<Menu.Item
+														color="red"
+														icon={<IconTrash size={16} />}
+														onClick={openConfirmDeleteModal}
+														disabled={isUpdatingPost}>
+														Delete
+													</Menu.Item>
+												</>
+											)}
+										</Menu.Dropdown>
+									</Menu>
+									{currentUserIsAuthor && (
+										<Modal
+											opened={confirmDeleteModalOpened}
+											onClose={closeConfirmDeleteModal}
+											title="Confirm Action"
+											centered>
+											<div className="flex flex-col gap-1.5">
+												<p>Are you sure you want to delete this post?</p>
+												<div className="flex flex-col gap-1">
+													<Button color="green" onClick={deletePost}>
+														Yes
+													</Button>
+													<Button color="red" onClick={closeConfirmDeleteModal}>
+														No
+													</Button>
+												</div>
+											</div>
+										</Modal>
+									)}
+								</div>
+								{inEditMode && (
+									<UpdatePost
+										editor={editor as Editor}
+										postID={postData.id}
+										currentUserID={currentUser?.id as string}
+										isUpdating={isUpdatingPost}
+										setIsUpdatingState={setIsUpdatingPost}
+										onUpdate={stopEditMode}
+										onFailedUpdate={cancelEditMode}
+										cancelUpdate={cancelEditMode}
+									/>
+								)}
+								{!inEditMode && (
+									<RichTextEditor
+										editor={editor}
+										styles={{
+											root: { border: "none" },
+											content: { "& .ProseMirror": { padding: "0" } },
+										}}>
+										<RichTextEditor.Content />
+									</RichTextEditor>
+								)}
+							</div>
 						</div>
-						{inEditMode && (
-							<UpdatePost
-								editor={editor as Editor}
-								postID={postData.id}
-								currentUserID={currentUser?.id as string}
-								isUpdating={isUpdatingPost}
-								setIsUpdatingState={setIsUpdatingPost}
-								onUpdate={stopEditMode}
-								onFailedUpdate={cancelEditMode}
-								cancelUpdate={cancelEditMode}
+						{!props.full && (
+							<Comments
+								currentUser={currentUser}
+								commentGroupID={postData.id}
+								commentsAllowed={commentsAllowed}
+								showOnlyCommentsCount={!props.full}
 							/>
 						)}
-						{!inEditMode && (
-							<>
-								<RichTextEditor
-									editor={editor}
-									styles={{
-										root: { border: "none" },
-										content: { "& .ProseMirror": { padding: "0" } },
-									}}>
-									<RichTextEditor.Content />
-								</RichTextEditor>
-								<Comments
-									currentUser={currentUser}
-									commentGroupID={postData.id}
-									commentsAllowed={commentsAllowed}
-									showOnlyCommentsCount={!props.full}
-								/>
-							</>
-						)}
 					</div>
+					{props.full && (
+						<Comments
+							currentUser={currentUser}
+							commentGroupID={postData.id}
+							commentsAllowed={commentsAllowed}
+							showOnlyCommentsCount={!props.full}
+						/>
+					)}
 				</>
 			)}
-		</li>
+		</div>
 	);
 }
