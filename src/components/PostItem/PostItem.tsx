@@ -127,7 +127,9 @@ export default function PostItem(props: PostItemProps) {
 								</Menu.Target>
 								<Menu.Dropdown>
 									<Menu.Label>General</Menu.Label>
-									<Menu.Item>View full post</Menu.Item>
+									<Menu.Item component={Link} href={`/posts/${postData.id}`}>
+										View full post
+									</Menu.Item>
 									{currentUserIsAuthor && (
 										<>
 											<Menu.Label>Manage</Menu.Label>
