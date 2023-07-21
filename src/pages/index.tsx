@@ -57,7 +57,7 @@ const Home = ({ user, publicPosts }: HomeProps) => {
 	return (
 		<>
 			<Navbar user={user} />
-			<main className="flex flex-col gap-3 items-center">
+			<main className="grow flex flex-col gap-3 items-center">
 				{user && (
 					<CreatePost
 						className="max-w-4xl w-full"
