@@ -8,7 +8,11 @@ import PostEditor from "../Editor/PostEditor";
 interface CreatePostProps {
 	anonymous?: boolean;
 	className?: string;
-	handlePostSubmit: (content: JSONContent, onSubmit: () => void) => void;
+	handlePostSubmit: (
+		content: JSONContent,
+		onSubmit: () => void,
+		onSubmitFailed: () => void
+	) => void;
 }
 
 export default function CreatePost(props: CreatePostProps) {
@@ -29,18 +33,21 @@ export default function CreatePost(props: CreatePostProps) {
 		if (!NoPostContent) {
 			setIsSubmittingPost(true);
 			const editorContent = editor.getJSON();
-			props.handlePostSubmit(editorContent, () => {
-				setIsSubmittingPost(false);
-				editor.commands.clearContent();
-			});
+			props.handlePostSubmit(
+				editorContent,
+				() => {
+					setIsSubmittingPost(false);
+					editor.commands.clearContent();
+				},
+				() => {
+					setIsSubmittingPost(false);
+				}
+			);
 		}
 	}
 
 	return (
-		<div
-			className={`flex flex-col gap-2 ${
-				props.className || ""
-			}`}>
+		<div className={`flex flex-col gap-2 ${props.className || ""}`}>
 			<PostEditor editor={editor} />
 			<Button
 				type="button"

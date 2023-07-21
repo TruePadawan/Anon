@@ -34,7 +34,11 @@ const Home = ({ user, publicPosts }: HomeProps) => {
 		});
 	}, [postsData, user]);
 
-	async function handlePostSubmit(content: JSONContent, onSubmit: () => void) {
+	async function handlePostSubmit(
+		content: JSONContent,
+		onSubmit: () => void,
+		onSubmitFailed: () => void
+	) {
 		const postDocument = {
 			content,
 			authorId: user?.id,
@@ -56,6 +60,7 @@ const Home = ({ user, publicPosts }: HomeProps) => {
 				color: "red",
 				message: "Failed to create post",
 			});
+			onSubmitFailed();
 		}
 	}
 
