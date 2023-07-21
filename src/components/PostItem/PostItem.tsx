@@ -108,7 +108,7 @@ export default function PostItem(props: PostItemProps) {
 						color={author.color}
 						src={author.avatarUrl}
 					/>
-					<div className="flex grow flex-col gap-0.5">
+					<div className="flex grow flex-col gap-1.5">
 						<div className="flex justify-between">
 							<div className="flex items-center gap-0.5">
 								<Link href={`/users/${author.accountName}`}>
