@@ -71,7 +71,7 @@ model Comment {
   parentComment   Comment?  @relation("ParentComment", fields: [parentCommentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   parentCommentId String?   @db.ObjectId
   Comment         Comment[] @relation("ParentComment")
-  content         String
+  content         Json
   author          User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId        String    @db.ObjectId
   createdAt       Int
