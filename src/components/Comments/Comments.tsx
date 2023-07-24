@@ -1,31 +1,63 @@
 import { useEditor } from "@tiptap/react";
 import { CommentEditorExtensions } from "../../../helpers/global-helpers";
 import CommentEditor from "../Editor/CommentEditor";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import CommentItem from "./CommentItem";
 import { UserProfile } from "@prisma/client";
-import { Button } from "@mantine/core";
+import { Button, Loader } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
+import useSWRInfinite from "swr/infinite";
 
 interface CommentsProps {
 	commentGroupID: string;
 	currentUser: UserProfile | null;
 	commentsAllowed: boolean;
-	initialCommentsCount?: number;
+	commentsPerRequest?: number;
 	showOnlyCommentsCount?: boolean;
 }
+
+interface CommentID {
+	id: string;
+}
+const fetcher = async (key: string): Promise<CommentID[]> => {
+	const response = await fetch(key);
+	if (!response.ok) {
+		const error = await response.json();
+		throw new Error(error.message);
+	}
+	const comments = await response.json();
+	return comments;
+};
 
 export default function Comments(props: CommentsProps) {
 	const editor = useEditor({
 		extensions: CommentEditorExtensions,
 	});
-	const [commentIDs, setCommentIDs] = useState<string[]>([]);
+	const [commentIDs, setCommentIDs] = useState<CommentID[]>([]);
 	const [creatingComment, setCreatingComment] = useState(false);
-	const { commentGroupID, currentUser, initialCommentsCount = 5 } = props;
+	const { commentGroupID, currentUser, commentsPerRequest = 20 } = props;
+
 	// use swr to fetch for comments
+	const { data, isLoading, isValidating, error, setSize } = useSWRInfinite(
+		(index: number, previousComments?: CommentID[]) => {
+			if (previousComments && previousComments.length === 0) return null;
+			if (index === 0)
+				return `/api/get-comment-ids?groupId=${commentGroupID}&limit=${commentsPerRequest}`;
+			const cursor = previousComments?.at(-1)?.id as string;
+			return `/api/get-comment-ids?groupId=${commentGroupID}&cursor=${cursor}&limit=${commentsPerRequest}`;
+		},
+		fetcher
+	);
+
+	useEffect(() => {
+		if (!isLoading && data) {
+			console.log(data.flat());
+			setCommentIDs(data.flat());
+		}
+	}, [isLoading, data]);
 
 	const comments = useMemo(() => {
-		return commentIDs.map((id) => <CommentItem key={id} id={id} />);
+		return commentIDs.map(({ id }) => <CommentItem key={id} id={id} />);
 	}, [commentIDs]);
 
 	function getCommentObject() {
@@ -77,6 +109,14 @@ export default function Comments(props: CommentsProps) {
 		setCreatingComment(false);
 	}
 
+	if (error) {
+		console.error(error);
+		notifications.show({
+			color: "red",
+			title: "Error",
+			message: error.message,
+		});
+	}
 	const commentsCount = commentIDs.length;
 	if (props.showOnlyCommentsCount) {
 		return (
@@ -87,21 +127,37 @@ export default function Comments(props: CommentsProps) {
 	}
 	return (
 		<div className="w-full flex flex-col gap-2">
-			{props.commentsAllowed && (
-				<div>
-					<CommentEditor editor={editor} />
+			{isLoading && (
+				<Loader className="mx-auto mt-3" color="gray" variant="bars" />
+			)}
+			{!isLoading && (
+				<>
+					{props.commentsAllowed && (
+						<div>
+							<CommentEditor editor={editor} />
+							<Button
+								type="button"
+								className="mt-1 w-full"
+								size="md"
+								color="gray"
+								onClick={createComment}
+								disabled={creatingComment}>
+								Post comment
+							</Button>
+						</div>
+					)}
+					<ul>{comments}</ul>
 					<Button
 						type="button"
-						className="mt-1 w-full"
-						size="md"
+						variant="subtle"
 						color="gray"
-						onClick={createComment}
-						disabled={creatingComment}>
-						Post comment
+						onClick={() => setSize((_size) => _size + 1)}
+						loaderPosition="center"
+						loading={isValidating}>
+						Load more comments
 					</Button>
-				</div>
+				</>
 			)}
-			<ul>{comments}</ul>
 		</div>
 	);
 }
