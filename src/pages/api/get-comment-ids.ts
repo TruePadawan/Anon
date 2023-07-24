@@ -13,7 +13,6 @@ export default async function handler(
 		const groupId = req.query.groupId as string;
 		const limit = Number(req.query.limit as string);
 		const cursor = req.query.cursor as string | undefined;
-		console.log(groupId, limit, cursor);
 		try {
 			let comment;
 			if (cursor) {
