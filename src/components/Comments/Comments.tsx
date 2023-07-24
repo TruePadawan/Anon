@@ -35,12 +35,16 @@ export default function Comments(props: CommentsProps) {
 	});
 	const [commentIDs, setCommentIDs] = useState<CommentID[]>([]);
 	const [creatingComment, setCreatingComment] = useState(false);
+	const [noMoreComments, setNoMoreComments] = useState(false);
 	const { commentGroupID, currentUser, commentsPerRequest = 20 } = props;
 
 	// use swr to fetch for comments
 	const { data, isLoading, isValidating, error, setSize } = useSWRInfinite(
 		(index: number, previousComments?: CommentID[]) => {
-			if (previousComments && previousComments.length === 0) return null;
+			if (previousComments && previousComments.length === 0) {
+				setNoMoreComments(true);
+				return null;
+			}
 			if (index === 0)
 				return `/api/get-comment-ids?groupId=${commentGroupID}&limit=${commentsPerRequest}`;
 			const cursor = previousComments?.at(-1)?.id as string;
@@ -51,7 +55,6 @@ export default function Comments(props: CommentsProps) {
 
 	useEffect(() => {
 		if (!isLoading && data) {
-			console.log(data.flat());
 			setCommentIDs(data.flat());
 		}
 	}, [isLoading, data]);
@@ -146,16 +149,21 @@ export default function Comments(props: CommentsProps) {
 							</Button>
 						</div>
 					)}
-					<ul>{comments}</ul>
-					<Button
-						type="button"
-						variant="light"
-						color="gray"
-						onClick={() => setSize((_size) => _size + 1)}
-						loaderPosition="center"
-						loading={isValidating}>
-						Load more comments
-					</Button>
+					<ul className="list-none">{comments}</ul>
+					{!noMoreComments && (
+						<Button
+							type="button"
+							variant="light"
+							color="gray"
+							onClick={() => setSize((_size) => _size + 1)}
+							loaderPosition="center"
+							loading={isValidating}>
+							Load more comments
+						</Button>
+					)}
+					{noMoreComments && (
+						<p className="text-sm text-center mt-2">All comments loaded</p>
+					)}
 				</>
 			)}
 		</div>
