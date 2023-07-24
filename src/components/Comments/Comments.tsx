@@ -128,6 +128,7 @@ export default function Comments(props: CommentsProps) {
 			}`}</p>
 		);
 	}
+	const showEditor = currentUser && props.commentsAllowed;
 	return (
 		<div className="w-full flex flex-col gap-2">
 			{isLoading && (
@@ -135,7 +136,7 @@ export default function Comments(props: CommentsProps) {
 			)}
 			{!isLoading && (
 				<>
-					{props.commentsAllowed && (
+					{showEditor && (
 						<div>
 							<CommentEditor editor={editor} />
 							<Button
