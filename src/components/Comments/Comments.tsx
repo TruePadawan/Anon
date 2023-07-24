@@ -149,7 +149,7 @@ export default function Comments(props: CommentsProps) {
 					<ul>{comments}</ul>
 					<Button
 						type="button"
-						variant="subtle"
+						variant="light"
 						color="gray"
 						onClick={() => setSize((_size) => _size + 1)}
 						loaderPosition="center"
