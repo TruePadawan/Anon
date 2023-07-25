@@ -42,6 +42,7 @@ model UserProfile {
   displayName String
   createdAt   Int
   PublicPost  PublicPost[]
+  Comment     Comment[]
 }
 
 model User {
@@ -53,7 +54,6 @@ model User {
   name          String?
   Account       Account[]
   Session       Session[]
-  Comment       Comment[]
 }
 
 model PublicPost {
@@ -66,14 +66,14 @@ model PublicPost {
 }
 
 model Comment {
-  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  id              String      @id @default(auto()) @map("_id") @db.ObjectId
   commentGroupId  String
-  parentComment   Comment?  @relation("ParentComment", fields: [parentCommentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  parentCommentId String?   @db.ObjectId
-  Comment         Comment[] @relation("ParentComment")
+  parentComment   Comment?    @relation("ParentComment", fields: [parentCommentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  parentCommentId String?     @db.ObjectId
+  Comment         Comment[]   @relation("ParentComment")
   content         Json
-  author          User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId        String    @db.ObjectId
+  author          UserProfile @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId        String      @db.ObjectId
   createdAt       Int
-  editedAt        Int       @default(0)
+  editedAt        Int         @default(0)
 }
