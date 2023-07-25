@@ -88,6 +88,7 @@ export default function Comments(props: CommentsProps) {
 
 	async function createComment() {
 		setCreatingComment(true);
+		editor?.setEditable(false);
 		try {
 			const comment = getCommentObject();
 			const response = await fetch("/api/create-comment", {
@@ -112,6 +113,7 @@ export default function Comments(props: CommentsProps) {
 			});
 		}
 		setCreatingComment(false);
+		editor?.setEditable(true);
 	}
 
 	if (error) {

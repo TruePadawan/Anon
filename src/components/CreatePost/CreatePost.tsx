@@ -32,15 +32,18 @@ export default function CreatePost(props: CreatePostProps) {
 
 		if (!NoPostContent) {
 			setIsSubmittingPost(true);
+			editor.setEditable(false);
 			const editorContent = editor.getJSON();
 			props.handlePostSubmit(
 				editorContent,
 				() => {
 					setIsSubmittingPost(false);
 					editor.commands.clearContent();
+					editor.setEditable(true);
 				},
 				() => {
 					setIsSubmittingPost(false);
+					editor.setEditable(true);
 				}
 			);
 		}
