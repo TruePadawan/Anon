@@ -43,7 +43,6 @@ export default function CommentItem(props: CommentItemProps) {
 		extensions: CommentEditorExtensions,
 	});
 
-	console.log(1);
 	if (isLoading) {
 		return (
 			<div
