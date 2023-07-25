@@ -70,10 +70,34 @@ export default function CommentItem(props: CommentItemProps) {
 		);
 	}
 
+	if (commentDeleted) {
+		return (
+			<li
+				className="flex flex-col p-1 rounded-md"
+				style={{ backgroundColor: theme.colors.dark[7] }}>
+				<Alert
+					className="grow"
+					icon={<IconCheck size="1rem" />}
+					color="dark"
+					variant="filled">
+					Comment has been deleted
+				</Alert>
+			</li>
+		);
+	}
+
 	if (error || !commentData) {
 		return (
-			<li>
-				<p className="text-center text-sm">Comment no longer exists</p>
+			<li
+				className="flex flex-col p-1 rounded-md"
+				style={{ backgroundColor: theme.colors.dark[7] }}>
+				<Alert
+					className="grow"
+					icon={<IconCheck size="1rem" />}
+					color="dark"
+					variant="filled">
+					Comment not found
+				</Alert>
 			</li>
 		);
 	}
@@ -107,85 +131,74 @@ export default function CommentItem(props: CommentItemProps) {
 		<li
 			className="flex flex-col p-1 rounded-md"
 			style={{ backgroundColor: theme.colors.dark[7] }}>
-			{commentDeleted && (
-				<Alert
-					className="grow"
-					icon={<IconCheck size="1rem" />}
-					color="dark"
-					variant="filled">
-					Comment deleted successfully
-				</Alert>
-			)}
-			{!commentDeleted && (
-				<div className="flex gap-1.5 py-1 px-1">
-					<Avatar
-						variant="filled"
-						radius="xl"
-						color={author.color}
-						src={author.avatarUrl}
-					/>
-					<div className="flex grow flex-col gap-1.5">
-						<div className="flex justify-between">
-							<div className="flex items-center gap-0.5">
-								<Link href={`/users/${author.accountName}`}>
-									<span className="font-semibold">{author.displayName}</span>
-								</Link>
-								<Link href={`/users/${author.accountName}`}>
-									<span className="text-gray-500 text-sm">{`@${author.accountName}`}</span>
-								</Link>
-								<span>·</span>
-								<span className="text-gray-500 text-sm">{creationDate}</span>
-							</div>
-							{currentUserIsAuthor && (
-								<>
-									<Menu>
-										<Menu.Target>
-											<ActionIcon>
-												<IconDots />
-											</ActionIcon>
-										</Menu.Target>
-										<Menu.Dropdown>
-											<Menu.Label>Manage</Menu.Label>
-											<Menu.Item icon={<IconEdit size={16} />}>Edit</Menu.Item>
-											<Menu.Item
-												color="red"
-												icon={<IconTrash size={16} />}
-												onClick={openConfirmDeleteModal}>
-												Delete
-											</Menu.Item>
-										</Menu.Dropdown>
-									</Menu>
-									<Modal
-										opened={confirmDeleteModalOpened}
-										onClose={closeConfirmDeleteModal}
-										title="Confirm Action"
-										centered>
-										<div className="flex flex-col gap-1.5">
-											<p>Are you sure you want to delete this comment?</p>
-											<div className="flex flex-col gap-1">
-												<Button color="green" onClick={deleteComment}>
-													Yes
-												</Button>
-												<Button color="red" onClick={closeConfirmDeleteModal}>
-													No
-												</Button>
-											</div>
-										</div>
-									</Modal>
-								</>
-							)}
+			<div className="flex gap-1.5 py-1 px-1">
+				<Avatar
+					variant="filled"
+					radius="xl"
+					color={author.color}
+					src={author.avatarUrl}
+				/>
+				<div className="flex grow flex-col gap-1.5">
+					<div className="flex justify-between">
+						<div className="flex items-center gap-0.5">
+							<Link href={`/users/${author.accountName}`}>
+								<span className="font-semibold">{author.displayName}</span>
+							</Link>
+							<Link href={`/users/${author.accountName}`}>
+								<span className="text-gray-500 text-sm">{`@${author.accountName}`}</span>
+							</Link>
+							<span>·</span>
+							<span className="text-gray-500 text-sm">{creationDate}</span>
 						</div>
-						<RichTextEditor
-							editor={editor}
-							styles={{
-								root: { border: "none" },
-								content: { "& .ProseMirror": { padding: "0" } },
-							}}>
-							<RichTextEditor.Content />
-						</RichTextEditor>
+						{currentUserIsAuthor && (
+							<>
+								<Menu>
+									<Menu.Target>
+										<ActionIcon>
+											<IconDots />
+										</ActionIcon>
+									</Menu.Target>
+									<Menu.Dropdown>
+										<Menu.Label>Manage</Menu.Label>
+										<Menu.Item icon={<IconEdit size={16} />}>Edit</Menu.Item>
+										<Menu.Item
+											color="red"
+											icon={<IconTrash size={16} />}
+											onClick={openConfirmDeleteModal}>
+											Delete
+										</Menu.Item>
+									</Menu.Dropdown>
+								</Menu>
+								<Modal
+									opened={confirmDeleteModalOpened}
+									onClose={closeConfirmDeleteModal}
+									title="Confirm Action"
+									centered>
+									<div className="flex flex-col gap-1.5">
+										<p>Are you sure you want to delete this comment?</p>
+										<div className="flex flex-col gap-1">
+											<Button color="green" onClick={deleteComment}>
+												Yes
+											</Button>
+											<Button color="red" onClick={closeConfirmDeleteModal}>
+												No
+											</Button>
+										</div>
+									</div>
+								</Modal>
+							</>
+						)}
 					</div>
+					<RichTextEditor
+						editor={editor}
+						styles={{
+							root: { border: "none" },
+							content: { "& .ProseMirror": { padding: "0" } },
+						}}>
+						<RichTextEditor.Content />
+					</RichTextEditor>
 				</div>
-			)}
+			</div>
 		</li>
 	);
 }
