@@ -14,9 +14,9 @@ export default async function handler(
 		const limit = Number(req.query.limit as string);
 		const cursor = req.query.cursor as string | undefined;
 		try {
-			let comment;
+			let comments;
 			if (cursor) {
-				comment = await prisma.comment.findMany({
+				comments = await prisma.comment.findMany({
 					take: limit,
 					skip: 1,
 					cursor: {
@@ -33,7 +33,7 @@ export default async function handler(
 					},
 				});
 			} else {
-				comment = await prisma.comment.findMany({
+				comments = await prisma.comment.findMany({
 					take: limit,
 					where: {
 						commentGroupId: groupId,
@@ -46,7 +46,7 @@ export default async function handler(
 					},
 				});
 			}
-			res.status(200).json(comment);
+			res.status(200).json(comments);
 		} catch (error: any) {
 			console.error(error);
 			res.status(500).json({
