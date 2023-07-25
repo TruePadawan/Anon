@@ -98,7 +98,7 @@ export default function Comments(props: CommentsProps) {
 			if (!response.ok) {
 				throw new Error(responseBody.message);
 			}
-			const newCommentID = responseBody.commentID;
+			const newCommentID: CommentID = { id: responseBody.commentID };
 			setCommentIDs((IDs) => [newCommentID, ...IDs]);
 
 			// clear comment editor after comment is created
