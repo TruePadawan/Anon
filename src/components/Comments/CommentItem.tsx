@@ -5,6 +5,8 @@ import {
 	ActionIcon,
 	useMantineTheme,
 	Skeleton,
+	Modal,
+	Button,
 } from "@mantine/core";
 import { RichTextEditor } from "@mantine/tiptap";
 import { UserProfile } from "@prisma/client";
@@ -14,6 +16,9 @@ import moment from "moment";
 import Link from "next/link";
 import useSWR from "swr";
 import { CommentEditorExtensions } from "../../../helpers/global-helpers";
+import { useDisclosure } from "@mantine/hooks";
+import { useState } from "react";
+import { notifications } from "@mantine/notifications";
 
 interface CommentItemProps {
 	id: string;
@@ -42,6 +47,11 @@ export default function CommentItem(props: CommentItemProps) {
 		editable: false,
 		extensions: CommentEditorExtensions,
 	});
+	const [
+		confirmDeleteModalOpened,
+		{ open: openConfirmDeleteModal, close: closeConfirmDeleteModal },
+	] = useDisclosure(false);
+	const [commentDeleted, setCommentDeleted] = useState(false);
 
 	if (isLoading) {
 		return (
@@ -67,6 +77,23 @@ export default function CommentItem(props: CommentItemProps) {
 		);
 	}
 
+	async function deleteComment() {
+		const response = await fetch("/api/delete-comment", {
+			method: "POST",
+			body: JSON.stringify({ comment: commentData }),
+		});
+		if (response.ok) {
+			setCommentDeleted(true);
+		} else {
+			const error = await response.json();
+			notifications.show({
+				color: "red",
+				title: "Failed to delete post",
+				message: error.message,
+			});
+		}
+		closeConfirmDeleteModal();
+	}
 	// set editor content after comment data is fetched
 	if (editor?.isEmpty) {
 		editor.commands.setContent(commentData.content as Content);
@@ -99,20 +126,42 @@ export default function CommentItem(props: CommentItemProps) {
 							<span className="text-gray-500 text-sm">{creationDate}</span>
 						</div>
 						{currentUserIsAuthor && (
-							<Menu>
-								<Menu.Target>
-									<ActionIcon>
-										<IconDots />
-									</ActionIcon>
-								</Menu.Target>
-								<Menu.Dropdown>
-									<Menu.Label>Manage</Menu.Label>
-									<Menu.Item icon={<IconEdit size={16} />}>Edit</Menu.Item>
-									<Menu.Item color="red" icon={<IconTrash size={16} />}>
-										Delete
-									</Menu.Item>
-								</Menu.Dropdown>
-							</Menu>
+							<>
+								<Menu>
+									<Menu.Target>
+										<ActionIcon>
+											<IconDots />
+										</ActionIcon>
+									</Menu.Target>
+									<Menu.Dropdown>
+										<Menu.Label>Manage</Menu.Label>
+										<Menu.Item icon={<IconEdit size={16} />}>Edit</Menu.Item>
+										<Menu.Item
+											color="red"
+											icon={<IconTrash size={16} />}
+											onClick={openConfirmDeleteModal}>
+											Delete
+										</Menu.Item>
+									</Menu.Dropdown>
+								</Menu>
+								<Modal
+									opened={confirmDeleteModalOpened}
+									onClose={closeConfirmDeleteModal}
+									title="Confirm Action"
+									centered>
+									<div className="flex flex-col gap-1.5">
+										<p>Are you sure you want to delete this comment?</p>
+										<div className="flex flex-col gap-1">
+											<Button color="green" onClick={deleteComment}>
+												Yes
+											</Button>
+											<Button color="red" onClick={closeConfirmDeleteModal}>
+												No
+											</Button>
+										</div>
+									</div>
+								</Modal>
+							</>
 						)}
 					</div>
 					<RichTextEditor
