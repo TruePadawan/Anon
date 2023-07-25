@@ -60,8 +60,10 @@ export default function Comments(props: CommentsProps) {
 	}, [isLoading, data]);
 
 	const comments = useMemo(() => {
-		return commentIDs.map(({ id }) => <CommentItem key={id} id={id} />);
-	}, [commentIDs]);
+		return commentIDs.map(({ id }) => (
+			<CommentItem key={id} id={id} currentUser={props.currentUser} />
+		));
+	}, [commentIDs, props.currentUser]);
 
 	function getCommentObject() {
 		if (editor === null) {
@@ -150,7 +152,7 @@ export default function Comments(props: CommentsProps) {
 							</Button>
 						</div>
 					)}
-					<ul className="list-none">{comments}</ul>
+					<ul className="list-none flex flex-col gap-1">{comments}</ul>
 					{!noMoreComments && (
 						<Button
 							type="button"
