@@ -89,7 +89,7 @@ export default function PostItem(props: PostItemProps) {
 	const currentUserIsAuthor = currentUser?.id === author.id;
 	const commentsAllowed = postData.commentsAllowed || currentUserIsAuthor;
 	return (
-		<div className={`flex flex-col gap-4 ${props.className || ""}`}>
+		<li className={`flex flex-col gap-4 ${props.className || ""}`}>
 			{postDeleted && (
 				<Alert
 					className="grow"
@@ -230,6 +230,6 @@ export default function PostItem(props: PostItemProps) {
 					)}
 				</>
 			)}
-		</div>
+		</li>
 	);
 }
