@@ -6,6 +6,7 @@ import {
 	Alert,
 	Avatar,
 	Button,
+	Divider,
 	Menu,
 	Modal,
 	useMantineTheme,
@@ -217,12 +218,15 @@ export default function PostItem(props: PostItemProps) {
 						)}
 					</div>
 					{props.full && (
-						<Comments
-							currentUser={currentUser}
-							commentGroupID={postData.id}
-							commentsAllowed={commentsAllowed}
-							showOnlyCommentsCount={!props.full}
-						/>
+						<>
+							<Divider label="Comments" labelPosition="center" />
+							<Comments
+								currentUser={currentUser}
+								commentGroupID={postData.id}
+								commentsAllowed={commentsAllowed}
+								showOnlyCommentsCount={!props.full}
+							/>
+						</>
 					)}
 				</>
 			)}
