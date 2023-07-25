@@ -7,10 +7,11 @@ import {
 	Skeleton,
 	Modal,
 	Button,
+	Alert,
 } from "@mantine/core";
 import { RichTextEditor } from "@mantine/tiptap";
 import { UserProfile } from "@prisma/client";
-import { IconDots, IconEdit, IconTrash } from "@tabler/icons-react";
+import { IconCheck, IconDots, IconEdit, IconTrash } from "@tabler/icons-react";
 import { Content, useEditor } from "@tiptap/react";
 import moment from "moment";
 import Link from "next/link";
@@ -37,12 +38,13 @@ const fetcher = async (key: string): Promise<CommentFull> => {
 };
 
 export default function CommentItem(props: CommentItemProps) {
+	const [commentDeleted, setCommentDeleted] = useState(false);
 	const theme = useMantineTheme();
 	const {
 		data: commentData,
 		isLoading,
 		error,
-	} = useSWR(`/api/get-comment/${props.id}`, fetcher);
+	} = useSWR(commentDeleted ? null : `/api/get-comment/${props.id}`, fetcher);
 	const editor = useEditor({
 		editable: false,
 		extensions: CommentEditorExtensions,
@@ -51,7 +53,6 @@ export default function CommentItem(props: CommentItemProps) {
 		confirmDeleteModalOpened,
 		{ open: openConfirmDeleteModal, close: closeConfirmDeleteModal },
 	] = useDisclosure(false);
-	const [commentDeleted, setCommentDeleted] = useState(false);
 
 	if (isLoading) {
 		return (
@@ -106,74 +107,85 @@ export default function CommentItem(props: CommentItemProps) {
 		<li
 			className="flex flex-col p-1 rounded-md"
 			style={{ backgroundColor: theme.colors.dark[7] }}>
-			<div className="flex gap-1.5 py-1 px-1">
-				<Avatar
-					variant="filled"
-					radius="xl"
-					color={author.color}
-					src={author.avatarUrl}
-				/>
-				<div className="flex grow flex-col gap-1.5">
-					<div className="flex justify-between">
-						<div className="flex items-center gap-0.5">
-							<Link href={`/users/${author.accountName}`}>
-								<span className="font-semibold">{author.displayName}</span>
-							</Link>
-							<Link href={`/users/${author.accountName}`}>
-								<span className="text-gray-500 text-sm">{`@${author.accountName}`}</span>
-							</Link>
-							<span>·</span>
-							<span className="text-gray-500 text-sm">{creationDate}</span>
-						</div>
-						{currentUserIsAuthor && (
-							<>
-								<Menu>
-									<Menu.Target>
-										<ActionIcon>
-											<IconDots />
-										</ActionIcon>
-									</Menu.Target>
-									<Menu.Dropdown>
-										<Menu.Label>Manage</Menu.Label>
-										<Menu.Item icon={<IconEdit size={16} />}>Edit</Menu.Item>
-										<Menu.Item
-											color="red"
-											icon={<IconTrash size={16} />}
-											onClick={openConfirmDeleteModal}>
-											Delete
-										</Menu.Item>
-									</Menu.Dropdown>
-								</Menu>
-								<Modal
-									opened={confirmDeleteModalOpened}
-									onClose={closeConfirmDeleteModal}
-									title="Confirm Action"
-									centered>
-									<div className="flex flex-col gap-1.5">
-										<p>Are you sure you want to delete this comment?</p>
-										<div className="flex flex-col gap-1">
-											<Button color="green" onClick={deleteComment}>
-												Yes
-											</Button>
-											<Button color="red" onClick={closeConfirmDeleteModal}>
-												No
-											</Button>
+			{commentDeleted && (
+				<Alert
+					className="grow"
+					icon={<IconCheck size="1rem" />}
+					color="dark"
+					variant="filled">
+					Comment deleted successfully
+				</Alert>
+			)}
+			{!commentDeleted && (
+				<div className="flex gap-1.5 py-1 px-1">
+					<Avatar
+						variant="filled"
+						radius="xl"
+						color={author.color}
+						src={author.avatarUrl}
+					/>
+					<div className="flex grow flex-col gap-1.5">
+						<div className="flex justify-between">
+							<div className="flex items-center gap-0.5">
+								<Link href={`/users/${author.accountName}`}>
+									<span className="font-semibold">{author.displayName}</span>
+								</Link>
+								<Link href={`/users/${author.accountName}`}>
+									<span className="text-gray-500 text-sm">{`@${author.accountName}`}</span>
+								</Link>
+								<span>·</span>
+								<span className="text-gray-500 text-sm">{creationDate}</span>
+							</div>
+							{currentUserIsAuthor && (
+								<>
+									<Menu>
+										<Menu.Target>
+											<ActionIcon>
+												<IconDots />
+											</ActionIcon>
+										</Menu.Target>
+										<Menu.Dropdown>
+											<Menu.Label>Manage</Menu.Label>
+											<Menu.Item icon={<IconEdit size={16} />}>Edit</Menu.Item>
+											<Menu.Item
+												color="red"
+												icon={<IconTrash size={16} />}
+												onClick={openConfirmDeleteModal}>
+												Delete
+											</Menu.Item>
+										</Menu.Dropdown>
+									</Menu>
+									<Modal
+										opened={confirmDeleteModalOpened}
+										onClose={closeConfirmDeleteModal}
+										title="Confirm Action"
+										centered>
+										<div className="flex flex-col gap-1.5">
+											<p>Are you sure you want to delete this comment?</p>
+											<div className="flex flex-col gap-1">
+												<Button color="green" onClick={deleteComment}>
+													Yes
+												</Button>
+												<Button color="red" onClick={closeConfirmDeleteModal}>
+													No
+												</Button>
+											</div>
 										</div>
-									</div>
-								</Modal>
-							</>
-						)}
+									</Modal>
+								</>
+							)}
+						</div>
+						<RichTextEditor
+							editor={editor}
+							styles={{
+								root: { border: "none" },
+								content: { "& .ProseMirror": { padding: "0" } },
+							}}>
+							<RichTextEditor.Content />
+						</RichTextEditor>
 					</div>
-					<RichTextEditor
-						editor={editor}
-						styles={{
-							root: { border: "none" },
-							content: { "& .ProseMirror": { padding: "0" } },
-						}}>
-						<RichTextEditor.Content />
-					</RichTextEditor>
 				</div>
-			</div>
+			)}
 		</li>
 	);
 }
