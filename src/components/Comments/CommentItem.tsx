@@ -12,14 +12,15 @@ import {
 import { RichTextEditor } from "@mantine/tiptap";
 import { UserProfile } from "@prisma/client";
 import { IconCheck, IconDots, IconEdit, IconTrash } from "@tabler/icons-react";
-import { Content, useEditor } from "@tiptap/react";
+import { Content, Editor, useEditor } from "@tiptap/react";
 import moment from "moment";
 import Link from "next/link";
 import useSWR from "swr";
 import { CommentEditorExtensions } from "../../../helpers/global-helpers";
 import { useDisclosure } from "@mantine/hooks";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { notifications } from "@mantine/notifications";
+import UpdateComment from "./UpdateComment";
 
 interface CommentItemProps {
 	id: string;
@@ -53,6 +54,9 @@ export default function CommentItem(props: CommentItemProps) {
 		confirmDeleteModalOpened,
 		{ open: openConfirmDeleteModal, close: closeConfirmDeleteModal },
 	] = useDisclosure(false);
+	const [inEditMode, setInEditMode] = useState(false);
+	const [isUpdatingComment, setIsUpdatingComment] = useState(false);
+	const editorContentRef = useRef(editor?.getHTML());
 
 	if (isLoading) {
 		return (
@@ -100,6 +104,25 @@ export default function CommentItem(props: CommentItemProps) {
 				</Alert>
 			</li>
 		);
+	}
+
+	function startEditMode() {
+		editorContentRef.current = editor?.getHTML();
+		editor?.setEditable(true);
+		setInEditMode(true);
+	}
+
+	function stopEditMode() {
+		editor?.setEditable(false);
+		setInEditMode(false);
+	}
+
+	// restore editor content to what it was pre-edit before stopping edit mode
+	function cancelEditMode() {
+		if (editorContentRef.current) {
+			editor?.commands.setContent(editorContentRef.current);
+		}
+		stopEditMode();
 	}
 
 	async function deleteComment() {
@@ -160,11 +183,17 @@ export default function CommentItem(props: CommentItemProps) {
 									</Menu.Target>
 									<Menu.Dropdown>
 										<Menu.Label>Manage</Menu.Label>
-										<Menu.Item icon={<IconEdit size={16} />}>Edit</Menu.Item>
+										<Menu.Item
+											icon={<IconEdit size={16} />}
+											onClick={startEditMode}
+											disabled={inEditMode || isUpdatingComment}>
+											Edit
+										</Menu.Item>
 										<Menu.Item
 											color="red"
 											icon={<IconTrash size={16} />}
-											onClick={openConfirmDeleteModal}>
+											onClick={openConfirmDeleteModal}
+											disabled={inEditMode || isUpdatingComment}>
 											Delete
 										</Menu.Item>
 									</Menu.Dropdown>
@@ -189,14 +218,27 @@ export default function CommentItem(props: CommentItemProps) {
 							</>
 						)}
 					</div>
-					<RichTextEditor
-						editor={editor}
-						styles={{
-							root: { border: "none" },
-							content: { "& .ProseMirror": { padding: "0" } },
-						}}>
-						<RichTextEditor.Content />
-					</RichTextEditor>
+					{inEditMode && (
+						<UpdateComment
+							editor={editor as Editor}
+							commentID={props.id}
+							authorId={commentData.authorId}
+							isUpdating={isUpdatingComment}
+							setIsUpdatingState={setIsUpdatingComment}
+							onUpdate={stopEditMode}
+							cancelUpdate={cancelEditMode}
+						/>
+					)}
+					{!inEditMode && (
+						<RichTextEditor
+							editor={editor}
+							styles={{
+								root: { border: "none" },
+								content: { "& .ProseMirror": { padding: "0" } },
+							}}>
+							<RichTextEditor.Content />
+						</RichTextEditor>
+					)}
 				</div>
 			</div>
 		</li>
