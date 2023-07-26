@@ -7,7 +7,7 @@ import { Dispatch, SetStateAction } from "react";
 interface UpdatePostProps {
 	editor: Editor;
 	postID: string;
-	currentUserID: string;
+	authorId: string;
 	isUpdating: boolean;
 	setIsUpdatingState: Dispatch<SetStateAction<boolean>>;
 	onUpdate?: () => void;
@@ -15,7 +15,7 @@ interface UpdatePostProps {
 }
 
 export default function UpdatePost(props: UpdatePostProps) {
-	const { editor, postID, currentUserID } = props;
+	const { editor, postID, authorId } = props;
 
 	async function updatePost() {
 		const NoPostContent =
@@ -37,7 +37,7 @@ export default function UpdatePost(props: UpdatePostProps) {
 			method: "POST",
 			body: JSON.stringify({
 				id: postID,
-				userID: currentUserID,
+				authorId,
 				content: editor.getJSON(),
 			}),
 		});

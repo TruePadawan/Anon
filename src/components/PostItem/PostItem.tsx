@@ -188,7 +188,7 @@ export default function PostItem(props: PostItemProps) {
 									<UpdatePost
 										editor={editor as Editor}
 										postID={postData.id}
-										currentUserID={currentUser?.id as string}
+										authorId={postData.authorId}
 										isUpdating={isUpdatingPost}
 										setIsUpdatingState={setIsUpdatingPost}
 										onUpdate={stopEditMode}

@@ -16,21 +16,28 @@ export default async function handler(
 		if (!session) {
 			res.status(401).json({ message: "Client not authenticated!" });
 		} else {
-			const newData = JSON.parse(req.body);
-			try {
-				const updatedPost = await prisma.publicPost.update({
-					where: {
-						id: newData.id,
-						authorId: newData.userID,
-					},
-					data: {
-						content: newData.content,
-					},
-				});
-				res.status(200).json(updatedPost);
-			} catch (error: any) {
-				res.status(500).json({
-					message: error.message,
+			const { id, content, authorId } = JSON.parse(req.body);
+			const currentUserIsAuthor = session.user.id === authorId;
+			if (currentUserIsAuthor) {
+				try {
+					const updatedPost = await prisma.publicPost.update({
+						where: {
+							id,
+							authorId: session.user.id,
+						},
+						data: {
+							content,
+						},
+					});
+					res.status(200).json(updatedPost);
+				} catch (error: any) {
+					res.status(500).json({
+						message: error.message,
+					});
+				}
+			} else {
+				res.status(403).json({
+					message: "Current user is not the author",
 				});
 			}
 		}
