@@ -150,14 +150,14 @@ export default function PostItem(props: PostItemProps) {
 													<Menu.Item
 														icon={<IconEdit size={16} />}
 														onClick={startEditMode}
-														disabled={isUpdatingPost}>
+														disabled={inEditMode || isUpdatingPost}>
 														Edit
 													</Menu.Item>
 													<Menu.Item
 														color="red"
 														icon={<IconTrash size={16} />}
 														onClick={openConfirmDeleteModal}
-														disabled={isUpdatingPost}>
+														disabled={inEditMode || isUpdatingPost}>
 														Delete
 													</Menu.Item>
 												</>
