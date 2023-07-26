@@ -11,7 +11,6 @@ interface UpdatePostProps {
 	isUpdating: boolean;
 	setIsUpdatingState: Dispatch<SetStateAction<boolean>>;
 	onUpdate?: () => void;
-	onFailedUpdate?: () => void;
 	cancelUpdate: () => void;
 }
 
@@ -51,9 +50,9 @@ export default function UpdatePost(props: UpdatePostProps) {
 				title: "Failed to update post",
 				message: error.message,
 			});
-			if (props.onFailedUpdate) {
-				props.onFailedUpdate();
-			}
+
+			// run the cancel update callback if the update failed
+			props.cancelUpdate();
 		}
 		props.setIsUpdatingState(false);
 	}

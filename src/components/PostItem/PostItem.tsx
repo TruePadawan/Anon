@@ -192,7 +192,6 @@ export default function PostItem(props: PostItemProps) {
 										isUpdating={isUpdatingPost}
 										setIsUpdatingState={setIsUpdatingPost}
 										onUpdate={stopEditMode}
-										onFailedUpdate={cancelEditMode}
 										cancelUpdate={cancelEditMode}
 									/>
 								)}
