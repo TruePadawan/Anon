@@ -21,6 +21,7 @@ import { useRef, useState } from "react";
 import { notifications } from "@mantine/notifications";
 import UpdatePost from "./UpdatePost";
 import Comments from "../Comments/Comments";
+import { IconArrowsMaximize } from "@tabler/icons-react";
 
 interface PostItemProps {
 	className?: string;
@@ -139,6 +140,7 @@ export default function PostItem(props: PostItemProps) {
 													<Menu.Label>General</Menu.Label>
 													<Menu.Item
 														component={Link}
+														icon={<IconArrowsMaximize size={16} />}
 														href={`/posts/${postData.id}`}>
 														View full post
 													</Menu.Item>
