@@ -14,14 +14,20 @@ import {
 import { PublicPostFull } from "@/types/types";
 import moment from "moment";
 import Link from "next/link";
-import { IconDots, IconCheck, IconEdit, IconTrash } from "@tabler/icons-react";
+import {
+	IconDots,
+	IconCheck,
+	IconEdit,
+	IconTrash,
+	IconArrowsMaximize,
+	IconMessageCircle,
+} from "@tabler/icons-react";
 import { UserProfile } from "@prisma/client";
 import { useDisclosure } from "@mantine/hooks";
 import { useRef, useState } from "react";
 import { notifications } from "@mantine/notifications";
 import UpdatePost from "./UpdatePost";
 import Comments from "../Comments/Comments";
-import { IconArrowsMaximize } from "@tabler/icons-react";
 
 interface PostItemProps {
 	className?: string;
@@ -47,6 +53,9 @@ export default function PostItem(props: PostItemProps) {
 	const [inEditMode, setInEditMode] = useState(false);
 	const [isUpdatingPost, setIsUpdatingPost] = useState(false);
 	const [postDeleted, setPostDeleted] = useState(false);
+	const [commentsAllowed, setCommentsAllowed] = useState(
+		postData.commentsAllowed
+	);
 	const editorContentRef = useRef(editor?.getHTML());
 
 	function startEditMode() {
@@ -86,9 +95,34 @@ export default function PostItem(props: PostItemProps) {
 		closeConfirmDeleteModal();
 	}
 
+	async function toggleComments() {
+		setIsUpdatingPost(true);
+		const response = await fetch(`/api/get-public-post/${postData.id}`);
+		if (response.ok) {
+			const post: PublicPostFull = await response.json();
+			const postResponse = await fetch("/api/update-public-post", {
+				method: "POST",
+				body: JSON.stringify({
+					id: postData.id,
+					authorId: postData.authorId,
+					data: {
+						commentsAllowed: !post.commentsAllowed,
+					},
+				}),
+			});
+			const { commentsAllowed }: PublicPostFull = await postResponse.json();
+			setCommentsAllowed(commentsAllowed);
+		} else {
+			notifications.show({
+				color: "red",
+				title: "Failed to complete action",
+				message: "Could not retrieve post data",
+			});
+		}
+		setIsUpdatingPost(false);
+	}
 	const creationDate = moment(postData.createdAt).fromNow(true);
 	const currentUserIsAuthor = currentUser?.id === author.id;
-	const commentsAllowed = postData.commentsAllowed || currentUserIsAuthor;
 	return (
 		<li className={`flex flex-col gap-4 ${props.className || ""}`}>
 			{postDeleted && (
@@ -149,6 +183,14 @@ export default function PostItem(props: PostItemProps) {
 											{currentUserIsAuthor && (
 												<>
 													<Menu.Label>Manage</Menu.Label>
+													<Menu.Item
+														icon={<IconMessageCircle size={16} />}
+														onClick={toggleComments}
+														disabled={inEditMode || isUpdatingPost}>
+														{commentsAllowed
+															? "Disable comments"
+															: "Enable comments"}
+													</Menu.Item>
 													<Menu.Item
 														icon={<IconEdit size={16} />}
 														onClick={startEditMode}
@@ -213,7 +255,7 @@ export default function PostItem(props: PostItemProps) {
 							<Comments
 								currentUser={currentUser}
 								commentGroupID={postData.id}
-								commentsAllowed={commentsAllowed}
+								commentsAllowed={commentsAllowed || currentUserIsAuthor}
 								showOnlyCommentsCount={!props.full}
 							/>
 						)}
@@ -224,7 +266,7 @@ export default function PostItem(props: PostItemProps) {
 							<Comments
 								currentUser={currentUser}
 								commentGroupID={postData.id}
-								commentsAllowed={commentsAllowed}
+								commentsAllowed={commentsAllowed || currentUserIsAuthor}
 								showOnlyCommentsCount={!props.full}
 							/>
 						</>
