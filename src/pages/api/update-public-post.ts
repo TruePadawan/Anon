@@ -16,7 +16,7 @@ export default async function handler(
 		if (!session) {
 			res.status(401).json({ message: "Client not authenticated!" });
 		} else {
-			const { id, content, authorId } = JSON.parse(req.body);
+			const { id, data, authorId } = JSON.parse(req.body);
 			const currentUserIsAuthor = session.user.id === authorId;
 			if (currentUserIsAuthor) {
 				try {
@@ -25,8 +25,9 @@ export default async function handler(
 							id,
 							authorId: session.user.id,
 						},
-						data: {
-							content,
+						data,
+						include: {
+							author: true,
 						},
 					});
 					res.status(200).json(updatedPost);

@@ -38,7 +38,9 @@ export default function UpdatePost(props: UpdatePostProps) {
 			body: JSON.stringify({
 				id: postID,
 				authorId,
-				content: editor.getJSON(),
+				data: {
+					content: editor.getJSON(),
+				},
 			}),
 		});
 		if (response.ok && props.onUpdate) {
