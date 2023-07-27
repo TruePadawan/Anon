@@ -83,12 +83,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	if (context.params === undefined) throw new Error("No account name in URL");
 
 	const session = await getServerSession(context.req, context.res, authOptions);
-
-	const currentUser = await prisma.userProfile.findUnique({
-		where: {
-			id: session?.user.id,
-		},
-	});
+	let currentUser = null;
+	if (session) {
+		currentUser = await prisma.userProfile.findUnique({
+			where: {
+				id: session.user.id,
+			},
+		});
+	}
 
 	// Get profile data that belongs to what [account-name] resolves to.
 	const accountName = context.params["account-name"] as string;
