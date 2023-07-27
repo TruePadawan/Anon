@@ -60,7 +60,7 @@ export default function CommentItem(props: CommentItemProps) {
 
 	if (isLoading) {
 		return (
-			<div
+			<li
 				className="flex flex-col p-1 rounded-md"
 				style={{ backgroundColor: theme.colors.dark[7] }}>
 				<div className="flex gap-1.5 py-1 px-1">
@@ -70,7 +70,7 @@ export default function CommentItem(props: CommentItemProps) {
 						<Skeleton height={80} />
 					</div>
 				</div>
-			</div>
+			</li>
 		);
 	}
 
