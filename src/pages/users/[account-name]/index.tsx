@@ -10,6 +10,7 @@ import EditProfileInfo from "@/components/ProfileInfo/EditProfileInfo";
 import { useRouter } from "next/router";
 import { prisma } from "../../../../lib/prisma-client";
 import { UserProfile } from "@prisma/client";
+import ProfileLayout from "@/layout/ProfileLayout";
 
 export interface ProfileProps {
 	profile: UserProfile | null;
@@ -43,31 +44,33 @@ const Profile = (props: ProfileProps) => {
 				<title key="title">{`ANON | ${profile.displayName}`}</title>
 			</Head>
 			<Navbar user={navbarUserProp} />
-			<main className="grow flex flex-col gap-4 items-center pt-8">
-				{isEditingProfile && (
-					<EditProfileInfo
-						profileData={profile}
-						onCancel={() => setIsEditingProfile(false)}
-						onUpdate={() =>
-							router.replace("/users").then(() => setIsEditingProfile(false))
-						}
-					/>
-				)}
-				{!isEditingProfile && (
-					<>
-						<ProfileInfo {...profile} />
-						{isEditingAllowed && (
-							<Button
-								type="button"
-								color="gray"
-								onClick={() => setIsEditingProfile(true)}
-								className="max-w-lg w-full">
-								Edit
-							</Button>
-						)}
-					</>
-				)}
-			</main>
+			<ProfileLayout tabValue="/" accountName={profile.accountName}>
+				<main className="grow flex flex-col gap-4 items-center pt-8">
+					{isEditingProfile && (
+						<EditProfileInfo
+							profileData={profile}
+							onCancel={() => setIsEditingProfile(false)}
+							onUpdate={() =>
+								router.replace("/users").then(() => setIsEditingProfile(false))
+							}
+						/>
+					)}
+					{!isEditingProfile && (
+						<>
+							<ProfileInfo {...profile} />
+							{isEditingAllowed && (
+								<Button
+									type="button"
+									color="gray"
+									onClick={() => setIsEditingProfile(true)}
+									className="max-w-lg w-full">
+									Edit
+								</Button>
+							)}
+						</>
+					)}
+				</main>
+			</ProfileLayout>
 		</>
 	);
 };
