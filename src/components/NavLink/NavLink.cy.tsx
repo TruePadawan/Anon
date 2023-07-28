@@ -2,7 +2,7 @@ import NavLink, { NavLinkProps } from "./NavLink";
 
 describe("<NavLink />", () => {
 	const activeLinkProps = {
-		href: "/",
+		href: "/somewhere",
 		disabled: false,
 		active(href: string) {
 			return true;
@@ -72,7 +72,7 @@ describe("<NavLink />", () => {
 				<span>Hello</span>
 			</NavLink>
 		);
-		cy.get(`a[href='${activeLinkProps.href}']`).should(
+		cy.get(`a[href='${inActiveLinkProps.href}']`).should(
 			"not.have.class",
 			"text-white"
 		);

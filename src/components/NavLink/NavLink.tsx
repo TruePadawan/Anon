@@ -27,7 +27,7 @@ export default function NavLink(props: NavLinkProps) {
 									: "hover:text-white"
 							}`}
 							{...otherProps}
-							href="/">
+							href={href}>
 							{children}
 						</Link>
 					</div>
@@ -41,7 +41,7 @@ export default function NavLink(props: NavLinkProps) {
 						disabled ? "pointer-events-none text-gray-500" : "hover:text-white"
 					}`}
 					{...otherProps}
-					href="/">
+					href={href}>
 					{children}
 				</Link>
 			)}
