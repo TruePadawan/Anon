@@ -11,12 +11,12 @@ import { JSONContent } from "@tiptap/react";
 import { PublicPostFull } from "@/types/types";
 import { notifications } from "@mantine/notifications";
 
-interface HomeProps {
+interface PageProps {
 	user: UserProfile | null;
 	publicPosts: PublicPostFull[];
 }
 
-const Home = ({ user, publicPosts }: HomeProps) => {
+const PublicPostsPage = ({ user, publicPosts }: PageProps) => {
 	const [postsData, setPostsData] = useState<PublicPostFull[]>(publicPosts);
 
 	const posts = useMemo(() => {
@@ -83,7 +83,7 @@ const Home = ({ user, publicPosts }: HomeProps) => {
 	);
 };
 
-export const getServerSideProps: GetServerSideProps<HomeProps> = async (
+export const getServerSideProps: GetServerSideProps<PageProps> = async (
 	context
 ) => {
 	const session = await getServerSession(context.req, context.res, authOptions);
@@ -109,4 +109,4 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async (
 	};
 };
 
-export default Home;
+export default PublicPostsPage;
