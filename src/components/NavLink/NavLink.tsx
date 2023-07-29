@@ -17,28 +17,15 @@ export default function NavLink(props: NavLinkProps) {
 		<>
 			{disabled && (
 				<Tooltip.Floating label="You need an account!">
-					<div className="flex-1">
-						<Link
-							className={`flex flex-col items-center gap-1 p-3 bg-primary-color-2 text-accent-color-2-l rounded-md ${
-								linkIsActive ? "text-white" : ""
-							} ${
-								disabled
-									? "pointer-events-none text-gray-500"
-									: "hover:text-white"
-							}`}
-							{...otherProps}
-							href={href}>
-							{children}
-						</Link>
+					<div className="flex-1 flex flex-col items-center gap-1 p-3 bg-primary-color-2 text-gray-500 rounded-md">
+						{children}
 					</div>
 				</Tooltip.Floating>
 			)}
 			{!disabled && (
 				<Link
-					className={`flex flex-col flex-1 items-center gap-1 p-3 bg-primary-color-2 text-accent-color-2-l rounded-md ${
+					className={`flex flex-col flex-1 items-center gap-1 p-3 bg-primary-color-2 text-accent-color-2-l rounded-md hover:text-white ${
 						linkIsActive ? "text-white" : ""
-					} ${
-						disabled ? "pointer-events-none text-gray-500" : "hover:text-white"
 					}`}
 					{...otherProps}
 					href={href}>
