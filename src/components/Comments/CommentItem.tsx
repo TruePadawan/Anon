@@ -11,7 +11,13 @@ import {
 } from "@mantine/core";
 import { RichTextEditor } from "@mantine/tiptap";
 import { UserProfile } from "@prisma/client";
-import { IconCheck, IconDots, IconEdit, IconTrash } from "@tabler/icons-react";
+import {
+	IconCheck,
+	IconDots,
+	IconEdit,
+	IconTrash,
+	IconMessage,
+} from "@tabler/icons-react";
 import { Content, Editor, useEditor } from "@tiptap/react";
 import moment from "moment";
 import Link from "next/link";
@@ -239,6 +245,13 @@ export default function CommentItem(props: CommentItemProps) {
 							<RichTextEditor.Content />
 						</RichTextEditor>
 					)}
+					<Button
+						className="self-end"
+						color="gray"
+						variant="subtle"
+						leftIcon={<IconMessage size={16} />}>
+						Reply
+					</Button>
 				</div>
 			</div>
 		</li>
