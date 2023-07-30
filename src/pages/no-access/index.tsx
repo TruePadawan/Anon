@@ -8,8 +8,8 @@ export default function NoAccess() {
 			<h1 className="text-xl font-semibold">
 				You need to be signed in to access the full site
 			</h1>
-			<Link href="/" className="mt-2 underline">
-				Go Home
+			<Link href="/sign-in" className="mt-2 underline">
+				Sign In
 			</Link>
 		</main>
 	);
