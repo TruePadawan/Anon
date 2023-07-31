@@ -151,7 +151,8 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 					size="md"
 					className="w-full"
 					icon={<IconUpload />}
-					label="Profile picture (<= 1MB)"
+					label="Profile picture"
+					description="The selected file should be no more than 1 megabyte in size"
 					placeholder="Select image"
 					error={imageValidationErrorText}
 					onChange={fileInputChangeHandler}
@@ -162,8 +163,8 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 						accountNameInput.checkingValidity ? <Loader size="sm" /> : undefined
 					}
 					size="md"
-					label="Account name (no whitespace)"
-					pattern="^\S*$"
+					label="Account name"
+					description="Account names are unique and should have no whitespace"
 					value={accountNameInput.inputValue}
 					onChange={accountNameInput.changeEventHandler}
 					error={
