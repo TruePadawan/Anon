@@ -43,6 +43,8 @@ model UserProfile {
   createdAt   Int
   PublicPost  PublicPost[]
   Comment     Comment[]
+  Group       Group[]
+  GroupPost   GroupPost[]
 }
 
 model User {
@@ -65,6 +67,18 @@ model PublicPost {
   createdAt       Int
 }
 
+model GroupPost {
+  id              String      @id @default(auto()) @map("_id") @db.ObjectId
+  content         Json
+  author          UserProfile @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId        String      @db.ObjectId
+  commentsAllowed Boolean     @default(true)
+  createdAt       Int
+  group           Group       @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId         String      @db.ObjectId
+  isApproved      Boolean
+}
+
 model Comment {
   id              String      @id @default(auto()) @map("_id") @db.ObjectId
   commentGroupId  String
@@ -76,4 +90,26 @@ model Comment {
   authorId        String      @db.ObjectId
   createdAt       Int
   editedAt        Int         @default(0)
+}
+
+model Group {
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  admin         UserProfile     @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  adminId       String          @db.ObjectId
+  name          String          @unique
+  desc          String?
+  banner_url    String
+  createdAt     Int
+  GroupSettings GroupSettings[]
+  GroupPost     GroupPost[]
+}
+
+model GroupSettings {
+  id                 String  @id @default(auto()) @map("_id") @db.ObjectId
+  group              Group   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId            String  @db.ObjectId
+  groupJoinId        String
+  isAnonymous        Boolean
+  autoMemberApproval Boolean
+  autoPostApproval   Boolean
 }
