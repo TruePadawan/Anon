@@ -27,8 +27,10 @@ const JoinGroupPage = ({ user }: PageProps) => {
 	const {
 		changeEventHandler,
 		checkingValidity: verifyingID,
+		focusEventHandler,
 		inputValue: groupJoinId,
 		isInputValid: isIdValid,
+		inputWasTouched,
 	} = useInput(validateJoinID);
 	const [formIsValid, setFormIsValid] = useState(() => {
 		return !verifyingID && isIdValid;
@@ -38,6 +40,9 @@ const JoinGroupPage = ({ user }: PageProps) => {
 		setFormIsValid(!verifyingID && isIdValid);
 	}, [verifyingID, isIdValid]);
 
+	const inputIsInvalid = inputWasTouched && !isIdValid;
+	const inputErrorMessage =
+		groupJoinId.length > 0 ? "ID doesn't match a group" : "No ID specified";
 	return (
 		<>
 			<Navbar user={user} />
@@ -48,7 +53,8 @@ const JoinGroupPage = ({ user }: PageProps) => {
 						placeholder="00000000-0000-0000-0000-000000000000"
 						value={groupJoinId}
 						onChange={changeEventHandler}
-						error={!isIdValid ? "ID doesn't match a group" : ""}
+						onFocus={focusEventHandler}
+						error={inputIsInvalid ? inputErrorMessage : ""}
 						size="lg"
 						withAsterisk
 						required
