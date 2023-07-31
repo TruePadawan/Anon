@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 
-export type InputValue = string | number | undefined;
-type InputValidateFn = (value: InputValue) => Promise<boolean>;
+type InputValidateFn = (value: string) => Promise<boolean>;
 interface UseInputOptions {
-	defaultValue?: InputValue;
-	transform?: (value: InputValue) => InputValue;
+	defaultValue?: string;
+	transform?: (value: string) => string;
 }
 /**
     `useInput` hook manages the value of an input element.  
@@ -16,7 +15,7 @@ export default function useInput(
 	options?: UseInputOptions
 ) {
 	const [isInputValid, setIsInputValid] = useState(false);
-	const [inputValue, setInputValue] = useState(options?.defaultValue);
+	const [inputValue, setInputValue] = useState(options?.defaultValue || "");
 	const [checkingValidity, setCheckingValidity] = useState(false);
 
 	// Apply debouncing to validate input value when it changes
