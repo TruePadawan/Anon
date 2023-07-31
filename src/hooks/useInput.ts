@@ -13,10 +13,10 @@ interface UseInputOptions {
 */
 export default function useInput(
 	validate: InputValidateFn,
-	options: UseInputOptions
+	options?: UseInputOptions
 ) {
 	const [isInputValid, setIsInputValid] = useState(false);
-	const [inputValue, setInputValue] = useState(options.defaultValue);
+	const [inputValue, setInputValue] = useState(options?.defaultValue);
 	const [checkingValidity, setCheckingValidity] = useState(false);
 
 	// Apply debouncing to validate input value when it changes
@@ -32,7 +32,7 @@ export default function useInput(
 	}, [inputValue, validate]);
 
 	function changeEventHandler(event: React.ChangeEvent<HTMLInputElement>) {
-		if (options.transform) {
+		if (options?.transform) {
 			setInputValue(options.transform(event.target.value));
 		} else {
 			setInputValue(event.target.value);
