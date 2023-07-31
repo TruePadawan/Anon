@@ -57,12 +57,11 @@ export default function CommentItem(props: CommentItemProps) {
 	const [inEditMode, setInEditMode] = useState(false);
 	const [isUpdatingComment, setIsUpdatingComment] = useState(false);
 	const editorContentRef = useRef(editor?.getHTML());
+	const listItemStyles = { backgroundColor: theme.colors.dark[6] };
 
 	if (isLoading) {
 		return (
-			<li
-				className="flex flex-col p-1 rounded-md"
-				style={{ backgroundColor: theme.colors.dark[7] }}>
+			<li className="flex flex-col p-1 rounded-md" style={listItemStyles}>
 				<div className="flex gap-1.5 py-1 px-1">
 					<Skeleton circle height={40} />
 					<div className="flex grow flex-col gap-1.5">
@@ -76,9 +75,7 @@ export default function CommentItem(props: CommentItemProps) {
 
 	if (commentDeleted) {
 		return (
-			<li
-				className="flex flex-col p-1 rounded-md"
-				style={{ backgroundColor: theme.colors.dark[7] }}>
+			<li className="flex flex-col p-1 rounded-md" style={listItemStyles}>
 				<Alert
 					className="grow"
 					icon={<IconCheck size="1rem" />}
@@ -92,9 +89,7 @@ export default function CommentItem(props: CommentItemProps) {
 
 	if (error || !commentData) {
 		return (
-			<li
-				className="flex flex-col p-1 rounded-md"
-				style={{ backgroundColor: theme.colors.dark[7] }}>
+			<li className="flex flex-col p-1 rounded-md" style={listItemStyles}>
 				<Alert
 					className="grow"
 					icon={<IconCheck size="1rem" />}
@@ -151,9 +146,7 @@ export default function CommentItem(props: CommentItemProps) {
 	const currentUserIsAuthor = props.currentUser?.id === author.id;
 	const creationDate = moment(commentData.createdAt).fromNow(true);
 	return (
-		<li
-			className="flex flex-col p-1 rounded-md"
-			style={{ backgroundColor: theme.colors.dark[7] }}>
+		<li className="flex flex-col p-1 rounded-md" style={listItemStyles}>
 			<div className="flex gap-1.5 py-1 px-1">
 				<Avatar
 					variant="filled"
@@ -234,7 +227,11 @@ export default function CommentItem(props: CommentItemProps) {
 							editor={editor}
 							styles={{
 								root: { border: "none" },
-								content: { "& .ProseMirror": { padding: "0" } },
+								content: {
+									backgroundColor: listItemStyles.backgroundColor,
+									fontSize: "0.9rem",
+									"& .ProseMirror": { padding: "0" },
+								},
 							}}>
 							<RichTextEditor.Content />
 						</RichTextEditor>
