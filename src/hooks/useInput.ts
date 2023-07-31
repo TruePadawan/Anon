@@ -15,6 +15,7 @@ export default function useInput(
 	options?: UseInputOptions
 ) {
 	const [isInputValid, setIsInputValid] = useState(false);
+	const [inputWasTouched, setInputWasTouched] = useState(false);
 	const [inputValue, setInputValue] = useState(options?.defaultValue || "");
 	const [checkingValidity, setCheckingValidity] = useState(false);
 
@@ -38,10 +39,16 @@ export default function useInput(
 		}
 	}
 
+	function focusEventHandler(event: React.ChangeEvent<HTMLInputElement>) {
+		setInputWasTouched(true);
+	}
+
 	return {
 		inputValue,
 		isInputValid,
+		inputWasTouched,
 		changeEventHandler,
+		focusEventHandler,
 		checkingValidity,
 	};
 }
