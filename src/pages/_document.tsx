@@ -4,16 +4,7 @@ export default function Document() {
 	return (
 		<Html lang="en">
 			<Head>
-				<link
-					href="/favicon-light.png"
-					rel="icon"
-					media="(prefers-color-scheme: dark)"
-				/>
-				<link
-					href="/favicon-dark.png"
-					rel="icon"
-					media="(prefers-color-scheme: light)"
-				/>
+				<link href="/favicon.png" rel="icon" />
 				<link rel="preconnect" href="https://fonts.googleapis.com" />
 				<link rel="preconnect" href="https://fonts.gstatic.com" />
 				<link
