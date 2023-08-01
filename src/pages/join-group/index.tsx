@@ -6,21 +6,20 @@ import { authOptions } from "../../../lib/auth";
 import { prisma } from "../../../lib/prisma-client";
 import { Button, TextInput } from "@mantine/core";
 import useInput from "@/hooks/useInput";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface PageProps {
 	user: UserProfile | null;
 }
 
 const validateJoinID = async (id: string) => {
-	// const response = await fetch("/api/validate-join-id", {
-	// 	method: "POST",
-	// 	body: JSON.stringify({
-	// 		id,
-	// 	}),
-	// });
-	// return response.ok;
-	return false;
+	const response = await fetch("/api/validate-join-id", {
+		method: "POST",
+		body: JSON.stringify({
+			id,
+		}),
+	});
+	return response.ok;
 };
 
 const JoinGroupPage = ({ user }: PageProps) => {
@@ -40,14 +39,20 @@ const JoinGroupPage = ({ user }: PageProps) => {
 		setFormIsValid(!verifyingID && isIdValid);
 	}, [verifyingID, isIdValid]);
 
-	const inputIsInvalid = inputWasTouched && !isIdValid;
+	function formSubmitHandler(event: React.FormEvent) {
+		event.preventDefault();
+	}
+
+	const inputIsInvalid = inputWasTouched && !verifyingID && !isIdValid;
 	const inputErrorMessage =
 		groupJoinId.length > 0 ? "ID doesn't match a group" : "No ID specified";
 	return (
 		<>
 			<Navbar user={user} />
 			<main className="grow flex items-center justify-center">
-				<form className="flex flex-col gap-3 max-w-md w-full">
+				<form
+					className="flex flex-col gap-3 max-w-md w-full"
+					onSubmit={formSubmitHandler}>
 					<TextInput
 						label="Join ID"
 						placeholder="00000000-0000-0000-0000-000000000000"
