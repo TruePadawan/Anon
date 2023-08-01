@@ -9,6 +9,7 @@ import {
 } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
 import NavLink from "../NavLink/NavLink";
+import useUser from "@/hooks/useUser";
 
 export interface NavbarUserProp {
 	displayName: string;
@@ -20,8 +21,9 @@ interface NavbarProps {
 	toIndex?: boolean;
 }
 
-export default function Navbar({ user, toIndex }: NavbarProps) {
+export default function Navbar({ toIndex }: NavbarProps) {
 	const router = useRouter();
+	const { user, isLoading, mutate } = useUser();
 
 	function routeToProfile() {
 		router.push(`/users/${user?.accountName}`);
@@ -30,6 +32,8 @@ export default function Navbar({ user, toIndex }: NavbarProps) {
 	async function handleSignout() {
 		try {
 			const { url } = await signOut({ redirect: false, callbackUrl: "/" });
+			// revalidate profile data
+			mutate();
 			router.push(url);
 		} catch (error: any) {
 			notifications.show({
@@ -44,20 +48,21 @@ export default function Navbar({ user, toIndex }: NavbarProps) {
 		return router.pathname === href;
 	}
 
+	const hasUser = !isLoading && user;
 	return (
 		<nav className="flex flex-col items-stretch gap-4">
 			<div className="flex justify-between items-center">
 				<h1 className="font-extrabold text-5xl">
 					<Link href="/">ANON</Link>
 				</h1>
-				{user && (
+				{hasUser && (
 					<ProfileMenu
 						displayName={user.displayName}
 						onProfileMenuItemClicked={routeToProfile}
 						onSignoutMenuItemClicked={handleSignout}
 					/>
 				)}
-				{!user && (
+				{!hasUser && (
 					<Link
 						href={toIndex ? "/" : "/sign-in"}
 						className="text-lg font-semibold hover:text-accent-color-1">
