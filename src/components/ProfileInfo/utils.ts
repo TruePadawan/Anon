@@ -1,7 +1,5 @@
-import { InputValue } from "@/hooks/useInput";
-
 // Account name is valid if it's unique in database
-export async function validateAccountName(value: InputValue) {
+export async function validateAccountName(value: string) {
 	if (!value) return false;
 	const response = await fetch(
 		`/api/validate-account-name?accountName=${value}`
