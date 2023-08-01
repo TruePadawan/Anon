@@ -1,8 +1,7 @@
 import { Tooltip } from "@mantine/core";
 import Link from "next/link";
 
-export interface NavLinkProps
-	extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+export interface NavLinkProps {
 	href: string;
 	disabled: boolean;
 	active: (href: string) => boolean;
@@ -17,7 +16,9 @@ export default function NavLink(props: NavLinkProps) {
 		<>
 			{disabled && (
 				<Tooltip.Floating label="You need an account!">
-					<div className="flex-1 flex flex-col items-center gap-1 p-3 bg-primary-color-2 text-gray-500 rounded-md">
+					<div
+						className="flex-1 flex flex-col items-center gap-1 p-3 bg-primary-color-2 text-gray-500 rounded-md"
+						{...otherProps}>
 						{children}
 					</div>
 				</Tooltip.Floating>
