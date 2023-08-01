@@ -41,7 +41,7 @@ export default function Navbar({ user, toIndex }: NavbarProps) {
 	}
 
 	function getNavLinkActiveStatus(href: string) {
-		return router.pathname.startsWith(href);
+		return router.pathname === href;
 	}
 
 	return (
