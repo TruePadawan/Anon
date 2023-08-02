@@ -36,7 +36,7 @@ const GroupsPage = (props: PageProps) => {
 						sx={{ background: theme.colors.gray[8], color: "white" }}
 						variant="light"
 						component={Link}
-						href="/groups/new">
+						href="/groups/create">
 						Create a group
 					</Button>
 				</div>
