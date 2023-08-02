@@ -28,12 +28,14 @@ import { notifications } from "@mantine/notifications";
 import UpdatePost from "./UpdatePost";
 import Comments from "../Comments/Comments";
 import useUser from "@/hooks/useUser";
+import CommentsCount from "../Comments/CommentsCount";
 
 interface PostItemProps {
 	className?: string;
 	postData: PublicPostFull;
 	postType: "public" | "group";
 	full: boolean;
+	showCommentsCount?: boolean;
 }
 
 export default function PostItem(props: PostItemProps) {
@@ -250,12 +252,8 @@ export default function PostItem(props: PostItemProps) {
 						)}
 					</div>
 				</div>
-				{!props.full && (
-					<Comments
-						commentGroupID={postData.id}
-						commentsAllowed={commentsAllowed || currentUserIsAuthor}
-						showOnlyCommentsCount={!props.full}
-					/>
+				{props.showCommentsCount && (
+					<CommentsCount commentGroupId={postData.id} />
 				)}
 			</div>
 			{props.full && (

@@ -25,6 +25,7 @@ const PublicPostsPage = ({ publicPosts }: PageProps) => {
 					postData={post}
 					postType="public"
 					full={false}
+					showCommentsCount
 				/>
 			);
 		});
