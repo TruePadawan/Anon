@@ -38,10 +38,6 @@ export default function Navbar({ toIndex }: NavbarProps) {
 		}
 	}
 
-	function getNavLinkActiveStatus(href: string) {
-		return router.pathname === href;
-	}
-
 	const hasUser = !isLoading && user;
 	return (
 		<nav className="flex flex-col items-stretch gap-4">
@@ -68,7 +64,9 @@ export default function Navbar({ toIndex }: NavbarProps) {
 				<NavLink
 					href="/"
 					disabled={false}
-					active={getNavLinkActiveStatus}
+					active={(href: string) =>
+						router.pathname === "/" || router.pathname.includes("posts")
+					}
 					data-cy="home-page-link">
 					<IconListDetails size={35} />
 					<span className="font-semibold text-inherit">Public Posts</span>
@@ -76,7 +74,7 @@ export default function Navbar({ toIndex }: NavbarProps) {
 				<NavLink
 					href="/groups"
 					disabled={!user}
-					active={getNavLinkActiveStatus}
+					active={(href: string) => router.pathname.includes("groups")}
 					data-cy="groups-page-link">
 					<IconUsersGroup size={35} />
 					<span className="font-semibold text-inherit">Groups</span>
@@ -84,7 +82,7 @@ export default function Navbar({ toIndex }: NavbarProps) {
 				<NavLink
 					href="/join-group"
 					disabled={!user}
-					active={getNavLinkActiveStatus}
+					active={(href: string) => router.pathname.includes("join-group")}
 					data-cy="join-group-page-link">
 					<IconUsersPlus size={35} />
 					<span className="font-semibold text-inherit">Join Group</span>
