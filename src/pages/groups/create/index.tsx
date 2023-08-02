@@ -14,7 +14,9 @@ export default function CreateGroupPage() {
 		<>
 			<Navbar />
 			<main className="flex justify-center">
-				<form aria-labelledby="form-header" className="max-w-lg w-full">
+				<form
+					aria-labelledby="form-header"
+					className="max-w-lg w-full flex flex-col gap-4">
 					<h2 id="form-header" className="text-4xl text-center">
 						Create a group
 					</h2>
@@ -77,7 +79,7 @@ export default function CreateGroupPage() {
 							</Group>
 						</Radio.Group>
 					</div>
-					<Button type="submit" color="gray" className="w-full mt-4">
+					<Button type="submit" color="gray" className="w-full" size="md">
 						Create
 					</Button>
 				</form>
