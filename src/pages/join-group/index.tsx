@@ -1,16 +1,10 @@
 import Navbar from "@/components/Navbar/Navbar";
 import { GetServerSideProps } from "next";
-import { getServerSession } from "next-auth";
-import { UserProfile } from "@prisma/client";
-import { authOptions } from "../../../lib/auth";
-import { prisma } from "../../../lib/prisma-client";
 import { Button, TextInput } from "@mantine/core";
 import useInput from "@/hooks/useInput";
 import React, { useEffect, useState } from "react";
 
-interface PageProps {
-	user: UserProfile | null;
-}
+interface PageProps {}
 
 const validateJoinID = async (id: string) => {
 	const response = await fetch("/api/validate-join-id", {
@@ -22,7 +16,7 @@ const validateJoinID = async (id: string) => {
 	return response.ok;
 };
 
-const JoinGroupPage = ({ user }: PageProps) => {
+const JoinGroupPage = (props: PageProps) => {
 	const {
 		changeEventHandler,
 		checkingValidity: verifyingID,
@@ -82,21 +76,8 @@ const JoinGroupPage = ({ user }: PageProps) => {
 export const getServerSideProps: GetServerSideProps<PageProps> = async (
 	context
 ) => {
-	const session = await getServerSession(context.req, context.res, authOptions);
-
-	if (session) {
-		// get current signed in user
-		const user = await prisma.userProfile.findUnique({
-			where: {
-				id: session.user.id,
-			},
-		});
-		return {
-			props: { user },
-		};
-	}
 	return {
-		props: { user: null },
+		props: {},
 	};
 };
 

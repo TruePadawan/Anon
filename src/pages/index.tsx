@@ -1,22 +1,20 @@
 import Navbar from "@/components/Navbar/Navbar";
-import { authOptions } from "../../lib/auth";
 import { GetServerSideProps } from "next";
-import { getServerSession } from "next-auth";
 import { prisma } from "../../lib/prisma-client";
 import { useMemo, useState } from "react";
-import { UserProfile } from "@prisma/client";
 import PostItem from "@/components/PostItem/PostItem";
 import CreatePost from "@/components/CreatePost/CreatePost";
 import { JSONContent } from "@tiptap/react";
 import { PublicPostFull } from "@/types/types";
 import { notifications } from "@mantine/notifications";
+import useUser from "@/hooks/useUser";
 
 interface PageProps {
-	user: UserProfile | null;
 	publicPosts: PublicPostFull[];
 }
 
-const PublicPostsPage = ({ user, publicPosts }: PageProps) => {
+const PublicPostsPage = ({ publicPosts }: PageProps) => {
+	const { user } = useUser();
 	const [postsData, setPostsData] = useState<PublicPostFull[]>(publicPosts);
 
 	const posts = useMemo(() => {
@@ -85,26 +83,15 @@ const PublicPostsPage = ({ user, publicPosts }: PageProps) => {
 export const getServerSideProps: GetServerSideProps<PageProps> = async (
 	context
 ) => {
-	const session = await getServerSession(context.req, context.res, authOptions);
 	const publicPosts = await prisma.publicPost.findMany({
 		include: { author: true },
 		orderBy: {
 			createdAt: "desc",
 		},
 	});
-	if (session) {
-		// get current signed in user
-		const user = await prisma.userProfile.findUnique({
-			where: {
-				id: session.user.id,
-			},
-		});
-		return {
-			props: { user, publicPosts },
-		};
-	}
+
 	return {
-		props: { user: null, publicPosts },
+		props: { publicPosts },
 	};
 };
 

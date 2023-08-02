@@ -1,17 +1,11 @@
 import Navbar from "@/components/Navbar/Navbar";
 import { GetServerSideProps } from "next";
-import { getServerSession } from "next-auth";
-import { UserProfile } from "@prisma/client";
-import { authOptions } from "../../../lib/auth";
-import { prisma } from "../../../lib/prisma-client";
 import { Button, TextInput, useMantineTheme } from "@mantine/core";
 import Link from "next/link";
 
-interface PageProps {
-	user: UserProfile | null;
-}
+interface PageProps {}
 
-const GroupsPage = ({ user }: PageProps) => {
+const GroupsPage = (props: PageProps) => {
 	const theme = useMantineTheme();
 	function formSubmitHandler(event: React.FormEvent) {
 		event.preventDefault();
@@ -54,21 +48,8 @@ const GroupsPage = ({ user }: PageProps) => {
 export const getServerSideProps: GetServerSideProps<PageProps> = async (
 	context
 ) => {
-	const session = await getServerSession(context.req, context.res, authOptions);
-
-	if (session) {
-		// get current signed in user
-		const user = await prisma.userProfile.findUnique({
-			where: {
-				id: session.user.id,
-			},
-		});
-		return {
-			props: { user },
-		};
-	}
 	return {
-		props: { user: null },
+		props: {},
 	};
 };
 

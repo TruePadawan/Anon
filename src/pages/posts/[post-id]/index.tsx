@@ -1,19 +1,15 @@
 import Navbar from "@/components/Navbar/Navbar";
 import { GetServerSideProps } from "next";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../../../lib/auth";
 import { prisma } from "../../../../lib/prisma-client";
-import { UserProfile } from "@prisma/client";
 import { PublicPostFull } from "@/types/types";
 import { IconError404 } from "@tabler/icons-react";
 import PostItem from "@/components/PostItem/PostItem";
 
-interface PostProps {
-	user: UserProfile | null;
+interface PageProps {
 	post: PublicPostFull | null;
 }
-const Post = (props: PostProps) => {
-	const { user, post } = props;
+const Post = (props: PageProps) => {
+	const { post } = props;
 	return (
 		<>
 			<Navbar />
@@ -28,7 +24,6 @@ const Post = (props: PostProps) => {
 					<PostItem
 						className="max-w-4xl w-full"
 						postData={post}
-						currentUser={user}
 						postType="public"
 						full={true}
 					/>
@@ -38,7 +33,7 @@ const Post = (props: PostProps) => {
 	);
 };
 
-export const getServerSideProps: GetServerSideProps<PostProps> = async (
+export const getServerSideProps: GetServerSideProps<PageProps> = async (
 	context
 ) => {
 	if (!context.params) {
@@ -50,7 +45,6 @@ export const getServerSideProps: GetServerSideProps<PostProps> = async (
 		};
 	}
 
-	const session = await getServerSession(context.req, context.res, authOptions);
 	// query db for post data
 	const postID = context.params["post-id"] as string;
 	const post = await prisma.publicPost.findUnique({
@@ -62,20 +56,8 @@ export const getServerSideProps: GetServerSideProps<PostProps> = async (
 		},
 	});
 
-	if (session) {
-		// get current signed in user
-		const user = await prisma.userProfile.findUnique({
-			where: {
-				id: session.user.id,
-			},
-		});
-
-		return {
-			props: { user, post },
-		};
-	}
 	return {
-		props: { user: null, post },
+		props: { post },
 	};
 };
 
