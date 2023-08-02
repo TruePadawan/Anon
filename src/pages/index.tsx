@@ -25,13 +25,12 @@ const PublicPostsPage = ({ user, publicPosts }: PageProps) => {
 				<PostItem
 					key={post.id}
 					postData={post}
-					currentUser={user}
 					postType="public"
 					full={false}
 				/>
 			);
 		});
-	}, [postsData, user]);
+	}, [postsData]);
 
 	async function handlePostSubmit(
 		content: JSONContent,

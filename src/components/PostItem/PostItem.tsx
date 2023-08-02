@@ -22,28 +22,28 @@ import {
 	IconArrowsMaximize,
 	IconMessageCircle,
 } from "@tabler/icons-react";
-import { UserProfile } from "@prisma/client";
 import { useDisclosure } from "@mantine/hooks";
 import { useRef, useState } from "react";
 import { notifications } from "@mantine/notifications";
 import UpdatePost from "./UpdatePost";
 import Comments from "../Comments/Comments";
+import useUser from "@/hooks/useUser";
 
 interface PostItemProps {
 	className?: string;
 	postData: PublicPostFull;
-	currentUser: UserProfile | null;
 	postType: "public" | "group";
 	full: boolean;
 }
 
 export default function PostItem(props: PostItemProps) {
+	const { user: currentUser } = useUser();
 	const [
 		confirmDeleteModalOpened,
 		{ open: openConfirmDeleteModal, close: closeConfirmDeleteModal },
 	] = useDisclosure(false);
 	const theme = useMantineTheme();
-	const { postData, currentUser, postType } = props;
+	const { postData, postType } = props;
 	const { author } = postData;
 	const editor = useEditor({
 		editable: false,
@@ -253,7 +253,6 @@ export default function PostItem(props: PostItemProps) {
 						</div>
 						{!props.full && (
 							<Comments
-								currentUser={currentUser}
 								commentGroupID={postData.id}
 								commentsAllowed={commentsAllowed || currentUserIsAuthor}
 								showOnlyCommentsCount={!props.full}
@@ -264,7 +263,6 @@ export default function PostItem(props: PostItemProps) {
 						<>
 							<Divider label="Comments" labelPosition="center" />
 							<Comments
-								currentUser={currentUser}
 								commentGroupID={postData.id}
 								commentsAllowed={commentsAllowed || currentUserIsAuthor}
 								showOnlyCommentsCount={!props.full}

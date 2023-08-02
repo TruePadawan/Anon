@@ -10,7 +10,6 @@ import {
 	Alert,
 } from "@mantine/core";
 import { RichTextEditor } from "@mantine/tiptap";
-import { UserProfile } from "@prisma/client";
 import { IconCheck, IconDots, IconEdit, IconTrash } from "@tabler/icons-react";
 import { Content, Editor, useEditor } from "@tiptap/react";
 import moment from "moment";
@@ -21,10 +20,10 @@ import { useDisclosure } from "@mantine/hooks";
 import { useRef, useState } from "react";
 import { notifications } from "@mantine/notifications";
 import UpdateComment from "./UpdateComment";
+import useUser from "@/hooks/useUser";
 
 interface CommentItemProps {
 	id: string;
-	currentUser: UserProfile | null;
 	className?: string;
 }
 
@@ -39,6 +38,7 @@ const fetcher = async (key: string): Promise<CommentFull> => {
 };
 
 export default function CommentItem(props: CommentItemProps) {
+	const { user: currentUser } = useUser();
 	const [commentDeleted, setCommentDeleted] = useState(false);
 	const theme = useMantineTheme();
 	const {
@@ -143,7 +143,7 @@ export default function CommentItem(props: CommentItemProps) {
 	}
 
 	const { author } = commentData;
-	const currentUserIsAuthor = props.currentUser?.id === author.id;
+	const currentUserIsAuthor = currentUser?.id === author.id;
 	const creationDate = moment(commentData.createdAt).fromNow(true);
 	return (
 		<li className="flex flex-col p-1 rounded-md" style={listItemStyles}>

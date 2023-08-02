@@ -3,14 +3,13 @@ import { CommentEditorExtensions } from "../../../helpers/global-helpers";
 import CommentEditor from "../Editor/CommentEditor";
 import { useMemo, useState, useEffect } from "react";
 import CommentItem from "./CommentItem";
-import { UserProfile } from "@prisma/client";
 import { Button, Loader } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import useSWRInfinite from "swr/infinite";
+import useUser from "@/hooks/useUser";
 
 interface CommentsProps {
 	commentGroupID: string;
-	currentUser: UserProfile | null;
 	commentsAllowed: boolean;
 	commentsPerRequest?: number;
 	showOnlyCommentsCount?: boolean;
@@ -30,13 +29,14 @@ const fetcher = async (key: string): Promise<CommentID[]> => {
 };
 
 export default function Comments(props: CommentsProps) {
+	const { user: currentUser } = useUser();
 	const editor = useEditor({
 		extensions: CommentEditorExtensions,
 	});
 	const [commentIDs, setCommentIDs] = useState<CommentID[]>([]);
 	const [creatingComment, setCreatingComment] = useState(false);
 	const [noMoreComments, setNoMoreComments] = useState(false);
-	const { commentGroupID, currentUser, commentsPerRequest = 20 } = props;
+	const { commentGroupID, commentsPerRequest = 20 } = props;
 
 	// use swr to fetch for comments
 	const { data, isLoading, isValidating, error, setSize } = useSWRInfinite(
@@ -60,15 +60,13 @@ export default function Comments(props: CommentsProps) {
 	}, [isLoading, data]);
 
 	const comments = useMemo(() => {
-		return commentIDs.map(({ id }) => (
-			<CommentItem key={id} id={id} currentUser={props.currentUser} />
-		));
-	}, [commentIDs, props.currentUser]);
+		return commentIDs.map(({ id }) => <CommentItem key={id} id={id} />);
+	}, [commentIDs]);
 
 	function getCommentObject() {
 		if (editor === null) {
 			throw new Error("Failed to initialize editor");
-		} else if (props.currentUser === null) {
+		} else if (!currentUser) {
 			throw new Error("Unsigned user can't make comments");
 		}
 
@@ -81,7 +79,7 @@ export default function Comments(props: CommentsProps) {
 		return {
 			commentGroupId: commentGroupID,
 			content: editor.getJSON(),
-			authorId: props.currentUser.id,
+			authorId: currentUser.id,
 			createdAt: Date.now(),
 		};
 	}
