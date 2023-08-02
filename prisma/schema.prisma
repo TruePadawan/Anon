@@ -98,7 +98,7 @@ model Group {
   adminId       String          @db.ObjectId
   name          String          @unique
   desc          String?
-  banner_url    String
+  banner_url    String?
   createdAt     Int
   GroupSettings GroupSettings[]
   GroupPost     GroupPost[]
