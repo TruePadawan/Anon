@@ -16,7 +16,7 @@ const Post = (props: PostProps) => {
 	const { user, post } = props;
 	return (
 		<>
-			<Navbar user={user} />
+			<Navbar />
 			{!post && (
 				<main className="flex flex-col justify-center items-center grow">
 					<IconError404 size="10rem" />

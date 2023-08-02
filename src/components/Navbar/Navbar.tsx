@@ -11,13 +11,7 @@ import { notifications } from "@mantine/notifications";
 import NavLink from "../NavLink/NavLink";
 import useUser from "@/hooks/useUser";
 
-export interface NavbarUserProp {
-	displayName: string;
-	accountName: string;
-}
-
 interface NavbarProps {
-	user?: NavbarUserProp | null;
 	toIndex?: boolean;
 }
 

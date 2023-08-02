@@ -48,7 +48,7 @@ const JoinGroupPage = ({ user }: PageProps) => {
 		groupJoinId.length > 0 ? "ID doesn't match a group" : "No ID specified";
 	return (
 		<>
-			<Navbar user={user} />
+			<Navbar />
 			<main className="grow flex items-center justify-center">
 				<form
 					className="flex flex-col gap-3 max-w-md w-full"

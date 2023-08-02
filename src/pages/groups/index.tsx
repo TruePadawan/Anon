@@ -6,7 +6,6 @@ import { authOptions } from "../../../lib/auth";
 import { prisma } from "../../../lib/prisma-client";
 import { Button, TextInput, useMantineTheme } from "@mantine/core";
 import Link from "next/link";
-import { IconPlus } from "@tabler/icons-react";
 
 interface PageProps {
 	user: UserProfile | null;
@@ -20,7 +19,7 @@ const GroupsPage = ({ user }: PageProps) => {
 
 	return (
 		<>
-			<Navbar user={user} />
+			<Navbar />
 			<main className="grow flex flex-col">
 				<div className="flex justify-between">
 					<form

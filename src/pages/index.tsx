@@ -65,7 +65,7 @@ const PublicPostsPage = ({ user, publicPosts }: PageProps) => {
 
 	return (
 		<>
-			<Navbar user={user} />
+			<Navbar />
 			<main className="grow flex flex-col gap-3 items-center">
 				{user && (
 					<CreatePost

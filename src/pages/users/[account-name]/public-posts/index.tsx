@@ -8,7 +8,7 @@ import { authOptions } from "../../../../../lib/auth";
 import useSWR from "swr";
 import { PublicPostFull } from "@/types/types";
 import PostItem from "@/components/PostItem/PostItem";
-import { Loader, Skeleton } from "@mantine/core";
+import { Loader } from "@mantine/core";
 import { UserProfile } from "@prisma/client";
 
 interface PublicPostsSectionProps {
@@ -42,7 +42,7 @@ const PublicPostsSection = (props: PublicPostsSectionProps) => {
 				<Head>
 					<title key="title">ANON | Profile Not Found</title>
 				</Head>
-				<Navbar user={currentUser} />
+				<Navbar />
 				<div className="flex items-center justify-center">
 					<h2>Profile Not Found</h2>
 				</div>
@@ -66,7 +66,7 @@ const PublicPostsSection = (props: PublicPostsSectionProps) => {
 			<Head>
 				<title key="title">{`ANON | ${profile.displayName}`}</title>
 			</Head>
-			<Navbar user={currentUser} />
+			<Navbar />
 			<ProfileLayout tabValue="/public-posts" accountName={profile.accountName}>
 				<main className="grow flex flex-col gap-4 items-center pt-8 h-full">
 					{isLoading && (
