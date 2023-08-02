@@ -11,6 +11,7 @@ import { UploadApiOptions } from "cloudinary";
 import { IconUpload } from "@tabler/icons-react";
 import { UserProfile } from "@prisma/client";
 import { notifications } from "@mantine/notifications";
+import { useSWRConfig } from "swr";
 
 interface EditProfileInfoProps {
 	profileData: UserProfile;
@@ -19,6 +20,7 @@ interface EditProfileInfoProps {
 }
 
 const EditProfileInfo = (props: EditProfileInfoProps) => {
+	const { mutate } = useSWRConfig();
 	const [formIsValid, setFormIsValid] = useState(false);
 	const [displayName, setDisplayName] = useState(props.profileData.displayName);
 	const [isUpdating, setIsUpdating] = useState(false);
@@ -91,6 +93,7 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 			if (response.ok && props.onUpdate) {
 				// after update
 				props.onUpdate();
+				mutate("/api/get-user-profile");
 			} else if (!response.ok) {
 				// handle failed update
 				const error = await response.json();
