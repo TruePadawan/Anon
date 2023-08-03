@@ -93,23 +93,24 @@ model Comment {
 }
 
 model Group {
-  id            String          @id @default(auto()) @map("_id") @db.ObjectId
-  admin         UserProfile     @relation(fields: [adminId], references: [id], onDelete: Cascade)
-  adminId       String          @db.ObjectId
-  name          String          @unique
-  desc          String?
-  banner_url    String?
-  createdAt     Int
-  GroupSettings GroupSettings[]
-  GroupPost     GroupPost[]
+  id         String        @id @default(auto()) @map("_id") @db.ObjectId
+  admin      UserProfile   @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  adminId    String        @db.ObjectId
+  name       String        @unique
+  desc       String?
+  banner_url String?
+  createdAt  Int
+  // a group MUST have a referenced group settings document which can't be deleted while the group exists
+  settings   GroupSettings @relation(fields: [settingsId], references: [id], onDelete: Restrict)
+  GroupPost  GroupPost[]
+  settingsId String        @unique @db.ObjectId
 }
 
 model GroupSettings {
   id                 String  @id @default(auto()) @map("_id") @db.ObjectId
-  group              Group   @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  groupId            String  @db.ObjectId
-  groupJoinId        String  @unique
+  groupJoinId        String  @unique @default(uuid())
   isAnonymous        Boolean
   autoMemberApproval Boolean
   autoPostApproval   Boolean
+  Group              Group?
 }
