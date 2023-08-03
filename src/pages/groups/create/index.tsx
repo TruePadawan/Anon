@@ -1,13 +1,5 @@
 import Navbar from "@/components/Navbar/Navbar";
-import {
-	Button,
-	FileInput,
-	Group,
-	Radio,
-	TextInput,
-	Textarea,
-} from "@mantine/core";
-import { IconUpload } from "@tabler/icons-react";
+import { Button, Group, Radio, TextInput, Textarea } from "@mantine/core";
 
 export default function CreateGroupPage() {
 	return (
@@ -23,24 +15,17 @@ export default function CreateGroupPage() {
 					<div className="flex flex-col gap-2">
 						<TextInput
 							label="Name"
-							placeholder="Earth_1"
+							placeholder="EARTH_1"
 							size="md"
 							withAsterisk
 							required
 						/>
 						<Textarea
 							label="Description"
-							placeholder="This group is for humans currently inhabiting earth_1"
+							placeholder="This group is for humans currently inhabiting EARTH_1"
 							size="md"
 							minRows={2}
 							autosize
-						/>
-						<FileInput
-							label="Banner image"
-							description="Image must be less than 1MB"
-							placeholder="Select image"
-							size="md"
-							icon={<IconUpload size={16} />}
 						/>
 						<Radio.Group
 							name="group-type"
