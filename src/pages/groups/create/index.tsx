@@ -12,7 +12,7 @@ export default function CreateGroupPage() {
 					<h2 id="form-header" className="text-4xl text-center">
 						Create a group
 					</h2>
-					<div className="flex flex-col gap-2">
+					<div className="flex flex-col gap-4">
 						<TextInput
 							label="Name"
 							placeholder="EARTH_1"
