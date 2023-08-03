@@ -7,6 +7,8 @@ import React, { useEffect, useState } from "react";
 interface PageProps {}
 
 const validateJoinID = async (id: string) => {
+	if (id === "") return false;
+
 	const response = await fetch("/api/validate-join-id", {
 		method: "POST",
 		body: JSON.stringify({
