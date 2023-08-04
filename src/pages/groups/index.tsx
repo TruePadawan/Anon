@@ -27,7 +27,7 @@ const GroupsPage = (props: PageProps) => {
 				<div className="flex justify-between">
 					<form
 						onSubmit={formSubmitHandler}
-						className="flex gap-1 max-w-xs w-full">
+						className="flex gap-1 max-w-md w-full">
 						<TextInput
 							className="grow"
 							placeholder="Group name"
