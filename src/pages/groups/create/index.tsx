@@ -39,6 +39,7 @@ export default function CreateGroupPage() {
 	const [autoApproveMembers, setAutoApproveMembers] =
 		useState<RadioValue>("true");
 	const router = useRouter();
+	const [creatingGroup, setCreatingGroup] = useState(false);
 
 	async function submitHandler(event: React.FormEvent) {
 		event.preventDefault();
@@ -56,6 +57,7 @@ export default function CreateGroupPage() {
 				autoPostApproval: autoApprovePosts === "true",
 			},
 		};
+		setCreatingGroup(true);
 		const res = await fetch("/api/create-group", {
 			method: "POST",
 			body: JSON.stringify(payload),
@@ -75,6 +77,7 @@ export default function CreateGroupPage() {
 			});
 			router.push("/groups");
 		}
+		setCreatingGroup(false);
 	}
 
 	const inputIsInvalid =
@@ -108,6 +111,7 @@ export default function CreateGroupPage() {
 							onChange={groupNameInput.changeEventHandler}
 							onFocus={groupNameInput.focusEventHandler}
 							error={inputIsInvalid ? inputErrorMessage : ""}
+							disabled={creatingGroup}
 							withAsterisk
 							required
 						/>
@@ -117,6 +121,7 @@ export default function CreateGroupPage() {
 							size="md"
 							minRows={2}
 							ref={descRef}
+							disabled={creatingGroup}
 							autosize
 						/>
 						<Radio.Group
@@ -128,8 +133,8 @@ export default function CreateGroupPage() {
 							size="md"
 							withAsterisk>
 							<Group mt="xs">
-								<Radio value="true" label="Yes" />
-								<Radio value="false" label="No" />
+								<Radio value="true" label="Yes" disabled={creatingGroup} />
+								<Radio value="false" label="No" disabled={creatingGroup} />
 							</Group>
 						</Radio.Group>
 						<Radio.Group
@@ -141,8 +146,8 @@ export default function CreateGroupPage() {
 							size="md"
 							withAsterisk>
 							<Group mt="xs">
-								<Radio value="true" label="Yes" />
-								<Radio value="false" label="No" />
+								<Radio value="true" label="Yes" disabled={creatingGroup} />
+								<Radio value="false" label="No" disabled={creatingGroup} />
 							</Group>
 						</Radio.Group>
 						<Radio.Group
@@ -154,8 +159,8 @@ export default function CreateGroupPage() {
 							size="md"
 							withAsterisk>
 							<Group mt="xs">
-								<Radio value="true" label="Yes" />
-								<Radio value="false" label="No" />
+								<Radio value="true" label="Yes" disabled={creatingGroup} />
+								<Radio value="false" label="No" disabled={creatingGroup} />
 							</Group>
 						</Radio.Group>
 					</div>
@@ -164,7 +169,7 @@ export default function CreateGroupPage() {
 						color="gray"
 						className="w-full"
 						size="md"
-						disabled={!formIsValid}>
+						disabled={creatingGroup || !formIsValid}>
 						Create
 					</Button>
 				</form>
