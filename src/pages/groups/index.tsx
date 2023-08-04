@@ -6,6 +6,8 @@ import { prisma } from "../../../lib/prisma-client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../lib/auth";
 import { Group } from "@prisma/client";
+import { IconSearchOff } from "@tabler/icons-react";
+import { classNames } from "../../../helpers/global-helpers";
 
 interface PageProps {
 	groups: Group[];
@@ -17,6 +19,7 @@ const GroupsPage = (props: PageProps) => {
 		event.preventDefault();
 	}
 
+	const noGroup = props.groups.length === 0;
 	return (
 		<>
 			<Navbar />
@@ -46,10 +49,17 @@ const GroupsPage = (props: PageProps) => {
 						Create a group
 					</Button>
 				</div>
-				<div>
-					{props.groups.map((group) => (
-						<li key={group.id}>{group.name}</li>
-					))}
+				<div
+					className={classNames(
+						"flex grow",
+						noGroup && "justify-center items-center"
+					)}>
+					{noGroup && (
+						<div className="flex flex-col items-center">
+							<IconSearchOff size={64} />
+							<p className="text-xl">Such empty</p>
+						</div>
+					)}
 				</div>
 			</main>
 		</>
