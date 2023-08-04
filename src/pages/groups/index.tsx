@@ -2,8 +2,14 @@ import Navbar from "@/components/Navbar/Navbar";
 import { GetServerSideProps } from "next";
 import { Button, TextInput, useMantineTheme } from "@mantine/core";
 import Link from "next/link";
+import { prisma } from "../../../lib/prisma-client";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../../lib/auth";
+import { Group } from "@prisma/client";
 
-interface PageProps {}
+interface PageProps {
+	groups: Group[];
+}
 
 const GroupsPage = (props: PageProps) => {
 	const theme = useMantineTheme();
@@ -14,7 +20,7 @@ const GroupsPage = (props: PageProps) => {
 	return (
 		<>
 			<Navbar />
-			<main className="grow flex flex-col">
+			<main className="grow flex flex-col gap-2 items-stretch">
 				<div className="flex justify-between">
 					<form
 						onSubmit={formSubmitHandler}
@@ -40,16 +46,34 @@ const GroupsPage = (props: PageProps) => {
 						Create a group
 					</Button>
 				</div>
+				<div>
+					{props.groups.map((group) => (
+						<li key={group.id}>{group.name}</li>
+					))}
+				</div>
 			</main>
 		</>
 	);
 };
 
-export const getServerSideProps: GetServerSideProps<PageProps> = async (
-	context
-) => {
+export const getServerSideProps: GetServerSideProps<PageProps> = async ({
+	req,
+	res,
+}) => {
+	const session = await getServerSession(req, res, authOptions);
+	const groups = await prisma.groupMember.findMany({
+		where: {
+			userProfileId: session?.user.id,
+		},
+		select: {
+			group: true,
+		},
+	});
+
 	return {
-		props: {},
+		props: {
+			groups: groups.map((obj: { group: Group }) => obj.group),
+		},
 	};
 };
 
