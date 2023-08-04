@@ -28,6 +28,7 @@ export default async function handler(
 			req.body
 		);
 		try {
+			// run a transaction that creates a group and its settings document, and also creates a single GroupMember document for the admin
 			const settings = await prisma.groupSettings.create({
 				data: {
 					isAnonymous: settingsData.isAnonymous,
@@ -39,6 +40,14 @@ export default async function handler(
 							name: groupData.name,
 							desc: groupData.desc,
 							createdAt: Date.now(),
+							GroupMember: {
+								create: [
+									{
+										userProfileId: groupData.adminId,
+										membershipStatus: "JOINED",
+									},
+								],
+							},
 						},
 					},
 				},
