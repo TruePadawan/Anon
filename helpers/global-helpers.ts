@@ -103,3 +103,7 @@ export const CommentEditorExtensions = [
 	Underline,
 	Link,
 ];
+
+export const classNames = (...classNames: Array<boolean | string>) => {
+	return classNames.filter(Boolean).join(" ");
+};
