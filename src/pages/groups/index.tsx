@@ -5,12 +5,13 @@ import Link from "next/link";
 import { prisma } from "../../../lib/prisma-client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../lib/auth";
-import { Group } from "@prisma/client";
 import { IconSearchOff } from "@tabler/icons-react";
 import { classNames } from "../../../helpers/global-helpers";
+import GroupItem from "@/components/GroupItem/GroupItem";
+import { GroupFull } from "@/types/types";
 
 interface PageProps {
-	groups: Group[];
+	groups: GroupFull[];
 }
 
 const GroupsPage = (props: PageProps) => {
@@ -19,7 +20,18 @@ const GroupsPage = (props: PageProps) => {
 		event.preventDefault();
 	}
 
-	const noGroup = props.groups.length === 0;
+	const groupItems = props.groups.map((group: GroupFull) => {
+		return (
+			<GroupItem
+				key={group.id}
+				id={group.id}
+				name={group.name}
+				desc={group.desc}
+				anonymous={group.settings.isAnonymous}
+			/>
+		);
+	});
+	const noGroup = groupItems.length === 0;
 	return (
 		<>
 			<Navbar />
@@ -60,6 +72,7 @@ const GroupsPage = (props: PageProps) => {
 							<p className="text-xl">Such empty</p>
 						</div>
 					)}
+					{!noGroup && <ul className="list-none">{groupItems}</ul>}
 				</div>
 			</main>
 		</>
@@ -76,13 +89,17 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 			userProfileId: session?.user.id,
 		},
 		select: {
-			group: true,
+			group: {
+				include: {
+					settings: true,
+				},
+			},
 		},
 	});
-
+	console.log(groups[0].group.settings)
 	return {
 		props: {
-			groups: groups.map((obj: { group: Group }) => obj.group),
+			groups: groups.map((obj: { group: GroupFull }) => obj.group),
 		},
 	};
 };

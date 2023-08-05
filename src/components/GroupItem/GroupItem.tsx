@@ -1,4 +1,10 @@
-import { ActionIcon, Badge, Collapse, Text, useMantineTheme } from "@mantine/core";
+import {
+	ActionIcon,
+	Badge,
+	Collapse,
+	Text,
+	useMantineTheme,
+} from "@mantine/core";
 import { IconChevronDown } from "@tabler/icons-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -12,7 +18,7 @@ interface GroupItemProps {
 
 export default function GroupItem(props: GroupItemProps) {
 	const [showDesc, setShowDesc] = useState(false);
-    const theme = useMantineTheme();
+	const theme = useMantineTheme();
 
 	function toggleDesc() {
 		setShowDesc((val: boolean) => !val);
