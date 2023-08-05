@@ -37,7 +37,11 @@ export default function GroupItem(props: GroupItemProps) {
 					</Badge>
 				</Link>
 				{props.desc && (
-					<ActionIcon size="lg" onClick={toggleDesc} data-cy="toggle-desc">
+					<ActionIcon
+						title="toggle description"
+						size="lg"
+						onClick={toggleDesc}
+						data-cy="toggle-desc">
 						{descIsShowing ? <IconChevronUp /> : <IconChevronDown />}
 					</ActionIcon>
 				)}
