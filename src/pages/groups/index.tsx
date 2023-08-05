@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar/Navbar";
 import { GetServerSideProps } from "next";
-import { Button, TextInput, useMantineTheme } from "@mantine/core";
+import { Button, Grid, TextInput, useMantineTheme } from "@mantine/core";
 import Link from "next/link";
 import { prisma } from "../../../lib/prisma-client";
 import { getServerSession } from "next-auth";
@@ -22,13 +22,14 @@ const GroupsPage = (props: PageProps) => {
 
 	const groupItems = props.groups.map((group: GroupFull) => {
 		return (
-			<GroupItem
-				key={group.id}
-				id={group.id}
-				name={group.name}
-				desc={group.desc}
-				anonymous={group.settings.isAnonymous}
-			/>
+			<Grid.Col key={group.id} sm={6} md={4} lg={3}>
+				<GroupItem
+					id={group.id}
+					name={group.name}
+					desc={group.desc}
+					anonymous={group.settings.isAnonymous}
+				/>
+			</Grid.Col>
 		);
 	});
 	const noGroup = groupItems.length === 0;
@@ -63,7 +64,7 @@ const GroupsPage = (props: PageProps) => {
 				</div>
 				<div
 					className={classNames(
-						"flex grow",
+						"grow",
 						noGroup && "justify-center items-center"
 					)}>
 					{noGroup && (
@@ -72,7 +73,11 @@ const GroupsPage = (props: PageProps) => {
 							<p className="text-xl">Such empty</p>
 						</div>
 					)}
-					{!noGroup && <ul className="list-none">{groupItems}</ul>}
+					{!noGroup && (
+						<Grid gutter={4} sx={{ width: "100%" }}>
+							{groupItems}
+						</Grid>
+					)}
 				</div>
 			</main>
 		</>
@@ -96,7 +101,6 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 			},
 		},
 	});
-	console.log(groups[0].group.settings)
 	return {
 		props: {
 			groups: groups.map((obj: { group: GroupFull }) => obj.group),
