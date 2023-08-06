@@ -10,6 +10,7 @@ import {
 import { notifications } from "@mantine/notifications";
 import NavLink from "../NavLink/NavLink";
 import useUser from "@/hooks/useUser";
+import { Loader } from "@mantine/core";
 
 interface NavbarProps {
 	toIndex?: boolean;
@@ -39,12 +40,14 @@ export default function Navbar({ toIndex }: NavbarProps) {
 	}
 
 	const hasUser = !isLoading && user;
+	const gettingUser = isLoading && !user;
 	return (
 		<nav className="flex flex-col items-stretch gap-4">
 			<div className="flex justify-between items-center">
 				<h1 className="font-extrabold text-5xl">
 					<Link href="/">ANON</Link>
 				</h1>
+				{gettingUser && <Loader color="gray" variant="dots" />}
 				{hasUser && (
 					<ProfileMenu
 						displayName={user.displayName}
