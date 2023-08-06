@@ -8,6 +8,7 @@ import {
 	Modal,
 	Button,
 	Alert,
+	Spoiler,
 } from "@mantine/core";
 import { RichTextEditor } from "@mantine/tiptap";
 import { IconCheck, IconDots, IconEdit, IconTrash } from "@tabler/icons-react";
@@ -233,7 +234,12 @@ export default function CommentItem(props: CommentItemProps) {
 									"& .ProseMirror": { padding: "0" },
 								},
 							}}>
-							<RichTextEditor.Content />
+							<Spoiler
+								maxHeight={300}
+								showLabel="Show more"
+								hideLabel="Show less">
+								<RichTextEditor.Content />
+							</Spoiler>
 						</RichTextEditor>
 					)}
 				</div>

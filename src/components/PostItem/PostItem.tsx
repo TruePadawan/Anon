@@ -9,6 +9,7 @@ import {
 	Divider,
 	Menu,
 	Modal,
+	Spoiler,
 	useMantineTheme,
 } from "@mantine/core";
 import { PublicPostFull } from "@/types/types";
@@ -247,7 +248,12 @@ export default function PostItem(props: PostItemProps) {
 									root: { border: "none" },
 									content: { "& .ProseMirror": { padding: "0" } },
 								}}>
-								<RichTextEditor.Content />
+								<Spoiler
+									maxHeight={400}
+									showLabel="Show more"
+									hideLabel="Show less">
+									<RichTextEditor.Content />
+								</Spoiler>
 							</RichTextEditor>
 						)}
 					</div>
