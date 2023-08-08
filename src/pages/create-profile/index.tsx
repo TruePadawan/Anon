@@ -5,12 +5,15 @@ import {
 import useInput from "@/hooks/useInput";
 import { Button, Loader, Skeleton, TextInput, Title } from "@mantine/core";
 import { useSession } from "next-auth/react";
-import { getRandomInt } from "../../../helpers/global-helpers";
+import { getRandomColor, getRandomInt } from "../../../helpers/global-helpers";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { useSWRConfig } from "swr";
+import { notifications } from "@mantine/notifications";
 
 export default function CreateProfilePage() {
 	const router = useRouter();
+	const { mutate } = useSWRConfig();
 	const { data: session, status } = useSession({
 		required: true,
 		onUnauthenticated() {
@@ -53,6 +56,45 @@ export default function CreateProfilePage() {
 		}
 	}
 
+	async function formSubmitHandler(event: React.FormEvent) {
+		event.preventDefault();
+		try {
+			setCreatingProfile(true);
+
+			const profileData = {
+				id: session?.user.id,
+				accountName: accountNameInput.value,
+				displayName: displayNameInput.value,
+				color: getRandomColor(),
+				createdAt: Date.now(),
+			};
+			const response = await fetch("/api/create-profile", {
+				method: "POST",
+				body: JSON.stringify(profileData),
+			});
+
+			if (response.ok) {
+				mutate("/api/get-user-profile");
+				router.replace(`/users/${profileData.accountName}`);
+
+				notifications.show({
+					color: "green",
+					message: "Profile created successfully",
+				});
+			} else if (!response.ok) {
+				const error = await response.json();
+				throw new Error(error.message);
+			}
+		} catch (error: any) {
+			notifications.show({
+				color: "red",
+				title: "Failed to create profile",
+				message: error.message,
+			});
+			setCreatingProfile(false);
+		}
+	}
+
 	const formIsValid = accountNameInput.isValid && displayNameInput.isValid;
 	const btnsAreDisabled = !formIsValid || creatingProfile;
 	return (
@@ -61,6 +103,7 @@ export default function CreateProfilePage() {
 				Create Profile
 			</Title>
 			<form
+				onSubmit={formSubmitHandler}
 				className="w-full max-w-2xl flex flex-col gap-3"
 				aria-labelledby="form-header-text">
 				<TextInput
