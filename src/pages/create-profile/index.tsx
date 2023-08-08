@@ -10,16 +10,15 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { useSWRConfig } from "swr";
 import { notifications } from "@mantine/notifications";
+import { GetServerSideProps } from "next";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../../lib/auth";
+import { prisma } from "../../../lib/prisma-client";
 
 export default function CreateProfilePage() {
 	const router = useRouter();
 	const { mutate } = useSWRConfig();
-	const { data: session, status } = useSession({
-		required: true,
-		onUnauthenticated() {
-			router.replace("/no-access");
-		},
-	});
+	const { data: session, status } = useSession();
 	const accountNameInput = useInput([validateAccountName], {
 		transform: parseAccountName,
 	});
@@ -76,7 +75,6 @@ export default function CreateProfilePage() {
 			if (response.ok) {
 				mutate("/api/get-user-profile");
 				router.replace(`/users/${profileData.accountName}`);
-
 				notifications.show({
 					color: "green",
 					message: "Profile created successfully",
@@ -156,3 +154,34 @@ export default function CreateProfilePage() {
 		</main>
 	);
 }
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+	// Check that signed in user doesn't already have a profile, if they do? redirect to their profile
+	const session = await getServerSession(context.req, context.res, authOptions);
+	if (!session) {
+		return {
+			redirect: {
+				destination: "/sign-in",
+				permanent: false,
+			},
+		};
+	}
+
+	const profile = await prisma.userProfile.findUnique({
+		where: { id: session.user.id },
+		select: { accountName: true },
+	});
+
+	if (profile !== null) {
+		return {
+			redirect: {
+				destination: `/users/${profile.accountName}`,
+				permanent: false,
+			},
+		};
+	}
+
+	return {
+		props: {},
+	};
+};
