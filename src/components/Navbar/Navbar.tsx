@@ -18,7 +18,7 @@ interface NavbarProps {
 
 export default function Navbar({ toIndex }: NavbarProps) {
 	const router = useRouter();
-	const { user, isLoading, mutate } = useUser();
+	const { user, status, mutate } = useUser();
 
 	function routeToProfile() {
 		router.push(`/users/${user?.accountName}`);
@@ -39,8 +39,9 @@ export default function Navbar({ toIndex }: NavbarProps) {
 		}
 	}
 
-	const hasUser = !isLoading && user;
-	const gettingUser = isLoading && !user;
+	const gettingUser = status === "GETTING_USER";
+	const hasUser = status === "HAS_USER" && user;
+	const noUser = status === "NO_USER";
 	return (
 		<nav className="flex flex-col items-stretch gap-4">
 			<div className="flex justify-between items-center">
@@ -55,7 +56,7 @@ export default function Navbar({ toIndex }: NavbarProps) {
 						onSignoutMenuItemClicked={handleSignout}
 					/>
 				)}
-				{!hasUser && (
+				{noUser && (
 					<Link
 						href={toIndex ? "/" : "/sign-in"}
 						className="text-lg font-semibold hover:text-accent-color-1">
