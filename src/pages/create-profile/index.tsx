@@ -3,14 +3,7 @@ import {
 	validateAccountName,
 } from "@/components/ProfileInfo/utils";
 import useInput from "@/hooks/useInput";
-import {
-	Button,
-	Loader,
-	Skeleton,
-	TextInput,
-	Textarea,
-	Title,
-} from "@mantine/core";
+import { Button, Loader, Skeleton, TextInput, Title } from "@mantine/core";
 import { useSession } from "next-auth/react";
 import { getRandomInt } from "../../../helpers/global-helpers";
 import { useRouter } from "next/router";
@@ -36,7 +29,6 @@ export default function CreateProfilePage() {
 				<div className="w-full max-w-2xl flex flex-col gap-5">
 					<Skeleton className="self-center" height={25} width="70%" />
 					<div className="flex flex-col gap-3">
-						<Skeleton height={40} />
 						<Skeleton height={40} />
 						<Skeleton height={40} />
 					</div>
@@ -98,7 +90,6 @@ export default function CreateProfilePage() {
 					spellCheck={false}
 					required
 				/>
-				<Textarea size="lg" label="Bio" required autosize />
 				<div className="flex flex-col gap-1">
 					<Button
 						type="submit"
