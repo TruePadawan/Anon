@@ -52,6 +52,7 @@ export default function useInput(
 		} else {
 			setValue(value);
 		}
+		setWasTouched(true);
 	}
 
 	const hasError =
