@@ -3,45 +3,30 @@ import { GetServerSideProps } from "next";
 import { Button, TextInput } from "@mantine/core";
 import useInput from "@/hooks/useInput";
 import React, { useEffect, useState } from "react";
+import { validateGroupJoinId } from "./utils";
 
 interface PageProps {}
 
-const validateJoinID = async (id: string) => {
-	if (id === "") return false;
-
-	const response = await fetch("/api/validate-join-id", {
-		method: "POST",
-		body: JSON.stringify({
-			id,
-		}),
-	});
-	return response.ok;
-};
-
 const JoinGroupPage = (props: PageProps) => {
 	const {
-		changeEventHandler,
-		checkingValidity: verifyingID,
-		focusEventHandler,
-		inputValue: groupJoinId,
-		isInputValid: isIdValid,
-		inputWasTouched,
-	} = useInput(validateJoinID);
-	const [formIsValid, setFormIsValid] = useState(() => {
-		return !verifyingID && isIdValid;
-	});
+		isValidating,
+		isValid,
+		value: joinId,
+		changeEvHandler,
+		focusEvHandler,
+		hasError,
+		errorMessage,
+	} = useInput([validateGroupJoinId]);
+	const [formIsValid, setFormIsValid] = useState(!isValidating && isValid);
 
 	useEffect(() => {
-		setFormIsValid(!verifyingID && isIdValid);
-	}, [verifyingID, isIdValid]);
+		setFormIsValid(!isValidating && isValid);
+	}, [isValidating, isValid]);
 
 	function formSubmitHandler(event: React.FormEvent) {
 		event.preventDefault();
 	}
 
-	const inputIsInvalid = inputWasTouched && !verifyingID && !isIdValid;
-	const inputErrorMessage =
-		groupJoinId.length > 0 ? "ID doesn't match a group" : "No ID specified";
 	return (
 		<>
 			<Navbar />
@@ -52,11 +37,12 @@ const JoinGroupPage = (props: PageProps) => {
 					<TextInput
 						label="Join ID"
 						placeholder="00000000-0000-0000-0000-000000000000"
-						value={groupJoinId}
-						onChange={changeEventHandler}
-						onFocus={focusEventHandler}
-						error={inputIsInvalid ? inputErrorMessage : ""}
+						value={joinId}
+						onChange={changeEvHandler}
+						onFocus={focusEvHandler}
+						error={hasError ? errorMessage : ""}
 						size="lg"
+						spellCheck={false}
 						withAsterisk
 						required
 					/>
@@ -65,7 +51,7 @@ const JoinGroupPage = (props: PageProps) => {
 						color="gray"
 						size="md"
 						loaderPosition="center"
-						loading={verifyingID}
+						loading={isValidating}
 						disabled={!formIsValid}>
 						Request access
 					</Button>

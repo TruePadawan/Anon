@@ -20,11 +20,11 @@ export default async function handler(
 					groupJoinId: id,
 				},
 				include: {
-					group: true,
+					Group: true,
 				},
 			});
 			if (groupSettings) {
-				res.status(200).json(groupSettings.group);
+				res.status(200).json(groupSettings.Group);
 			} else {
 				res.status(404).json({ message: `Group with ID ${id} not found` });
 			}

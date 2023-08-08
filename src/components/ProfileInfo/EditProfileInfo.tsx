@@ -31,8 +31,9 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 	const profilePictureRef = useRef<File | undefined>();
 
 	// account name is valid if its the same as signed in users' or is unique in db
-	const accountNameInput = useInput(validateAccountName, {
-		defaultValue: props.profileData.accountName,
+	const accountNameInput = useInput([validateAccountName], {
+		initialValue: props.profileData.accountName,
+		initialValueIsValid: true,
 		transform: (value) => value?.toString().replaceAll(" ", ""),
 	});
 
@@ -40,8 +41,8 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 	useEffect(() => {
 		setFormIsValid(
 			profilePicIsValid &&
-				accountNameInput.checkingValidity === false &&
-				accountNameInput.isInputValid &&
+				accountNameInput.isValidating === false &&
+				accountNameInput.isValid &&
 				displayName.trim().length > 0
 		);
 	}, [
@@ -80,8 +81,8 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 			// update profile data
 			const data = {
 				avatarUrl: profilePicUrl,
-				accountName: accountNameInput.inputValue,
-				displayName,
+				accountName: accountNameInput.value,
+				displayName: displayName.trim(),
 				bio: bioRef.current?.value,
 			};
 
@@ -105,8 +106,8 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 				title: "Failed to update profile",
 				message: error.message,
 			});
+			setIsUpdating(false);
 		}
-		setIsUpdating(false);
 	}
 
 	function displayNameChangeHandler(
@@ -163,18 +164,15 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 				<TextInput
 					className="w-full"
 					rightSection={
-						accountNameInput.checkingValidity ? <Loader size="sm" /> : undefined
+						accountNameInput.isValidating ? <Loader size="sm" /> : undefined
 					}
 					size="md"
 					label="Account name"
 					description="Account names are unique and should have no whitespace"
-					value={accountNameInput.inputValue}
-					onChange={accountNameInput.changeEventHandler}
-					error={
-						!accountNameInput.isInputValid
-							? `${accountNameInput.inputValue} is taken`
-							: ""
-					}
+					value={accountNameInput.value}
+					onChange={accountNameInput.changeEvHandler}
+					onFocus={accountNameInput.focusEvHandler}
+					error={accountNameInput.hasError ? accountNameInput.errorMessage : ""}
 					spellCheck={false}
 					required
 				/>
@@ -196,16 +194,12 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 					required
 					autosize
 				/>
-				{accountNameInput.checkingValidity && (
-					<p className="text-dark-green-l text-sm">Validating values</p>
-				)}
-				{isUpdating && (
-					<p className="text-dark-green-l text-sm">Updating profile</p>
-				)}
 				<div className="flex flex-col gap-2 self-stretch">
 					<Button
 						type="submit"
 						className="bg-dark-green disabled:hover:bg-dark-green hover:bg-dark-green-l"
+						loaderPosition="center"
+						loading={isUpdating}
 						disabled={updateIsDisabled}>
 						Update
 					</Button>
@@ -213,6 +207,8 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 						type="button"
 						className="bg-dark-red disabled:hover:bg-dark-red hover:bg-dark-red-l"
 						onClick={cancelBtnClickHandler}
+						loaderPosition="center"
+						loading={isUpdating}
 						disabled={isUpdating}>
 						Cancel
 					</Button>

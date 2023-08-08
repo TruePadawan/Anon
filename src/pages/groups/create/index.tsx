@@ -7,32 +7,11 @@ import { notifications } from "@mantine/notifications";
 import { Group as GroupModel } from "@prisma/client";
 import { useRouter } from "next/router";
 import { useRef, useState } from "react";
-
-interface fetchResponse {
-	group: GroupModel | null;
-}
-async function validateGroupName(groupName: string) {
-	if (groupName === "") return false;
-
-	const res = await fetch("/api/get-group", {
-		method: "POST",
-		body: JSON.stringify({
-			name: groupName,
-		}),
-	});
-	if (!res.ok) {
-		const { message: errorMessage } = await res.json();
-		throw new Error(errorMessage);
-	}
-	const { group }: fetchResponse = await res.json();
-	// group name is valid if there is no group with that name, so group will be null
-	return group === null;
-}
+import { validateGroupName } from "./utils";
 
 type RadioValue = "true" | "false" | string;
 export default function CreateGroupPage() {
 	const { user } = useUser();
-	const groupNameInput = useInput(validateGroupName);
 	const descRef = useRef<HTMLTextAreaElement>(null);
 	const [groupIsAnonymous, setGroupIsAnonymous] = useState<RadioValue>("false");
 	const [autoApprovePosts, setAutoApprovePosts] = useState<RadioValue>("true");
@@ -40,6 +19,7 @@ export default function CreateGroupPage() {
 		useState<RadioValue>("true");
 	const router = useRouter();
 	const [creatingGroup, setCreatingGroup] = useState(false);
+	const groupNameInput = useInput([validateGroupName]);
 
 	async function submitHandler(event: React.FormEvent) {
 		event.preventDefault();
@@ -48,7 +28,7 @@ export default function CreateGroupPage() {
 		const payload: CreateGroupApiReqBody = {
 			groupData: {
 				adminId: user.id,
-				name: groupNameInput.inputValue,
+				name: groupNameInput.value,
 				desc: descRef.current?.value,
 			},
 			settingsData: {
@@ -80,17 +60,7 @@ export default function CreateGroupPage() {
 		setCreatingGroup(false);
 	}
 
-	const inputIsInvalid =
-		groupNameInput.inputWasTouched &&
-		!groupNameInput.checkingValidity &&
-		!groupNameInput.isInputValid;
-
-	const inputErrorMessage =
-		groupNameInput.inputValue.length <= 0
-			? "Group name not specified"
-			: `${groupNameInput.inputValue} is taken`;
-	const formIsValid =
-		!groupNameInput.checkingValidity && groupNameInput.isInputValid;
+	const formIsValid = !groupNameInput.isValidating && groupNameInput.isValid;
 	return (
 		<>
 			<Navbar />
@@ -107,10 +77,10 @@ export default function CreateGroupPage() {
 							label="Name"
 							placeholder="EARTH_1"
 							size="md"
-							value={groupNameInput.inputValue}
-							onChange={groupNameInput.changeEventHandler}
-							onFocus={groupNameInput.focusEventHandler}
-							error={inputIsInvalid ? inputErrorMessage : ""}
+							value={groupNameInput.value}
+							onChange={groupNameInput.changeEvHandler}
+							onFocus={groupNameInput.focusEvHandler}
+							error={groupNameInput.hasError ? groupNameInput.errorMessage : ""}
 							disabled={creatingGroup}
 							withAsterisk
 							required
@@ -169,6 +139,8 @@ export default function CreateGroupPage() {
 						color="gray"
 						className="w-full"
 						size="md"
+						loaderPosition="center"
+						loading={groupNameInput.isValidating}
 						disabled={creatingGroup || !formIsValid}>
 						Create
 					</Button>

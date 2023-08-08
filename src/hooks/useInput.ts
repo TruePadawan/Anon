@@ -1,54 +1,116 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
-type InputValidateFn = (value: string) => Promise<boolean>;
-interface UseInputOptions {
-	defaultValue?: string;
-	transform?: (value: string) => string;
-}
 /**
-    `useInput` hook manages the value of an input element.  
+    * `useInput` hook manages the value of an input element.  
     Using debouncing, it validates the input's value when it changes and keeps track
     of its validation status.  
+    * @param validators - an array of validator functions
+    * @param options - extra options for useInput hook like an initial value and a transform function
 */
 export default function useInput(
-	validate: InputValidateFn,
-	options?: UseInputOptions
+	validators: UseInputParams["validators"],
+	options?: UseInputParams["options"]
 ) {
-	const [isInputValid, setIsInputValid] = useState(false);
-	const [inputWasTouched, setInputWasTouched] = useState(false);
-	const [inputValue, setInputValue] = useState(options?.defaultValue || "");
-	const [checkingValidity, setCheckingValidity] = useState(false);
+	const [value, setValue] = useState(options?.initialValue ?? "");
+	const [isValidating, setIsValidating] = useState(false);
+	const [isValid, setIsValid] = useState(Boolean(options?.initialValueIsValid));
+	const [wasTouched, setWasTouched] = useState(false);
+	const [errorMessages, setErrorMessages] = useState<string[]>([]);
+	const validatorsRef = useRef(validators);
 
-	// Apply debouncing to validate input value when it changes
+	// validation process
 	useEffect(() => {
-		setCheckingValidity(true);
-		const timeoutID = setTimeout(() => {
-			validate(inputValue).then((isValid) => {
-				setIsInputValid(isValid);
-				setCheckingValidity(false);
-			});
-		}, 600);
-		return () => clearTimeout(timeoutID);
-	}, [inputValue, validate]);
+		if (wasTouched) {
+			setIsValidating(true);
+			setErrorMessages([]);
+			const timeoutID = setTimeout(() => {
+				runValidationProcess(value, validatorsRef.current).then((result) => {
+					setIsValid(result.valid);
+					if (!result.valid) {
+						setErrorMessages(result.errorMessages);
+					}
+					setIsValidating(false);
+				});
+			}, 600);
+			return () => clearTimeout(timeoutID);
+		}
+	}, [wasTouched, value]);
 
-	function changeEventHandler(event: React.ChangeEvent<HTMLInputElement>) {
+	function onChange(ev: React.ChangeEvent<HTMLInputElement>) {
+		setIsValid(false);
+
+		const newValue = ev.currentTarget.value;
 		if (options?.transform) {
-			setInputValue(options.transform(event.target.value));
+			setValue(options.transform(newValue));
 		} else {
-			setInputValue(event.target.value);
+			setValue(newValue);
 		}
 	}
 
-	function focusEventHandler(event: React.ChangeEvent<HTMLInputElement>) {
-		setInputWasTouched(true);
+	function onFocus(ev: React.FocusEvent<HTMLInputElement>) {
+		setWasTouched(true);
 	}
 
+	const hasError =
+		errorMessages.length !== 0 || (wasTouched && !isValidating && !isValid);
 	return {
-		inputValue,
-		isInputValid,
-		inputWasTouched,
-		changeEventHandler,
-		focusEventHandler,
-		checkingValidity,
+		value,
+		wasTouched,
+		isValidating,
+		isValid,
+		errorMessages,
+		errorMessage: errorMessages.join(),
+		hasError,
+		changeEvHandler: onChange,
+		focusEvHandler: onFocus,
 	};
+}
+
+async function runValidationProcess(
+	value: string,
+	validators: UseInputParams["validators"]
+) {
+	if (value.trim() === "") {
+		return {
+			valid: false,
+			errorMessages: ["Input is empty"],
+		};
+	}
+
+	const messages: string[] = [];
+	for (let i = 0; i < validators.length; ++i) {
+		const { validatorFn, name } = validators[i];
+		try {
+			const { valid, message } = await validatorFn(value);
+			if (!valid) {
+				const errorMessage: string = message ?? `'${name}' validator failed`;
+				messages.unshift(errorMessage);
+			}
+		} catch (error: any) {
+			messages.unshift(error.message ?? `'${name}' validator threw an error`);
+		}
+	}
+	return {
+		valid: messages.length === 0,
+		errorMessages: messages,
+	};
+}
+
+interface UseInputParams {
+	validators: Validator[];
+	options?: {
+		initialValue?: string;
+		initialValueIsValid?: boolean;
+		transform?: (value: string) => string;
+	};
+}
+
+export interface Validator {
+	name: string;
+	validatorFn: (value: string) => Promise<ValidationFnReturnValue>;
+}
+
+interface ValidationFnReturnValue {
+	valid: boolean;
+	message?: string;
 }
