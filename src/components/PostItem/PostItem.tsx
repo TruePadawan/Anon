@@ -171,17 +171,13 @@ export default function PostItem(props: PostItemProps) {
 									</ActionIcon>
 								</Menu.Target>
 								<Menu.Dropdown>
-									{!props.full && (
-										<>
-											<Menu.Label>General</Menu.Label>
-											<Menu.Item
-												component={Link}
-												icon={<IconArrowsMaximize size={16} />}
-												href={`/posts/${postData.id}`}>
-												View full post
-											</Menu.Item>
-										</>
-									)}
+									<Menu.Label>General</Menu.Label>
+									<Menu.Item
+										component={Link}
+										icon={<IconArrowsMaximize size={16} />}
+										href={`/posts/${postData.id}`}>
+										View full post
+									</Menu.Item>
 									{currentUserIsAuthor && (
 										<>
 											<Menu.Label>Manage</Menu.Label>

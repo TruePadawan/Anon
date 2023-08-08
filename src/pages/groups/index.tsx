@@ -65,7 +65,7 @@ const GroupsPage = (props: PageProps) => {
 				<div
 					className={classNames(
 						"grow",
-						noGroup && "justify-center items-center"
+						noGroup && "flex justify-center items-center"
 					)}>
 					{noGroup && (
 						<div className="flex flex-col items-center">
