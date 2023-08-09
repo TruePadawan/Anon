@@ -84,16 +84,17 @@ model GroupPost {
 }
 
 model Comment {
-  id              String      @id @default(auto()) @map("_id") @db.ObjectId
-  commentGroupId  String
-  parentComment   Comment?    @relation("ParentComment", fields: [parentCommentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  parentCommentId String?     @db.ObjectId
-  comment         Comment[]   @relation("ParentComment")
-  content         Json
-  author          UserProfile @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId        String      @db.ObjectId
-  createdAt       Int
-  editedAt        Int         @default(0)
+  id             String      @id @default(auto()) @map("_id") @db.ObjectId
+  commentGroupId String
+  content        Json
+  author         UserProfile @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId       String      @db.ObjectId
+  createdAt      Int
+  editedAt       Int         @default(0)
+  // self relation that handles a comment having replies
+  parentComment  Comment?    @relation("replies", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies        Comment[]   @relation("replies")
+  parentId       String?     @db.ObjectId
 }
 
 model Group {
