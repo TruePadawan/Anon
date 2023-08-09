@@ -1,11 +1,10 @@
 import { authOptions } from "../../../lib/auth";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
-import { getRandomColor, getRandomInt } from "../../../helpers/global-helpers";
 import { prisma } from "../../../lib/prisma-client";
 
 /*	If there is a session
-		create default profile for user if none,
+		if user has no profile, route to page for creating a profile, else go to index page,
 	else redirect to profile page
 */
 export default async function handler(
@@ -13,32 +12,16 @@ export default async function handler(
 	res: NextApiResponse
 ) {
 	const session = await getServerSession(req, res, authOptions);
-
 	if (session) {
-		const userID = session.user.id;
 		const profile = await prisma.userProfile.findUnique({
-			where: { id: userID },
+			where: { id: session.user.id },
 			select: { accountName: true },
 		});
 		if (profile) {
 			res.redirect("/");
 		} else {
-			const displayName = session.user.name || "New User";
-			const accountName = `${session.user.email
-				?.split("@")
-				.at(0)}${getRandomInt(100000000)}`;
-			await prisma.userProfile.create({
-				data: {
-					id: userID,
-					accountName,
-					displayName,
-					color: getRandomColor(),
-					createdAt: Date.now(),
-				},
-			});
-
-			// should redirect to user profile
-			res.redirect(`/users/${accountName}`);
+			// should redirect to page for creating a profile
+			res.redirect("/create-profile");
 		}
 	} else {
 		res.redirect("/sign-in");
