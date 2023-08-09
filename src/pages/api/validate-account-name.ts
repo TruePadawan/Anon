@@ -19,17 +19,19 @@ export default async function handler(
 				accountName: true,
 			},
 		});
+
+		const accountName = req.query.accountName as string;
+		const count = await prisma.userProfile.count({
+			where: {
+				accountName,
+			},
+		});
+
+		// if client is authenticated and has a profile, account name is also valid if it's the same as their current account name
 		if (!currentUser) {
-			res
-				.status(404)
-				.json({ message: "Failed to find profile of current user" });
+			const accountNameIsValid = count === 0;
+			res.status(200).json({ valid: accountNameIsValid });
 		} else {
-			const accountName = req.query.accountName as string;
-			const count = await prisma.userProfile.count({
-				where: {
-					accountName,
-				},
-			});
 			const accountNameIsValid =
 				accountName === currentUser.accountName || count === 0;
 			res.status(200).json({ valid: accountNameIsValid });

@@ -38,16 +38,20 @@ export default function useInput(
 
 	function onChange(ev: React.ChangeEvent<HTMLInputElement>) {
 		setIsValid(false);
-
 		const newValue = ev.currentTarget.value;
-		if (options?.transform) {
-			setValue(options.transform(newValue));
-		} else {
-			setValue(newValue);
-		}
+		updateValue(newValue);
 	}
 
 	function onFocus(ev: React.FocusEvent<HTMLInputElement>) {
+		setWasTouched(true);
+	}
+
+	function updateValue(value: string) {
+		if (options?.transform) {
+			setValue(options.transform(value));
+		} else {
+			setValue(value);
+		}
 		setWasTouched(true);
 	}
 
@@ -63,6 +67,7 @@ export default function useInput(
 		hasError,
 		changeEvHandler: onChange,
 		focusEvHandler: onFocus,
+		updateValue,
 	};
 }
 

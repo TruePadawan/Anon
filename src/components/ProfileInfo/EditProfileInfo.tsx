@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Button, FileInput, Loader, TextInput, Textarea } from "@mantine/core";
 import useInput from "@/hooks/useInput";
-import { validateAccountName } from "./utils";
+import { parseAccountName, validateAccountName } from "./utils";
 import {
 	validateFileAsImage,
 	uploadImage,
@@ -34,7 +34,7 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 	const accountNameInput = useInput([validateAccountName], {
 		initialValue: props.profileData.accountName,
 		initialValueIsValid: true,
-		transform: (value) => value?.toString().replaceAll(" ", ""),
+		transform: parseAccountName,
 	});
 
 	// update formIsValid state when input states change
