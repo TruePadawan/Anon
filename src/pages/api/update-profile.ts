@@ -19,7 +19,7 @@ export default async function handler(
 			try {
 				await prisma.userProfile.update({
 					where: {
-						id: session.user.id,
+						userId: session.user.id,
 					},
 					data: JSON.parse(req.body),
 				});

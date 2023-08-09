@@ -15,9 +15,8 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
 	let redirectDestination = "/sign-in";
 
 	if (session) {
-		const userID = session.user.id;
 		const profile = await prisma.userProfile.findUnique({
-			where: { id: userID },
+			where: { userId: session.user.id },
 			select: { accountName: true },
 		});
 		if (profile) {

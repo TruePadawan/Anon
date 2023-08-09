@@ -13,7 +13,7 @@ export default async function handler(
 	} else {
 		const currentUser = await prisma.userProfile.findUnique({
 			where: {
-				id: session.user.id,
+				userId: session.user.id,
 			},
 			select: {
 				accountName: true,

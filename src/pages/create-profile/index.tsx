@@ -61,7 +61,6 @@ export default function CreateProfilePage() {
 			setCreatingProfile(true);
 
 			const profileData = {
-				id: session?.user.id,
 				accountName: accountNameInput.value,
 				displayName: displayNameInput.value,
 				color: getRandomColor(),
@@ -168,7 +167,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 	}
 
 	const profile = await prisma.userProfile.findUnique({
-		where: { id: session.user.id },
+		where: { userId: session.user.id },
 		select: { accountName: true },
 	});
 

@@ -14,7 +14,7 @@ export default async function handler(
 	const session = await getServerSession(req, res, authOptions);
 	if (session) {
 		const profile = await prisma.userProfile.findUnique({
-			where: { id: session.user.id },
+			where: { userId: session.user.id },
 			select: { accountName: true },
 		});
 		if (profile) {
