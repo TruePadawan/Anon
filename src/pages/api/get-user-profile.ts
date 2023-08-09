@@ -19,7 +19,7 @@ export default async function handler(
 			try {
 				const user = await prisma.userProfile.findUnique({
 					where: {
-						id: session.user.id,
+						userId: session.user.id,
 					},
 				});
 				res.status(200).json({ user });

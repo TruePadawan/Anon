@@ -41,6 +41,8 @@ model UserProfile {
   color       String
   displayName String
   createdAt   Int
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String        @unique @db.ObjectId
   PublicPost  PublicPost[]
   Comment     Comment[]
   Group       Group[]
@@ -49,14 +51,15 @@ model UserProfile {
 }
 
 model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  email         String?   @unique
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  email         String?      @unique
   /// Could not determine type: the field only had null or empty values in the sample set.
   emailVerified DateTime?
   image         String?
   name          String?
   Account       Account[]
   Session       Session[]
+  profile       UserProfile?
 }
 
 model PublicPost {

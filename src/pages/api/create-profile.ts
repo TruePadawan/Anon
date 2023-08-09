@@ -18,7 +18,7 @@ export default async function handler(
 		} else {
 			try {
 				const profile = await prisma.userProfile.create({
-					data: JSON.parse(req.body),
+					data: { ...JSON.parse(req.body), userId: session.user.id },
 				});
 				res
 					.status(200)
