@@ -40,8 +40,8 @@ const PublicPostsSection = (props: PublicPostsSectionProps) => {
 					<title key="title">ANON | Profile Not Found</title>
 				</Head>
 				<Navbar />
-				<div className="flex items-center justify-center">
-					<h2>Profile Not Found</h2>
+				<div className="flex justify-center">
+					<h2 className="mt-2 text-2xl font-semibold">Profile Not Found</h2>
 				</div>
 			</>
 		);

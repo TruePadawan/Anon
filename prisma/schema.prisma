@@ -43,11 +43,11 @@ model UserProfile {
   createdAt   Int
   user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String        @unique @db.ObjectId
-  PublicPost  PublicPost[]
-  Comment     Comment[]
-  Group       Group[]
-  GroupPost   GroupPost[]
-  GroupMember GroupMember[]
+  publicPosts PublicPost[]
+  comments    Comment[]
+  groups      Group[]
+  groupPosts  GroupPost[]
+  groupMember GroupMember[]
 }
 
 model User {
@@ -57,8 +57,8 @@ model User {
   emailVerified DateTime?
   image         String?
   name          String?
-  Account       Account[]
-  Session       Session[]
+  account       Account[]
+  session       Session[]
   profile       UserProfile?
 }
 
@@ -88,7 +88,7 @@ model Comment {
   commentGroupId  String
   parentComment   Comment?    @relation("ParentComment", fields: [parentCommentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   parentCommentId String?     @db.ObjectId
-  Comment         Comment[]   @relation("ParentComment")
+  comment         Comment[]   @relation("ParentComment")
   content         Json
   author          UserProfile @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId        String      @db.ObjectId
@@ -97,18 +97,18 @@ model Comment {
 }
 
 model Group {
-  id          String        @id @default(auto()) @map("_id") @db.ObjectId
-  admin       UserProfile   @relation(fields: [adminId], references: [id], onDelete: Cascade)
-  adminId     String        @db.ObjectId
-  name        String        @unique
-  desc        String?
-  banner_url  String?
-  createdAt   Int
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  admin        UserProfile   @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  adminId      String        @db.ObjectId
+  name         String        @unique
+  desc         String?
+  banner_url   String?
+  createdAt    Int
   // a group MUST have a referenced group settings document which can't be deleted while the group exists
-  settings    GroupSettings @relation(fields: [settingsId], references: [id], onDelete: Restrict)
-  GroupPost   GroupPost[]
-  settingsId  String        @unique @db.ObjectId
-  GroupMember GroupMember[]
+  settings     GroupSettings @relation(fields: [settingsId], references: [id], onDelete: Restrict)
+  groupPosts   GroupPost[]
+  settingsId   String        @unique @db.ObjectId
+  groupMembers GroupMember[]
 }
 
 model GroupSettings {
@@ -117,7 +117,7 @@ model GroupSettings {
   isAnonymous        Boolean
   autoMemberApproval Boolean
   autoPostApproval   Boolean
-  Group              Group?
+  group              Group?
 }
 
 model GroupMember {
