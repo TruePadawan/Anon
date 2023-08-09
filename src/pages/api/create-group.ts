@@ -34,13 +34,13 @@ export default async function handler(
 					isAnonymous: settingsData.isAnonymous,
 					autoMemberApproval: settingsData.autoMemberApproval,
 					autoPostApproval: settingsData.autoPostApproval,
-					Group: {
+					group: {
 						create: {
 							adminId: groupData.adminId,
 							name: groupData.name,
 							desc: groupData.desc,
 							createdAt: Date.now(),
-							GroupMember: {
+							groupMembers: {
 								create: [
 									{
 										userProfileId: groupData.adminId,
@@ -52,12 +52,12 @@ export default async function handler(
 					},
 				},
 				include: {
-					Group: true,
+					group: true,
 				},
 			});
 			res
 				.status(200)
-				.json({ message: "Group created successfully", group: settings.Group });
+				.json({ message: "Group created successfully", group: settings.group });
 		} catch (error: any) {
 			console.error(error);
 			res
