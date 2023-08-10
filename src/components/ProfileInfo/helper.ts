@@ -1,6 +1,7 @@
+import { Base64 } from "@/types/types";
 import { UploadApiOptions, UploadApiResponse } from "cloudinary";
 
-export function getBase64(file: File): Promise<string | ArrayBuffer | null> {
+export function getBase64(file: File): Promise<Base64 | null> {
 	return new Promise((resolve, reject) => {
 		const reader = new FileReader();
 		reader.readAsDataURL(file);
@@ -23,20 +24,14 @@ export function validateFileAsImage(file: File) {
 	};
 }
 
-export async function uploadImage(file: File, uploadParams: UploadApiOptions) {
-	const { isValid } = validateFileAsImage(file);
-	if (!isValid) {
-		throw new Error("Could not verify that file is an image");
-	}
-	const fileBase64 = await getBase64(file);
-	if (!fileBase64) {
-		throw new Error("Failed to convert file to base64");
-	}
-
+export async function uploadImage(
+	file: Base64,
+	uploadParams: UploadApiOptions
+) {
 	const response = await fetch("/api/upload-image", {
 		method: "POST",
 		body: JSON.stringify({
-			file: fileBase64,
+			file,
 			options: uploadParams,
 		}),
 	});
