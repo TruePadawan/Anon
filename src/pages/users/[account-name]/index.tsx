@@ -6,7 +6,7 @@ import { Button } from "@mantine/core";
 import { useState } from "react";
 import EditProfileInfo from "@/components/ProfileInfo/EditProfileInfo";
 import { useRouter } from "next/router";
-import { prisma } from "../../../../lib/prisma-client";
+import { prisma } from "@/lib/prisma-client";
 import { UserProfile } from "@prisma/client";
 import ProfileLayout from "@/layout/ProfileLayout";
 import useUser from "@/hooks/useUser";

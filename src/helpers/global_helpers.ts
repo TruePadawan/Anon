@@ -1,6 +1,5 @@
 import { Validator } from "@/hooks/useInput";
 
-// Account name is valid if it's unique in database
 export const validateAccountName: Validator = {
 	name: "validate account name",
 	async validatorFn(value: string) {
@@ -19,5 +18,6 @@ export function parseAccountName(accountName: string) {
 	return accountName?.toString().replaceAll(" ", "");
 }
 
-export const IMG_WIDTH = 150;
-export const IMG_HEIGHT = IMG_WIDTH;
+export function classNames(...classNames: Array<boolean | string>) {
+	return classNames.filter(Boolean).join(" ");
+}

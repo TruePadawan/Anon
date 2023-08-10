@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar/Navbar";
 import { GetServerSideProps } from "next";
-import { prisma } from "../../lib/prisma-client";
+import { prisma } from "@/lib/prisma-client";
 import { useMemo, useState } from "react";
 import PostItem from "@/components/PostItem/PostItem";
 import CreatePost from "@/components/CreatePost/CreatePost";

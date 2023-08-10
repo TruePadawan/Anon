@@ -2,11 +2,11 @@
 import { useEffect, useRef, useState } from "react";
 import { Button, FileInput, Loader, TextInput, Textarea } from "@mantine/core";
 import useInput from "@/hooks/useInput";
-import { parseAccountName, validateAccountName } from "./utils";
+import { validateFileAsImage, uploadImage, getBase64 } from "./helper";
 import {
-	validateFileAsImage,
-	uploadImage,
-} from "../../../helpers/global-helpers";
+	validateAccountName,
+	parseAccountName,
+} from "@/helpers/global_helpers";
 import { UploadApiOptions } from "cloudinary";
 import { IconUpload } from "@tabler/icons-react";
 import { UserProfile } from "@prisma/client";
@@ -56,6 +56,17 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 		if (profilePictureRef.current === undefined) {
 			throw new Error("No file selected!");
 		}
+
+		const result = validateFileAsImage(profilePictureRef.current);
+		if (!result.isValid) {
+			throw new Error(result.messages.join());
+		}
+
+		const fileAsBase64 = await getBase64(profilePictureRef.current);
+		if (!fileAsBase64) {
+			throw new Error("Failed to convert image file to base64");
+		}
+
 		const uploadOptions: UploadApiOptions = {
 			upload_preset: "profile_pic_preset",
 			public_id: `${props.profileData.id}`,
@@ -63,10 +74,7 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 			overwrite: true,
 		};
 
-		const uploadResult = await uploadImage(
-			profilePictureRef.current,
-			uploadOptions
-		);
+		const uploadResult = await uploadImage(fileAsBase64, uploadOptions);
 		return uploadResult.secure_url;
 	}
 

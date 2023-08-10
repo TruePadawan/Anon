@@ -1,19 +1,19 @@
 import {
-	parseAccountName,
 	validateAccountName,
-} from "@/components/ProfileInfo/utils";
+	parseAccountName,
+} from "@/helpers/global_helpers";
 import useInput from "@/hooks/useInput";
 import { Button, Loader, Skeleton, TextInput, Title } from "@mantine/core";
 import { useSession } from "next-auth/react";
-import { getRandomColor, getRandomInt } from "../../../helpers/global-helpers";
+import { getRandomColor, getRandomInt } from "./helpers";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useSWRConfig } from "swr";
 import { notifications } from "@mantine/notifications";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../../lib/auth";
-import { prisma } from "../../../lib/prisma-client";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma-client";
 
 export default function CreateProfilePage() {
 	const router = useRouter();

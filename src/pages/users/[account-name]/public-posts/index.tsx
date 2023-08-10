@@ -2,7 +2,7 @@ import Navbar from "@/components/Navbar/Navbar";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
 import ProfileLayout from "@/layout/ProfileLayout";
-import { prisma } from "../../../../../lib/prisma-client";
+import { prisma } from "@/lib/prisma-client";
 import useSWR from "swr";
 import { PublicPostFull } from "@/types/types";
 import PostItem from "@/components/PostItem/PostItem";

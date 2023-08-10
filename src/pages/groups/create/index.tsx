@@ -7,7 +7,7 @@ import { notifications } from "@mantine/notifications";
 import { Group as GroupModel } from "@prisma/client";
 import { useRouter } from "next/router";
 import { useRef, useState } from "react";
-import { validateGroupName } from "./utils";
+import { validateGroupName } from "./helpers";
 
 type RadioValue = "true" | "false" | string;
 export default function CreateGroupPage() {

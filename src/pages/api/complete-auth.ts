@@ -1,7 +1,7 @@
-import { authOptions } from "../../../lib/auth";
+import { authOptions } from "@/lib/auth";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
-import { prisma } from "../../../lib/prisma-client";
+import { prisma } from "@/lib/prisma-client";
 
 /*	If there is a session
 		if user has no profile, route to page for creating a profile, else go to index page,

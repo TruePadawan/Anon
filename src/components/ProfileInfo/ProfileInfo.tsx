@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { UserProfile } from "@prisma/client";
-import { IMG_HEIGHT, IMG_WIDTH } from "./utils";
+import { IMG_HEIGHT, IMG_WIDTH } from "./vars";
 import { TextInput, Textarea } from "@mantine/core";
 
 const ProfileInfo = (props: UserProfile) => {

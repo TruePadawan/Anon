@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { prisma } from "../../../lib/prisma-client";
+import { prisma } from "@/lib/prisma-client";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../../lib/auth";
+import { authOptions } from "@/lib/auth";
 import { CommentFull } from "@/types/types";
 
 export interface DeletePostRequestBody {
