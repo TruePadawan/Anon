@@ -7,7 +7,7 @@ import {
 	validateAccountName,
 	validateFileAsImage,
 	uploadImage,
-} from "./utils";
+} from "./helper";
 import { UploadApiOptions } from "cloudinary";
 import { IconUpload } from "@tabler/icons-react";
 import { UserProfile } from "@prisma/client";

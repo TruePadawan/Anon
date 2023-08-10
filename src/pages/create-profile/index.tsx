@@ -1,7 +1,7 @@
 import {
 	parseAccountName,
 	validateAccountName,
-} from "@/components/ProfileInfo/utils";
+} from "@/components/ProfileInfo/helper";
 import useInput from "@/hooks/useInput";
 import { Button, Loader, Skeleton, TextInput, Title } from "@mantine/core";
 import { useSession } from "next-auth/react";
