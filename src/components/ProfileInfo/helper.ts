@@ -69,6 +69,3 @@ export async function uploadImage(file: File, uploadParams: UploadApiOptions) {
 	const data: UploadApiResponse = await response.json();
 	return data;
 }
-
-export const IMG_WIDTH = 150;
-export const IMG_HEIGHT = IMG_WIDTH;
