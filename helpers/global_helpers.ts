@@ -101,6 +101,6 @@ export const CommentEditorExtensions = [
 	Link,
 ];
 
-export const classNames = (...classNames: Array<boolean | string>) => {
+export function classNames(...classNames: Array<boolean | string>) {
 	return classNames.filter(Boolean).join(" ");
-};
+}
