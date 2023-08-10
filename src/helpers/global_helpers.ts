@@ -14,6 +14,10 @@ export const validateAccountName: Validator = {
 	},
 };
 
+export function parseAccountName(accountName: string) {
+	return accountName?.toString().replaceAll(" ", "");
+}
+
 export function classNames(...classNames: Array<boolean | string>) {
 	return classNames.filter(Boolean).join(" ");
 }

@@ -1,9 +1,5 @@
 import { UploadApiOptions, UploadApiResponse } from "cloudinary";
 
-export function parseAccountName(accountName: string) {
-	return accountName?.toString().replaceAll(" ", "");
-}
-
 export function getBase64(file: File): Promise<string | ArrayBuffer | null> {
 	return new Promise((resolve, reject) => {
 		const reader = new FileReader();
