@@ -16,9 +16,6 @@ export function getRandomInt(max: number) {
 	return Math.floor(Math.random() * max);
 }
 
-export const CLOUDINARY_UPLOAD_URL =
-	"https://api.cloudinary.com/v1_1/cloudinary-freeplan/image/upload";
-
 export function validateFileAsImage(file: File) {
 	const errorMessages = [];
 	if (file.size / 1000 >= 1024) {
