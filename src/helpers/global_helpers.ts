@@ -1,6 +1,5 @@
 import { Validator } from "@/hooks/useInput";
 
-// Account name is valid if it's unique in database
 export const validateAccountName: Validator = {
 	name: "validate account name",
 	async validatorFn(value: string) {
