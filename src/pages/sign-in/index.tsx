@@ -4,7 +4,7 @@ import Head from "next/head";
 import { signIn } from "next-auth/react";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../../lib/auth";
+import { authOptions } from "@/lib/auth";
 import { Alert } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
 import { IconBrandGoogle, IconBrandGithub } from "@tabler/icons-react";

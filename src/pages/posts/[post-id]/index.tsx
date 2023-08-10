@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar/Navbar";
 import { GetServerSideProps } from "next";
-import { prisma } from "../../../../lib/prisma-client";
+import { prisma } from "@/lib/prisma-client";
 import { PublicPostFull } from "@/types/types";
 import { IconError404 } from "@tabler/icons-react";
 import PostItem from "@/components/PostItem/PostItem";
