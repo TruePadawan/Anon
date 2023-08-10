@@ -1,7 +1,3 @@
-import { Link } from "@mantine/tiptap";
-import TextAlign from "@tiptap/extension-text-align";
-import Underline from "@tiptap/extension-underline";
-import StarterKit from "@tiptap/starter-kit";
 import { UploadApiOptions, UploadApiResponse } from "cloudinary";
 import randomColor from "randomcolor";
 
@@ -76,30 +72,6 @@ export async function uploadImage(file: File, uploadParams: UploadApiOptions) {
 	const data: UploadApiResponse = await response.json();
 	return data;
 }
-
-export const PostEditorExtensions = [
-	StarterKit.configure({
-		horizontalRule: false,
-		dropcursor: false,
-		gapcursor: false,
-		hardBreak: false,
-	}),
-	Underline,
-	Link,
-	TextAlign.configure({ types: ["heading", "paragraph"] }),
-];
-
-export const CommentEditorExtensions = [
-	StarterKit.configure({
-		horizontalRule: false,
-		dropcursor: false,
-		gapcursor: false,
-		hardBreak: false,
-		heading: false,
-	}),
-	Underline,
-	Link,
-];
 
 export function classNames(...classNames: Array<boolean | string>) {
 	return classNames.filter(Boolean).join(" ");

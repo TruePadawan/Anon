@@ -1,6 +1,6 @@
 import { RichTextEditor } from "@mantine/tiptap";
 import { Content, Editor, useEditor } from "@tiptap/react";
-import { PostEditorExtensions } from "../../../helpers/global_helpers";
+import { PostEditorExtensions } from "../../../helpers/global_vars";
 import {
 	ActionIcon,
 	Alert,
