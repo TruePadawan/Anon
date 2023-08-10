@@ -16,7 +16,7 @@ import { Content, Editor, useEditor } from "@tiptap/react";
 import moment from "moment";
 import Link from "next/link";
 import useSWR from "swr";
-import { CommentEditorExtensions } from "../../../helpers/global-helpers";
+import { CommentEditorExtensions } from "../../../helpers/global_helpers";
 import { useDisclosure } from "@mantine/hooks";
 import { useRef, useState } from "react";
 import { notifications } from "@mantine/notifications";

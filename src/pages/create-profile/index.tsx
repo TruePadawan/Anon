@@ -5,7 +5,7 @@ import {
 import useInput from "@/hooks/useInput";
 import { Button, Loader, Skeleton, TextInput, Title } from "@mantine/core";
 import { useSession } from "next-auth/react";
-import { getRandomColor, getRandomInt } from "../../../helpers/global-helpers";
+import { getRandomColor, getRandomInt } from "../../../helpers/global_helpers";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useSWRConfig } from "swr";

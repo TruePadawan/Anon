@@ -6,7 +6,7 @@ import { prisma } from "../../../lib/prisma-client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../lib/auth";
 import { IconSearchOff } from "@tabler/icons-react";
-import { classNames } from "../../../helpers/global-helpers";
+import { classNames } from "../../../helpers/global_helpers";
 import GroupItem from "@/components/GroupItem/GroupItem";
 import { GroupFull } from "@/types/types";
 
