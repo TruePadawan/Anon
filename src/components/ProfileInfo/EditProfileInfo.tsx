@@ -2,8 +2,12 @@
 import { useEffect, useRef, useState } from "react";
 import { Button, FileInput, Loader, TextInput, Textarea } from "@mantine/core";
 import useInput from "@/hooks/useInput";
-import { parseAccountName, validateAccountName } from "./utils";
-import { validateFileAsImage, uploadImage } from "@/helpers/global_helpers";
+import {
+	parseAccountName,
+	validateAccountName,
+	validateFileAsImage,
+	uploadImage,
+} from "./utils";
 import { UploadApiOptions } from "cloudinary";
 import { IconUpload } from "@tabler/icons-react";
 import { UserProfile } from "@prisma/client";
