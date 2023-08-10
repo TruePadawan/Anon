@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { JSONContent, useEditor } from "@tiptap/react";
 import Placeholder from "@tiptap/extension-placeholder";
-import { PostEditorExtensions } from "../../../helpers/global_vars";
+import { PostEditorExtensions } from "@/helpers/global_vars";
 import { Button } from "@mantine/core";
 import PostEditor from "../Editor/PostEditor";
 

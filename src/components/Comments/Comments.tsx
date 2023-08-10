@@ -1,5 +1,5 @@
 import { useEditor } from "@tiptap/react";
-import { CommentEditorExtensions } from "../../../helpers/global_vars";
+import { CommentEditorExtensions } from "@/helpers/global_vars";
 import CommentEditor from "../Editor/CommentEditor";
 import { useMemo, useState, useEffect } from "react";
 import CommentItem from "./CommentItem";
