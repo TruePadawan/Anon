@@ -3,7 +3,7 @@ import { GetServerSideProps } from "next";
 import { Button, TextInput } from "@mantine/core";
 import useInput from "@/hooks/useInput";
 import React, { useEffect, useState } from "react";
-import { validateGroupJoinId } from "./utils";
+import { validateGroupJoinId } from "./helpers";
 
 interface PageProps {}
 
