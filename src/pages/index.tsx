@@ -1,26 +1,23 @@
 import Navbar from "@/components/Navbar/Navbar";
-import { GetServerSideProps } from "next";
-import { prisma } from "@/lib/prisma-client";
 import { useState } from "react";
 import PostItem from "@/components/PostItem/PostItem";
 import { useEditor } from "@tiptap/react";
-import { PublicPostFull } from "@/types/types";
 import { notifications } from "@mantine/notifications";
 import useUser from "@/hooks/useUser";
-import { Button } from "@mantine/core";
+import { Button, Loader } from "@mantine/core";
 import PostEditor from "@/components/Editor/PostEditor";
 import { PostEditorExtensions } from "@/helpers/global_vars";
 import Placeholder from "@tiptap/extension-placeholder";
-import PublicPostAPI from "@/lib/api/PublicPostAPI";
 import { getErrorMessage } from "@/lib/error-message";
+import usePublicPosts from "@/hooks/usePublicPosts";
 
-interface PageProps {
-	publicPosts: PublicPostFull[];
-}
-
-const PublicPostsPage = ({ publicPosts }: PageProps) => {
+const PublicPostsPage = () => {
 	const { user, isValidating: verifyingUser } = useUser();
-	const [postsData, setPostsData] = useState<PublicPostFull[]>(publicPosts);
+	const { createPublicPost, posts, isLoading } = usePublicPosts({
+		orderBy: {
+			createdAt: "desc",
+		},
+	});
 	const editor = useEditor({
 		extensions: [
 			...PostEditorExtensions,
@@ -39,29 +36,13 @@ const PublicPostsPage = ({ publicPosts }: PageProps) => {
 			return;
 		}
 
-		if (verifyingUser || !user) {
-			notifications.show({
-				color: "orange",
-				title: "Cannot start post submission",
-				message: "User is not valid",
-			});
-			return;
-		}
-
 		const validPost = !editor.isEmpty || editor.getText().trim().length !== 0;
-
 		if (validPost) {
 			setIsSubmittingPost(true);
 			// editor should be read-only while submitting post
 			editor.setEditable(false);
-
 			try {
-				const post = await PublicPostAPI.create(editor.getJSON(), user.id);
-				setPostsData((postsData) => {
-					postsData.unshift(post);
-					return [...postsData];
-				});
-
+				await createPublicPost(editor.getJSON());
 				editor.commands.clearContent();
 			} catch (error) {
 				notifications.show({
@@ -74,18 +55,6 @@ const PublicPostsPage = ({ publicPosts }: PageProps) => {
 			editor.setEditable(true);
 		}
 	}
-
-	const posts = postsData.map((post) => {
-		return (
-			<PostItem
-				key={post.id}
-				postData={post}
-				postType="public"
-				full={false}
-				showCommentsCount
-			/>
-		);
-	});
 
 	return (
 		<>
@@ -103,29 +72,26 @@ const PublicPostsPage = ({ publicPosts }: PageProps) => {
 						</Button>
 					</div>
 				)}
-				{postsData && (
-					<ul className="max-w-4xl w-full flex flex-col gap-2 list-none">
-						{posts}
-					</ul>
-				)}
+				<ul className="max-w-4xl w-full flex flex-col gap-2 list-none">
+					{isLoading && (
+						<Loader className="mt-2 self-center" size="lg" color="gray" />
+					)}
+					{!isLoading &&
+						posts.map((post) => {
+							return (
+								<PostItem
+									key={post.id}
+									postData={post}
+									postType="public"
+									full={false}
+									showCommentsCount
+								/>
+							);
+						})}
+				</ul>
 			</main>
 		</>
 	);
-};
-
-export const getServerSideProps: GetServerSideProps<PageProps> = async (
-	context
-) => {
-	const publicPosts = await prisma.publicPost.findMany({
-		include: { author: true },
-		orderBy: {
-			createdAt: "desc",
-		},
-	});
-
-	return {
-		props: { publicPosts },
-	};
 };
 
 export default PublicPostsPage;
