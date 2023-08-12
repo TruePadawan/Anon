@@ -1,75 +1,107 @@
 import Navbar from "@/components/Navbar/Navbar";
 import { GetServerSideProps } from "next";
 import { prisma } from "@/lib/prisma-client";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import PostItem from "@/components/PostItem/PostItem";
-import CreatePost from "@/components/CreatePost/CreatePost";
-import { JSONContent } from "@tiptap/react";
+import { useEditor } from "@tiptap/react";
 import { PublicPostFull } from "@/types/types";
 import { notifications } from "@mantine/notifications";
 import useUser from "@/hooks/useUser";
+import { Button } from "@mantine/core";
+import PostEditor from "@/components/Editor/PostEditor";
+import { PostEditorExtensions } from "@/helpers/global_vars";
+import Placeholder from "@tiptap/extension-placeholder";
+import PublicPostAPI from "@/lib/api/PublicPostAPI";
+import { getErrorMessage } from "@/lib/error-message";
 
 interface PageProps {
 	publicPosts: PublicPostFull[];
 }
 
 const PublicPostsPage = ({ publicPosts }: PageProps) => {
-	const { user } = useUser();
+	const { user, isValidating: verifyingUser } = useUser();
 	const [postsData, setPostsData] = useState<PublicPostFull[]>(publicPosts);
+	const editor = useEditor({
+		extensions: [
+			...PostEditorExtensions,
+			Placeholder.configure({ placeholder: "Share your thoughts" }),
+		],
+	});
+	const [isSubmittingPost, setIsSubmittingPost] = useState(false);
 
-	const posts = useMemo(() => {
-		return postsData.map((post) => {
-			return (
-				<PostItem
-					key={post.id}
-					postData={post}
-					postType="public"
-					full={false}
-					showCommentsCount
-				/>
-			);
-		});
-	}, [postsData]);
-
-	async function handlePostSubmit(
-		content: JSONContent,
-		onSubmit: () => void,
-		onSubmitFailed: () => void
-	) {
-		const postDocument = {
-			content,
-			authorId: user?.id,
-			createdAt: Date.now(),
-		};
-		const response = await fetch("/api/create-public-post", {
-			method: "POST",
-			body: JSON.stringify(postDocument),
-		});
-		if (response.ok) {
-			onSubmit();
-			const createdPost = await response.json();
-			setPostsData((postsData) => {
-				postsData.unshift(createdPost);
-				return [...postsData];
-			});
-		} else {
+	async function handlePostSubmit() {
+		if (editor === null) {
 			notifications.show({
 				color: "red",
-				message: "Failed to create post",
+				title: "Cannot get post content",
+				message: "Editor not initialized",
 			});
-			onSubmitFailed();
+			return;
+		}
+
+		if (verifyingUser || !user) {
+			notifications.show({
+				color: "orange",
+				title: "Cannot start post submission",
+				message: "User is not valid",
+			});
+			return;
+		}
+
+		const validPost = !editor.isEmpty || editor.getText().trim().length !== 0;
+
+		if (validPost) {
+			setIsSubmittingPost(true);
+			// editor should be read-only while submitting post
+			editor.setEditable(false);
+
+			try {
+				const post = await PublicPostAPI.create(editor.getJSON(), user.id);
+				setPostsData((postsData) => {
+					postsData.unshift(post);
+					return [...postsData];
+				});
+
+				editor.commands.clearContent();
+			} catch (error) {
+				notifications.show({
+					color: "red",
+					title: "Post submission failed",
+					message: getErrorMessage(error),
+				});
+			}
+			setIsSubmittingPost(false);
+			editor.setEditable(true);
 		}
 	}
+
+	const posts = postsData.map((post) => {
+		return (
+			<PostItem
+				key={post.id}
+				postData={post}
+				postType="public"
+				full={false}
+				showCommentsCount
+			/>
+		);
+	});
 
 	return (
 		<>
 			<Navbar />
 			<main className="grow flex flex-col gap-3 items-center">
 				{user && (
-					<CreatePost
-						className="max-w-4xl w-full"
-						handlePostSubmit={handlePostSubmit}
-					/>
+					<div className="flex flex-col gap-2 max-w-4xl w-full">
+						<PostEditor editor={editor} />
+						<Button
+							color="gray"
+							size="md"
+							onClick={handlePostSubmit}
+							disabled={verifyingUser || isSubmittingPost}>
+							Create post
+						</Button>
+					</div>
 				)}
 				{postsData && (
 					<ul className="max-w-4xl w-full flex flex-col gap-2 list-none">
