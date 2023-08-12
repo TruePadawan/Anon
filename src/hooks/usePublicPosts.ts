@@ -13,20 +13,17 @@ interface UsePublicPostsParams {
 
 export default function usePublicPosts(params?: UsePublicPostsParams) {
 	const [posts, setPosts] = useState<PublicPostWithAuthor[]>([]);
+	// isLoading is true only when the initial load is happening
 	const [isLoading, setIsLoading] = useState(false);
 	const paramsRef = useRef(params);
 	const cursorRef = useRef<string>();
 	const { user } = useUser();
 
-	// update the cursor to the last post whenever posts state changes
-	useEffect(() => {
-		cursorRef.current = posts.at(-1)?.id;
-	}, [posts]);
-
 	// load posts when page mounts
 	useEffect(() => {
 		setIsLoading(true);
 		PublicPostAPI.getMany(paramsRef.current).then((posts) => {
+			cursorRef.current = posts.at(-1)?.id;
 			setPosts(posts);
 			setIsLoading(false);
 		});
@@ -44,5 +41,22 @@ export default function usePublicPosts(params?: UsePublicPostsParams) {
 		return newPost;
 	}
 
-	return { posts, isLoading, createPublicPost };
+	async function loadMorePosts() {
+		const newPosts = await PublicPostAPI.getMany({
+			cursor: {
+				id: cursorRef.current,
+			},
+			skip: 1,
+			...paramsRef.current,
+		});
+
+		setPosts((currentPosts) => {
+			const posts = currentPosts.concat(newPosts);
+			// update the cursor after the new posts has been added to current posts
+			cursorRef.current = posts.at(-1)?.id;
+			return posts;
+		});
+	}
+
+	return { posts, isLoading, createPublicPost, loadMorePosts };
 }
