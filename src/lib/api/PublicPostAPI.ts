@@ -35,7 +35,20 @@ class PublicPostAPI {
 
 	static async getById(postId: string) {}
 
-	static async getMany(where: Prisma.PublicPostScalarWhereInput = {}) {}
+	static async getMany(
+		params?: GetManyParams
+	): Promise<PublicPostWithAuthor[]> {
+		const response = await fetch("/api/get-public-posts", {
+			method: "POST",
+			body: JSON.stringify(params),
+		});
+		if (!response.ok) {
+			const { message } = await response.json();
+			throw new Error(message);
+		}
+		const posts: PublicPostWithAuthor[] = await response.json();
+		return posts;
+	}
 }
 
 interface CreatePublicPostData {
@@ -47,6 +60,14 @@ interface CreatePublicPostData {
 interface UpdatePublicPostPayload {
 	content?: JSONContent;
 	commentsAllowed?: boolean;
+}
+
+export interface GetManyParams {
+	take?: number;
+	where?: Prisma.PublicPostWhereInput;
+	orderBy?: Prisma.PublicPostOrderByWithRelationInput;
+	cursor?: Prisma.PublicPostWhereInput;
+	skip?: number;
 }
 
 export default PublicPostAPI;
