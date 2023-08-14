@@ -30,6 +30,8 @@ import UpdatePost from "./UpdatePost";
 import Comments from "../Comments/Comments";
 import useUser from "@/hooks/useUser";
 import CommentsCount from "../Comments/CommentsCount";
+import PublicPostAPI from "@/lib/api/PublicPostAPI";
+import { getErrorMessage } from "@/lib/error-message";
 
 interface PostItemProps {
 	className?: string;
@@ -98,18 +100,14 @@ const PostItem = forwardRef(function PostItem(
 	}
 
 	async function deletePost() {
-		const response = await fetch("/api/delete-post", {
-			method: "POST",
-			body: JSON.stringify({ postData, postType }),
-		});
-		if (response.ok) {
+		try {
+			await PublicPostAPI.remove(postData.id, postData.authorId);
 			setPostDeleted(true);
-		} else {
-			const error = await response.json();
+		} catch (error) {
 			notifications.show({
 				color: "red",
 				title: "Failed to delete post",
-				message: error.message,
+				message: getErrorMessage(error),
 			});
 		}
 		closeConfirmDeleteModal();
