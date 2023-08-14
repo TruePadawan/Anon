@@ -29,7 +29,22 @@ class PublicPostAPI {
 		postId: string,
 		authorId: string,
 		newData: UpdatePublicPostPayload
-	) {}
+	) {
+		const response = await fetch("/api/update-public-post", {
+			method: "POST",
+			body: JSON.stringify({
+				id: postId,
+				authorId,
+				data: newData,
+			}),
+		});
+		if (!response.ok) {
+			const { message } = await response.json();
+			throw new Error(message || "An unknown error occured");
+		}
+		const updatedPost = await response.json();
+		return updatedPost;
+	}
 
 	static async remove(postId: string, authorId: string) {
 		const response = await fetch("/api/delete-public-post", {
