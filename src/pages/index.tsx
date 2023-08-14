@@ -53,8 +53,8 @@ const PublicPostsPage = () => {
 			return;
 		}
 
-		const validPost = !editor.isEmpty || editor.getText().trim().length !== 0;
-		if (validPost) {
+		const notEmpty = !editor.isEmpty || editor.getText().trim().length !== 0;
+		if (notEmpty) {
 			setIsSubmittingPost(true);
 			// editor should be read-only while submitting post
 			editor.setEditable(false);
@@ -70,6 +70,12 @@ const PublicPostsPage = () => {
 			}
 			setIsSubmittingPost(false);
 			editor.setEditable(true);
+		} else {
+			notifications.show({
+				color: "orange",
+				title: "Post submission failed",
+				message: "Post content cannot be empty or just whitespace",
+			});
 		}
 	}
 
