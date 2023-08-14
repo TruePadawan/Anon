@@ -51,7 +51,7 @@ const PostItem = forwardRef(function PostItem(
 		{ open: openConfirmDeleteModal, close: closeConfirmDeleteModal },
 	] = useDisclosure(false);
 	const theme = useMantineTheme();
-	const { postData, postType } = props;
+	const { postData } = props;
 	const { author } = postData;
 	const editor = useEditor({
 		editable: false,
