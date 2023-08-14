@@ -60,8 +60,6 @@ class PublicPostAPI {
 		}
 	}
 
-	static async getById(postId: string) {}
-
 	static async getMany(
 		params?: GetManyParams
 	): Promise<PublicPostWithAuthor[]> {
