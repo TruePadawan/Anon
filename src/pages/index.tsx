@@ -1,5 +1,5 @@
 import Navbar from "@/components/Navbar/Navbar";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PostItem from "@/components/PostItem/PostItem";
 import { useEditor } from "@tiptap/react";
 import { notifications } from "@mantine/notifications";
@@ -10,13 +10,15 @@ import { PostEditorExtensions } from "@/helpers/global_vars";
 import Placeholder from "@tiptap/extension-placeholder";
 import { getErrorMessage } from "@/lib/error-message";
 import usePublicPosts from "@/hooks/usePublicPosts";
+import { useIntersection } from "@mantine/hooks";
 
 const PublicPostsPage = () => {
 	const { user, isValidating: verifyingUser } = useUser();
-	const { createPublicPost, posts, isLoading } = usePublicPosts({
+	const { createPublicPost, posts, isLoading, loadMorePosts } = usePublicPosts({
 		orderBy: {
 			createdAt: "desc",
 		},
+		take: 2,
 	});
 	const editor = useEditor({
 		extensions: [
@@ -25,6 +27,20 @@ const PublicPostsPage = () => {
 		],
 	});
 	const [isSubmittingPost, setIsSubmittingPost] = useState(false);
+	const intersectionRootElRef = useRef(null);
+	const { entry, ref: infiniteScrollTriggerElRef } = useIntersection({
+		threshold: 0.25,
+	});
+
+	useEffect(() => {
+		const timeoutID = setTimeout(() => {
+			if (entry?.isIntersecting) {
+				console.log("LOADING MORE POSTS");
+				loadMorePosts();
+			}
+		}, 800);
+		return () => clearTimeout(timeoutID);
+	}, [entry?.isIntersecting, loadMorePosts]);
 
 	async function handlePostSubmit() {
 		if (editor === null) {
@@ -59,7 +75,9 @@ const PublicPostsPage = () => {
 	return (
 		<>
 			<Navbar />
-			<main className="grow flex flex-col gap-3 items-center">
+			<main
+				className="grow flex flex-col gap-3 items-center"
+				ref={intersectionRootElRef}>
 				{user && (
 					<div className="flex flex-col gap-2 max-w-4xl w-full">
 						<PostEditor editor={editor} />
@@ -77,9 +95,11 @@ const PublicPostsPage = () => {
 						<Loader className="mt-2 self-center" size="lg" color="gray" />
 					)}
 					{!isLoading &&
-						posts.map((post) => {
+						posts.map((post, index) => {
+							const secondToLast = index == posts.length - 2;
 							return (
 								<PostItem
+									ref={secondToLast ? infiniteScrollTriggerElRef : null}
 									key={post.id}
 									postData={post}
 									postType="public"
