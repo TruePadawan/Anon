@@ -3,11 +3,12 @@ import { GetServerSideProps } from "next";
 import Head from "next/head";
 import ProfileLayout from "@/layout/ProfileLayout";
 import { prisma } from "@/lib/prisma-client";
-import useSWR from "swr";
-import { PublicPostFull } from "@/types/types";
 import PostItem from "@/components/PostItem/PostItem";
 import { Loader } from "@mantine/core";
 import { UserProfile } from "@prisma/client";
+import { useEffect, useRef } from "react";
+import usePublicPosts from "@/hooks/usePublicPosts";
+import { useIntersection } from "@mantine/hooks";
 
 interface PublicPostsSectionProps {
 	profile: UserProfile | null;
@@ -15,23 +16,27 @@ interface PublicPostsSectionProps {
 
 const PublicPostsSection = (props: PublicPostsSectionProps) => {
 	const { profile } = props;
-	const { data: postsData, isLoading } = useSWR(
-		profile ? "/api/get-public-posts" : null,
-		async (key: string): Promise<PublicPostFull[]> => {
-			const response = await fetch(key, {
-				method: "POST",
-				body: JSON.stringify({
-					authorId: profile?.id,
-				}),
-			});
-			if (!response.ok) {
-				const error = await response.json();
-				throw new Error(error.message);
+	const { posts, isLoading, loadMorePosts } = usePublicPosts({
+		where: {
+			authorId: profile?.id,
+		},
+		take: 10,
+	});
+	const intersectionRootElRef = useRef(null);
+	const { entry, ref: infiniteScrollTriggerElRef } = useIntersection({
+		threshold: 0.25,
+	});
+	const loadMorePostsRef = useRef(loadMorePosts);
+
+	// load more posts when the second to last post is in view
+	useEffect(() => {
+		const timeoutID = setTimeout(() => {
+			if (entry?.isIntersecting) {
+				loadMorePostsRef.current();
 			}
-			const posts = await response.json();
-			return posts;
-		}
-	);
+		}, 800);
+		return () => clearTimeout(timeoutID);
+	}, [entry?.isIntersecting]);
 
 	if (profile === null) {
 		return (
@@ -47,11 +52,6 @@ const PublicPostsSection = (props: PublicPostsSectionProps) => {
 		);
 	}
 
-	const posts = postsData?.map((post) => {
-		return (
-			<PostItem key={post.id} postData={post} postType="public" full={false} />
-		);
-	});
 	return (
 		<>
 			<Head>
@@ -59,11 +59,28 @@ const PublicPostsSection = (props: PublicPostsSectionProps) => {
 			</Head>
 			<Navbar />
 			<ProfileLayout tabValue="/public-posts" accountName={profile.accountName}>
-				<main className="grow flex flex-col gap-4 items-center pt-8 h-full">
+				<main
+					className="grow flex flex-col gap-4 items-center pt-8 h-full"
+					ref={intersectionRootElRef}>
 					{isLoading && (
 						<Loader variant="bars" color="gray" className="my-auto" />
 					)}
-					{!isLoading && <ul className="max-w-4xl">{posts}</ul>}
+					{!isLoading && (
+						<ul className="max-w-4xl list-none flex flex-col gap-2">
+							{posts?.map((post, index) => {
+								const secondToLast = index == posts.length - 2;
+								return (
+									<PostItem
+										key={post.id}
+										ref={secondToLast ? infiniteScrollTriggerElRef : null}
+										postData={post}
+										postType="public"
+										full={false}
+									/>
+								);
+							})}
+						</ul>
+					)}
 				</main>
 			</ProfileLayout>
 		</>

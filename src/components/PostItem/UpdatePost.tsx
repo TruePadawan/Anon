@@ -3,6 +3,8 @@ import PostEditor from "../Editor/PostEditor";
 import { Editor } from "@tiptap/react";
 import { notifications } from "@mantine/notifications";
 import { Dispatch, SetStateAction } from "react";
+import PublicPostAPI from "@/lib/api/PublicPostAPI";
+import { getErrorMessage } from "@/lib/error-message";
 
 interface UpdatePostProps {
 	editor: Editor;
@@ -18,9 +20,8 @@ export default function UpdatePost(props: UpdatePostProps) {
 	const { editor, postID, authorId } = props;
 
 	async function updatePost() {
-		const NoPostContent =
-			editor.isEmpty || editor.getText().trim().length === 0;
-		if (NoPostContent) {
+		const emptyPost = editor.isEmpty || editor.getText().trim().length === 0;
+		if (emptyPost) {
 			notifications.show({
 				color: "red",
 				title: "Invalid data",
@@ -32,29 +33,21 @@ export default function UpdatePost(props: UpdatePostProps) {
 		// set the editor to read-only while post is being updated
 		props.setIsUpdatingState(true);
 		editor.setEditable(false);
-
-		const response = await fetch("/api/update-public-post", {
-			method: "POST",
-			body: JSON.stringify({
-				id: postID,
-				authorId,
-				data: {
-					content: editor.getJSON(),
-				},
-			}),
-		});
-		if (response.ok && props.onUpdate) {
-			props.onUpdate();
-		} else if (!response.ok) {
-			const error = await response.json();
+		try {
+			await PublicPostAPI.update(postID, authorId, {
+				content: editor.getJSON(),
+			});
+			if (props.onUpdate) {
+				props.onUpdate();
+			}
+		} catch (error) {
+			// run the cancel update callback if the update failed
+			props.cancelUpdate();
 			notifications.show({
 				color: "red",
 				title: "Failed to update post",
-				message: error.message,
+				message: getErrorMessage(error),
 			});
-
-			// run the cancel update callback if the update failed
-			props.cancelUpdate();
 		}
 		props.setIsUpdatingState(false);
 	}

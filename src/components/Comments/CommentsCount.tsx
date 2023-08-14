@@ -3,25 +3,11 @@ import useSWR from "swr";
 interface CommentsCountProps {
 	commentGroupId: string;
 }
-export default function CommentsCount(props: CommentsCountProps) {
-	const { data: count, isLoading } = useSWR(
-		"/api/get-comments-count",
-		async (key: string): Promise<number> => {
-			const res = await fetch(key, {
-				method: "POST",
-				body: JSON.stringify({
-					commentGroupId: props.commentGroupId,
-				}),
-			});
 
-			if (res.ok) {
-				const { count } = await res.json();
-				return count;
-			} else {
-				const { message } = await res.json();
-				throw new Error(message);
-			}
-		}
+export default function CommentsCount({ commentGroupId }: CommentsCountProps) {
+	const { data: count, isLoading } = useSWR(
+		["/api/get-comments-count", commentGroupId],
+		fetcher
 	);
 	return (
 		<p className="w-full text-center font-semibold">
@@ -29,3 +15,20 @@ export default function CommentsCount(props: CommentsCountProps) {
 		</p>
 	);
 }
+
+const fetcher = async ([url, groupId]: [string, string]): Promise<number> => {
+	const res = await fetch(url, {
+		method: "POST",
+		body: JSON.stringify({
+			commentGroupId: groupId,
+		}),
+	});
+
+	if (res.ok) {
+		const { count } = await res.json();
+		return count;
+	} else {
+		const { message } = await res.json();
+		throw new Error(message);
+	}
+};

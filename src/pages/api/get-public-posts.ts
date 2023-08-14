@@ -11,12 +11,11 @@ export default async function handler(
 		});
 	} else {
 		try {
-			const filters = JSON.parse(req.body);
 			const posts = await prisma.publicPost.findMany({
-				where: filters,
 				include: {
 					author: true,
 				},
+				...JSON.parse(req.body),
 			});
 			res.status(200).json(posts);
 		} catch (error: any) {

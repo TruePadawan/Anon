@@ -24,12 +24,14 @@ import {
 	IconMessageCircle,
 } from "@tabler/icons-react";
 import { useDisclosure } from "@mantine/hooks";
-import { useRef, useState } from "react";
+import { Ref, forwardRef, useRef, useState } from "react";
 import { notifications } from "@mantine/notifications";
 import UpdatePost from "./UpdatePost";
 import Comments from "../Comments/Comments";
 import useUser from "@/hooks/useUser";
 import CommentsCount from "../Comments/CommentsCount";
+import PublicPostAPI from "@/lib/api/PublicPostAPI";
+import { getErrorMessage } from "@/lib/error-message";
 
 interface PostItemProps {
 	className?: string;
@@ -39,14 +41,17 @@ interface PostItemProps {
 	showCommentsCount?: boolean;
 }
 
-export default function PostItem(props: PostItemProps) {
+const PostItem = forwardRef(function PostItem(
+	props: PostItemProps,
+	ref: Ref<HTMLLIElement>
+) {
 	const { user: currentUser } = useUser();
 	const [
 		confirmDeleteModalOpened,
 		{ open: openConfirmDeleteModal, close: closeConfirmDeleteModal },
 	] = useDisclosure(false);
 	const theme = useMantineTheme();
-	const { postData, postType } = props;
+	const { postData } = props;
 	const { author } = postData;
 	const editor = useEditor({
 		editable: false,
@@ -95,18 +100,14 @@ export default function PostItem(props: PostItemProps) {
 	}
 
 	async function deletePost() {
-		const response = await fetch("/api/delete-post", {
-			method: "POST",
-			body: JSON.stringify({ postData, postType }),
-		});
-		if (response.ok) {
+		try {
+			await PublicPostAPI.remove(postData.id, postData.authorId);
 			setPostDeleted(true);
-		} else {
-			const error = await response.json();
+		} catch (error) {
 			notifications.show({
 				color: "red",
 				title: "Failed to delete post",
-				message: error.message,
+				message: getErrorMessage(error),
 			});
 		}
 		closeConfirmDeleteModal();
@@ -141,7 +142,7 @@ export default function PostItem(props: PostItemProps) {
 	const creationDate = moment(postData.createdAt).fromNow(true);
 	const currentUserIsAuthor = currentUser?.id === author.id;
 	return (
-		<li className={`flex flex-col gap-4 ${props.className || ""}`}>
+		<li className={`flex flex-col gap-4 ${props.className || ""}`} ref={ref}>
 			<div
 				className="flex flex-col p-1 rounded-md"
 				style={{ backgroundColor: theme.colors.dark[7] }}>
@@ -270,4 +271,6 @@ export default function PostItem(props: PostItemProps) {
 			)}
 		</li>
 	);
-}
+});
+
+export default PostItem;

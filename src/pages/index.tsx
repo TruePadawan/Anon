@@ -1,99 +1,124 @@
 import Navbar from "@/components/Navbar/Navbar";
-import { GetServerSideProps } from "next";
-import { prisma } from "@/lib/prisma-client";
-import { useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PostItem from "@/components/PostItem/PostItem";
-import CreatePost from "@/components/CreatePost/CreatePost";
-import { JSONContent } from "@tiptap/react";
-import { PublicPostFull } from "@/types/types";
+import { useEditor } from "@tiptap/react";
 import { notifications } from "@mantine/notifications";
 import useUser from "@/hooks/useUser";
+import { Button, Loader } from "@mantine/core";
+import PostEditor from "@/components/Editor/PostEditor";
+import { PostEditorExtensions } from "@/helpers/global_vars";
+import Placeholder from "@tiptap/extension-placeholder";
+import { getErrorMessage } from "@/lib/error-message";
+import usePublicPosts from "@/hooks/usePublicPosts";
+import { useIntersection } from "@mantine/hooks";
 
-interface PageProps {
-	publicPosts: PublicPostFull[];
-}
+const PublicPostsPage = () => {
+	const { user, isValidating: verifyingUser } = useUser();
+	const { createPublicPost, posts, isLoading, loadMorePosts } = usePublicPosts({
+		orderBy: {
+			createdAt: "desc",
+		},
+		take: 10,
+	});
+	const editor = useEditor({
+		extensions: [
+			...PostEditorExtensions,
+			Placeholder.configure({ placeholder: "Share your thoughts" }),
+		],
+	});
+	const [isSubmittingPost, setIsSubmittingPost] = useState(false);
+	const intersectionRootElRef = useRef(null);
+	const { entry, ref: infiniteScrollTriggerElRef } = useIntersection({
+		threshold: 0.25,
+	});
+	const loadMorePostsRef = useRef(loadMorePosts);
 
-const PublicPostsPage = ({ publicPosts }: PageProps) => {
-	const { user } = useUser();
-	const [postsData, setPostsData] = useState<PublicPostFull[]>(publicPosts);
+	// load more posts when the second to last post is in view
+	useEffect(() => {
+		const timeoutID = setTimeout(() => {
+			if (entry?.isIntersecting) {
+				loadMorePostsRef.current();
+			}
+		}, 800);
+		return () => clearTimeout(timeoutID);
+	}, [entry?.isIntersecting]);
 
-	const posts = useMemo(() => {
-		return postsData.map((post) => {
-			return (
-				<PostItem
-					key={post.id}
-					postData={post}
-					postType="public"
-					full={false}
-					showCommentsCount
-				/>
-			);
-		});
-	}, [postsData]);
-
-	async function handlePostSubmit(
-		content: JSONContent,
-		onSubmit: () => void,
-		onSubmitFailed: () => void
-	) {
-		const postDocument = {
-			content,
-			authorId: user?.id,
-			createdAt: Date.now(),
-		};
-		const response = await fetch("/api/create-public-post", {
-			method: "POST",
-			body: JSON.stringify(postDocument),
-		});
-		if (response.ok) {
-			onSubmit();
-			const createdPost = await response.json();
-			setPostsData((postsData) => {
-				postsData.unshift(createdPost);
-				return [...postsData];
-			});
-		} else {
+	async function handlePostSubmit() {
+		if (editor === null) {
 			notifications.show({
 				color: "red",
-				message: "Failed to create post",
+				title: "Cannot get post content",
+				message: "Editor not initialized",
 			});
-			onSubmitFailed();
+			return;
+		}
+
+		const notEmpty = !editor.isEmpty || editor.getText().trim().length !== 0;
+		if (notEmpty) {
+			setIsSubmittingPost(true);
+			// editor should be read-only while submitting post
+			editor.setEditable(false);
+			try {
+				await createPublicPost(editor.getJSON());
+				editor.commands.clearContent();
+			} catch (error) {
+				notifications.show({
+					color: "red",
+					title: "Post submission failed",
+					message: getErrorMessage(error),
+				});
+			}
+			setIsSubmittingPost(false);
+			editor.setEditable(true);
+		} else {
+			notifications.show({
+				color: "orange",
+				title: "Post submission failed",
+				message: "Post content cannot be empty or just whitespace",
+			});
 		}
 	}
 
 	return (
 		<>
 			<Navbar />
-			<main className="grow flex flex-col gap-3 items-center">
+			<main
+				className="grow flex flex-col gap-3 items-center"
+				ref={intersectionRootElRef}>
 				{user && (
-					<CreatePost
-						className="max-w-4xl w-full"
-						handlePostSubmit={handlePostSubmit}
-					/>
+					<div className="flex flex-col gap-2 max-w-4xl w-full">
+						<PostEditor editor={editor} />
+						<Button
+							color="gray"
+							size="md"
+							onClick={handlePostSubmit}
+							disabled={verifyingUser || isSubmittingPost}>
+							Create post
+						</Button>
+					</div>
 				)}
-				{postsData && (
-					<ul className="max-w-4xl w-full flex flex-col gap-2 list-none">
-						{posts}
-					</ul>
-				)}
+				<ul className="max-w-4xl w-full flex flex-col gap-2 list-none">
+					{isLoading && (
+						<Loader className="mt-2 self-center" size="lg" color="gray" />
+					)}
+					{!isLoading &&
+						posts.map((post, index) => {
+							const secondToLast = index == posts.length - 2;
+							return (
+								<PostItem
+									ref={secondToLast ? infiniteScrollTriggerElRef : null}
+									key={post.id}
+									postData={post}
+									postType="public"
+									full={false}
+									showCommentsCount
+								/>
+							);
+						})}
+				</ul>
 			</main>
 		</>
 	);
-};
-
-export const getServerSideProps: GetServerSideProps<PageProps> = async (
-	context
-) => {
-	const publicPosts = await prisma.publicPost.findMany({
-		include: { author: true },
-		orderBy: {
-			createdAt: "desc",
-		},
-	});
-
-	return {
-		props: { publicPosts },
-	};
 };
 
 export default PublicPostsPage;

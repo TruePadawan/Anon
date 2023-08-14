@@ -4,9 +4,9 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { PublicPostFull } from "@/types/types";
 
-export interface DeletePostRequestBody {
-	postType: "public" | "group";
-	postData: PublicPostFull;
+interface RequestBody {
+	authorId: string;
+	id: string;
 }
 
 export default async function handler(
@@ -22,25 +22,15 @@ export default async function handler(
 		if (!session) {
 			res.status(401).json({ message: "Client not authenticated!?" });
 		} else {
-			const requestBody: DeletePostRequestBody = JSON.parse(req.body);
-			const { postType, postData } = requestBody;
+			const postData: RequestBody = JSON.parse(req.body);
 			const currentUserIsAuthor = session.user.id === postData.authorId;
 			if (currentUserIsAuthor) {
 				try {
-					switch (postType) {
-						case "public":
-							await prisma.publicPost.delete({
-								where: {
-									id: postData.id,
-								},
-							});
-							break;
-						case "group":
-							//TODO
-							break;
-						default:
-							break;
-					}
+					await prisma.publicPost.delete({
+						where: {
+							id: postData.id,
+						},
+					});
 					res.status(200).json({ message: "Post deleted successfully" });
 				} catch (error: any) {
 					res.status(500).json({
