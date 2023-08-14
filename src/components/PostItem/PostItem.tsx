@@ -24,7 +24,7 @@ import {
 	IconMessageCircle,
 } from "@tabler/icons-react";
 import { useDisclosure } from "@mantine/hooks";
-import { useRef, useState } from "react";
+import { Ref, forwardRef, useRef, useState } from "react";
 import { notifications } from "@mantine/notifications";
 import UpdatePost from "./UpdatePost";
 import Comments from "../Comments/Comments";
@@ -39,7 +39,10 @@ interface PostItemProps {
 	showCommentsCount?: boolean;
 }
 
-export default function PostItem(props: PostItemProps) {
+const PostItem = forwardRef(function PostItem(
+	props: PostItemProps,
+	ref: Ref<HTMLLIElement>
+) {
 	const { user: currentUser } = useUser();
 	const [
 		confirmDeleteModalOpened,
@@ -141,7 +144,7 @@ export default function PostItem(props: PostItemProps) {
 	const creationDate = moment(postData.createdAt).fromNow(true);
 	const currentUserIsAuthor = currentUser?.id === author.id;
 	return (
-		<li className={`flex flex-col gap-4 ${props.className || ""}`}>
+		<li className={`flex flex-col gap-4 ${props.className || ""}`} ref={ref}>
 			<div
 				className="flex flex-col p-1 rounded-md"
 				style={{ backgroundColor: theme.colors.dark[7] }}>
@@ -270,4 +273,6 @@ export default function PostItem(props: PostItemProps) {
 			)}
 		</li>
 	);
-}
+});
+
+export default PostItem;
