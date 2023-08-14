@@ -31,16 +31,16 @@ const PublicPostsPage = () => {
 	const { entry, ref: infiniteScrollTriggerElRef } = useIntersection({
 		threshold: 0.25,
 	});
+	const loadMorePostsRef = useRef(loadMorePosts);
 
 	useEffect(() => {
 		const timeoutID = setTimeout(() => {
 			if (entry?.isIntersecting) {
-				console.log("LOADING MORE POSTS");
-				loadMorePosts();
+				loadMorePostsRef.current();
 			}
 		}, 800);
 		return () => clearTimeout(timeoutID);
-	}, [entry?.isIntersecting, loadMorePosts]);
+	}, [entry?.isIntersecting]);
 
 	async function handlePostSubmit() {
 		if (editor === null) {
