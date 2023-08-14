@@ -31,7 +31,19 @@ class PublicPostAPI {
 		newData: UpdatePublicPostPayload
 	) {}
 
-	static async remove(postId: string) {}
+	static async remove(postId: string, authorId: string) {
+		const response = await fetch("/api/delete-public-post", {
+			method: "POST",
+			body: JSON.stringify({
+				authorId,
+				id: postId,
+			}),
+		});
+		if (!response.ok) {
+			const { message } = await response.json();
+			throw new Error(message || "An unknown error occured");
+		}
+	}
 
 	static async getById(postId: string) {}
 
