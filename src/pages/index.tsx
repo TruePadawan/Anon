@@ -33,6 +33,7 @@ const PublicPostsPage = () => {
 	});
 	const loadMorePostsRef = useRef(loadMorePosts);
 
+	// load more posts when the second to last post is in view
 	useEffect(() => {
 		const timeoutID = setTimeout(() => {
 			if (entry?.isIntersecting) {
