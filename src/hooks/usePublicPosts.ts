@@ -4,6 +4,7 @@ import { JSONContent } from "@tiptap/react";
 import { useEffect, useRef, useState } from "react";
 import useUser from "./useUser";
 import { PublicPostWithAuthor } from "@/types/types";
+import useSWRInfinite from "swr/infinite";
 
 interface UsePublicPostsParams {
 	take?: number;
@@ -11,23 +12,51 @@ interface UsePublicPostsParams {
 	orderBy?: Prisma.PublicPostOrderByWithRelationInput;
 }
 
+interface SWRInfiniteData {
+	posts: PublicPostWithAuthor[];
+	nextCursor: {
+		id?: string;
+	};
+}
+
 export default function usePublicPosts(params?: UsePublicPostsParams) {
 	const [posts, setPosts] = useState<PublicPostWithAuthor[]>([]);
-	// isLoading is true only when the initial load is happening
-	const [isLoading, setIsLoading] = useState(false);
 	const paramsRef = useRef(params);
-	const cursorRef = useRef<string>();
+	const {
+		data: rawPosts,
+		isLoading,
+		setSize,
+	} = useSWRInfinite(
+		(index, prevData?: SWRInfiniteData) => {
+			const atEnd = prevData?.posts.length === 0;
+			if (atEnd) return null;
+			if (index === 0) return paramsRef.current;
+
+			return {
+				...paramsRef.current,
+				skip: 1,
+				cursor: prevData?.nextCursor,
+			};
+		},
+		async (key): Promise<SWRInfiniteData> => {
+			const posts = await PublicPostAPI.getMany(key);
+			return {
+				posts,
+				nextCursor: {
+					id: posts.at(-1)?.id,
+				},
+			};
+		}
+	);
 	const { user } = useUser();
 
-	// load posts when page mounts
+	// get the actual posts from the data useSWRInfinite returns
 	useEffect(() => {
-		setIsLoading(true);
-		PublicPostAPI.getMany(paramsRef.current).then((posts) => {
-			cursorRef.current = posts.at(-1)?.id;
+		if (!isLoading && rawPosts) {
+			const posts = rawPosts.flatMap((rawPost) => rawPost.posts);
 			setPosts(posts);
-			setIsLoading(false);
-		});
-	}, []);
+		}
+	}, [isLoading, rawPosts]);
 
 	async function createPublicPost(content: JSONContent) {
 		if (!user) {
@@ -42,20 +71,7 @@ export default function usePublicPosts(params?: UsePublicPostsParams) {
 	}
 
 	async function loadMorePosts() {
-		const newPosts = await PublicPostAPI.getMany({
-			cursor: {
-				id: cursorRef.current,
-			},
-			skip: 1,
-			...paramsRef.current,
-		});
-
-		setPosts((currentPosts) => {
-			const posts = currentPosts.concat(newPosts);
-			// update the cursor after the new posts has been added to current posts
-			cursorRef.current = posts.at(-1)?.id;
-			return posts;
-		});
+		setSize((_size) => _size + 1);
 	}
 
 	return { posts, isLoading, createPublicPost, loadMorePosts };
