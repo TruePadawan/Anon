@@ -18,7 +18,7 @@ const PublicPostsPage = () => {
 		orderBy: {
 			createdAt: "desc",
 		},
-		take: 2,
+		take: 10,
 	});
 	const editor = useEditor({
 		extensions: [
