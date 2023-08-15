@@ -1,7 +1,7 @@
 import { useEditor } from "@tiptap/react";
 import { CommentEditorExtensions } from "@/helpers/global_vars";
 import CommentEditor from "../Editor/CommentEditor";
-import { useMemo, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import CommentItem from "./CommentItem";
 import { Button, Loader } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
@@ -59,9 +59,7 @@ export default function Comments(props: CommentsProps) {
 		}
 	}, [isLoading, data]);
 
-	const comments = useMemo(() => {
-		return commentIDs.map(({ id }) => <CommentItem key={id} id={id} />);
-	}, [commentIDs]);
+	const comments = commentIDs.map(({ id }) => <CommentItem key={id} id={id} />);
 
 	function getCommentObject() {
 		if (editor === null) {
