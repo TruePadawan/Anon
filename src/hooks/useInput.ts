@@ -75,10 +75,17 @@ async function runValidationProcess(
 	value: string,
 	validators: UseInputParams["validators"]
 ) {
+	if (value === "") {
+		return {
+			valid: false,
+			errorMessages: ["Input contains no value"],
+		};
+	}
+
 	if (value.trim() === "") {
 		return {
 			valid: false,
-			errorMessages: ["Input is empty"],
+			errorMessages: ["Why'd you just put only whitespace?"],
 		};
 	}
 
