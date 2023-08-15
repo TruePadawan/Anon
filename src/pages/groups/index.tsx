@@ -8,10 +8,10 @@ import { authOptions } from "@/lib/auth";
 import { IconSearchOff } from "@tabler/icons-react";
 import { classNames } from "@/helpers/global_helpers";
 import GroupItem from "@/components/GroupItem/GroupItem";
-import { GroupFull } from "@/types/types";
+import { GroupWithSettings } from "@/types/types";
 
 interface PageProps {
-	groups: GroupFull[];
+	groups: GroupWithSettings[];
 }
 
 const GroupsPage = (props: PageProps) => {
@@ -20,7 +20,7 @@ const GroupsPage = (props: PageProps) => {
 		event.preventDefault();
 	}
 
-	const groupItems = props.groups.map((group: GroupFull) => {
+	const groupItems = props.groups.map((group: GroupWithSettings) => {
 		return (
 			<Grid.Col key={group.id} sm={6} md={4} lg={3}>
 				<GroupItem
@@ -103,7 +103,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 	});
 	return {
 		props: {
-			groups: groups.map((obj: { group: GroupFull }) => obj.group),
+			groups: groups.map((obj: { group: GroupWithSettings }) => obj.group),
 		},
 	};
 };
