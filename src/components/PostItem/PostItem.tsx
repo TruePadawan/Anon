@@ -12,7 +12,7 @@ import {
 	Spoiler,
 	useMantineTheme,
 } from "@mantine/core";
-import { PublicPostFull } from "@/types/types";
+import { PublicPostWithAuthor } from "@/types/types";
 import moment from "moment";
 import Link from "next/link";
 import {
@@ -35,7 +35,7 @@ import { getErrorMessage } from "@/lib/error-message";
 
 interface PostItemProps {
 	className?: string;
-	postData: PublicPostFull;
+	postData: PublicPostWithAuthor;
 	postType: "public" | "group";
 	full: boolean;
 	showCommentsCount?: boolean;
@@ -115,26 +115,18 @@ const PostItem = forwardRef(function PostItem(
 
 	async function toggleComments() {
 		setIsUpdatingPost(true);
-		const response = await fetch(`/api/get-public-post/${postData.id}`);
-		if (response.ok) {
-			const post: PublicPostFull = await response.json();
-			const postResponse = await fetch("/api/update-public-post", {
-				method: "POST",
-				body: JSON.stringify({
-					id: postData.id,
-					authorId: postData.authorId,
-					data: {
-						commentsAllowed: !post.commentsAllowed,
-					},
-				}),
+		const { id, authorId } = postData;
+		try {
+			const { commentsAllowed } = await PublicPostAPI.getById(postData.id);
+			const updatedPost = await PublicPostAPI.update(id, authorId, {
+				commentsAllowed: !commentsAllowed,
 			});
-			const { commentsAllowed }: PublicPostFull = await postResponse.json();
-			setCommentsAllowed(commentsAllowed);
-		} else {
+			setCommentsAllowed(updatedPost.commentsAllowed);
+		} catch (error) {
 			notifications.show({
 				color: "red",
 				title: "Failed to complete action",
-				message: "Could not retrieve post data",
+				message: getErrorMessage(error),
 			});
 		}
 		setIsUpdatingPost(false);
