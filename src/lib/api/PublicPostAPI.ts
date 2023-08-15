@@ -42,7 +42,7 @@ class PublicPostAPI {
 			const { message } = await response.json();
 			throw new Error(message || "An unknown error occured");
 		}
-		const updatedPost = await response.json();
+		const updatedPost: PublicPostWithAuthor = await response.json();
 		return updatedPost;
 	}
 
@@ -73,6 +73,16 @@ class PublicPostAPI {
 		}
 		const posts: PublicPostWithAuthor[] = await response.json();
 		return posts;
+	}
+
+	static async getById(postId: string) {
+		const response = await fetch(`/api/get-public-post/${postId}`);
+		if (!response.ok) {
+			const { message } = await response.json();
+			throw new Error(message);
+		}
+		const post: PublicPostWithAuthor = await response.json();
+		return post;
 	}
 }
 
