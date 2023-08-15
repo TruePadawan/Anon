@@ -12,7 +12,6 @@ interface CommentsProps {
 	commentGroupID: string;
 	commentsAllowed: boolean;
 	commentsPerRequest?: number;
-	showOnlyCommentsCount?: boolean;
 }
 
 interface CommentID {
@@ -58,8 +57,6 @@ export default function Comments(props: CommentsProps) {
 			setCommentIDs(data.flat());
 		}
 	}, [isLoading, data]);
-
-	const comments = commentIDs.map(({ id }) => <CommentItem key={id} id={id} />);
 
 	function getCommentObject() {
 		if (editor === null) {
@@ -120,14 +117,8 @@ export default function Comments(props: CommentsProps) {
 			message: error.message,
 		});
 	}
-	const commentsCount = commentIDs.length;
-	if (props.showOnlyCommentsCount) {
-		return (
-			<p className="w-full text-center font-semibold">{`${commentsCount} comment${
-				commentsCount === 1 ? "" : "s"
-			}`}</p>
-		);
-	}
+
+	const comments = commentIDs.map(({ id }) => <CommentItem key={id} id={id} />);
 	const showEditor = currentUser && props.commentsAllowed;
 	return (
 		<div className="w-full flex flex-col gap-2">

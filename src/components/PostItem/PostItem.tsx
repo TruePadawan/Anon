@@ -257,7 +257,6 @@ const PostItem = forwardRef(function PostItem(
 					<Comments
 						commentGroupID={postData.id}
 						commentsAllowed={commentsAllowed || currentUserIsAuthor}
-						showOnlyCommentsCount={!props.full}
 					/>
 				</>
 			)}
