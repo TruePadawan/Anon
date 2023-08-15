@@ -75,7 +75,6 @@ const PublicPostsSection = (props: PublicPostsSectionProps) => {
 										ref={secondToLast ? infiniteScrollTriggerElRef : null}
 										postData={post}
 										postType="public"
-										full={false}
 									/>
 								);
 							})}

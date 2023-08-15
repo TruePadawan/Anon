@@ -110,7 +110,6 @@ const PublicPostsPage = () => {
 									key={post.id}
 									postData={post}
 									postType="public"
-									full={false}
 									showCommentsCount
 								/>
 							);

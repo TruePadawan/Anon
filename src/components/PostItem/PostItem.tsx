@@ -6,7 +6,6 @@ import {
 	Alert,
 	Avatar,
 	Button,
-	Divider,
 	Menu,
 	Modal,
 	Spoiler,
@@ -27,7 +26,6 @@ import { useDisclosure } from "@mantine/hooks";
 import { Ref, forwardRef, useRef, useState } from "react";
 import { notifications } from "@mantine/notifications";
 import UpdatePost from "./UpdatePost";
-import Comments from "../Comments/Comments";
 import useUser from "@/hooks/useUser";
 import CommentsCount from "../Comments/CommentsCount";
 import PublicPostAPI from "@/lib/api/PublicPostAPI";
@@ -37,7 +35,6 @@ interface PostItemProps {
 	className?: string;
 	postData: PublicPostWithAuthor;
 	postType: "public" | "group";
-	full: boolean;
 	showCommentsCount?: boolean;
 }
 
@@ -251,15 +248,6 @@ const PostItem = forwardRef(function PostItem(
 					<CommentsCount commentGroupId={postData.id} />
 				)}
 			</div>
-			{props.full && (
-				<>
-					<Divider label="Comments" labelPosition="center" />
-					<Comments
-						commentGroupID={postData.id}
-						commentsAllowed={commentsAllowed || currentUserIsAuthor}
-					/>
-				</>
-			)}
 		</li>
 	);
 });
