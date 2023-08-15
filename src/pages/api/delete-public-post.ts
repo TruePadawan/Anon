@@ -2,7 +2,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/lib/prisma-client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { PublicPostFull } from "@/types/types";
 
 interface RequestBody {
 	authorId: string;

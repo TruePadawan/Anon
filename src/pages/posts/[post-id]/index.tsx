@@ -1,12 +1,12 @@
 import Navbar from "@/components/Navbar/Navbar";
 import { GetServerSideProps } from "next";
 import { prisma } from "@/lib/prisma-client";
-import { PublicPostFull } from "@/types/types";
+import { PublicPostWithAuthor } from "@/types/types";
 import { IconError404 } from "@tabler/icons-react";
 import PostItem from "@/components/PostItem/PostItem";
 
 interface PageProps {
-	post: PublicPostFull | null;
+	post: PublicPostWithAuthor | null;
 }
 const Post = (props: PageProps) => {
 	const { post } = props;
