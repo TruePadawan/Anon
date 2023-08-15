@@ -1,4 +1,4 @@
-import { CommentFull } from "@/types/types";
+import { CommentWithAuthor } from "@/types/types";
 import {
 	Avatar,
 	Menu,
@@ -28,7 +28,7 @@ interface CommentItemProps {
 	className?: string;
 }
 
-const fetcher = async (key: string): Promise<CommentFull> => {
+const fetcher = async (key: string): Promise<CommentWithAuthor> => {
 	const response = await fetch(key);
 	if (!response.ok) {
 		const error = await response.json();
