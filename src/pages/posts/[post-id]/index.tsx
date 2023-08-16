@@ -3,13 +3,18 @@ import { GetServerSideProps } from "next";
 import { prisma } from "@/lib/prisma-client";
 import { PublicPostWithAuthor } from "@/types/types";
 import { IconError404 } from "@tabler/icons-react";
-import PostItem from "@/components/PostItem/PostItem";
+import PublicPostItem from "@/components/PostItem/PublicPostItem";
+import Comments from "@/components/Comments/Comments";
+import { Divider } from "@mantine/core";
+import useUser from "@/hooks/useUser";
 
 interface PageProps {
 	post: PublicPostWithAuthor | null;
 }
 const Post = (props: PageProps) => {
+	const { user } = useUser();
 	const { post } = props;
+	const currentUserIsAuthor = user?.id === post?.authorId;
 	return (
 		<>
 			<Navbar />
@@ -20,13 +25,15 @@ const Post = (props: PageProps) => {
 				</main>
 			)}
 			{post && (
-				<main className="grow flex flex-col items-center">
-					<PostItem
-						className="max-w-4xl w-full"
-						postData={post}
-						postType="public"
-						full={true}
-					/>
+				<main className="grow flex justify-center">
+					<div className="max-w-4xl w-full flex flex-col gap-4">
+						<PublicPostItem postData={post} currentUser={user} />
+						<Divider label="Comments" labelPosition="center" />
+						<Comments
+							commentGroupID={post.id}
+							commentsAllowed={post.commentsAllowed || currentUserIsAuthor}
+						/>
+					</div>
 				</main>
 			)}
 		</>

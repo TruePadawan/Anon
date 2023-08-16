@@ -3,12 +3,13 @@ import { GetServerSideProps } from "next";
 import Head from "next/head";
 import ProfileLayout from "@/layout/ProfileLayout";
 import { prisma } from "@/lib/prisma-client";
-import PostItem from "@/components/PostItem/PostItem";
+import PostItem from "@/components/PostItem/PublicPostItem";
 import { Loader } from "@mantine/core";
 import { UserProfile } from "@prisma/client";
 import { useEffect, useRef } from "react";
 import usePublicPosts from "@/hooks/usePublicPosts";
 import { useIntersection } from "@mantine/hooks";
+import useUser from "@/hooks/useUser";
 
 interface PublicPostsSectionProps {
 	profile: UserProfile | null;
@@ -27,6 +28,7 @@ const PublicPostsSection = (props: PublicPostsSectionProps) => {
 		threshold: 0.25,
 	});
 	const loadMorePostsRef = useRef(loadMorePosts);
+	const { user } = useUser();
 
 	// load more posts when the second to last post is in view
 	useEffect(() => {
@@ -74,8 +76,7 @@ const PublicPostsSection = (props: PublicPostsSectionProps) => {
 										key={post.id}
 										ref={secondToLast ? infiniteScrollTriggerElRef : null}
 										postData={post}
-										postType="public"
-										full={false}
+										currentUser={user}
 									/>
 								);
 							})}
