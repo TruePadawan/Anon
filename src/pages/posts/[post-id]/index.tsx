@@ -3,7 +3,7 @@ import { GetServerSideProps } from "next";
 import { prisma } from "@/lib/prisma-client";
 import { PublicPostWithAuthor } from "@/types/types";
 import { IconError404 } from "@tabler/icons-react";
-import PostItem from "@/components/PostItem/PostItem";
+import PublicPostItem from "@/components/PostItem/PublicPostItem";
 import Comments from "@/components/Comments/Comments";
 import { Divider } from "@mantine/core";
 import useUser from "@/hooks/useUser";
@@ -27,7 +27,7 @@ const Post = (props: PageProps) => {
 			{post && (
 				<main className="grow flex justify-center">
 					<div className="max-w-4xl w-full flex flex-col gap-4">
-						<PostItem postData={post} postType="public" />
+						<PublicPostItem postData={post} currentUser={user} />
 						<Divider label="Comments" labelPosition="center" />
 						<Comments
 							commentGroupID={post.id}

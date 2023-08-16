@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar/Navbar";
 import { useEffect, useRef, useState } from "react";
-import PostItem from "@/components/PostItem/PostItem";
+import PublicPostItem from "@/components/PostItem/PublicPostItem";
 import { useEditor } from "@tiptap/react";
 import { notifications } from "@mantine/notifications";
 import useUser from "@/hooks/useUser";
@@ -105,11 +105,11 @@ const PublicPostsPage = () => {
 						posts.map((post, index) => {
 							const secondToLast = index == posts.length - 2;
 							return (
-								<PostItem
+								<PublicPostItem
 									ref={secondToLast ? infiniteScrollTriggerElRef : null}
 									key={post.id}
 									postData={post}
-									postType="public"
+									currentUser={user}
 									showCommentsCount
 								/>
 							);
