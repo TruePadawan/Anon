@@ -8,8 +8,11 @@ import { getErrorMessage } from "@/lib/error-message";
 
 interface UpdatePostProps {
 	editor: Editor;
-	postID: string;
-	authorId: string;
+	postData: {
+		Id: string;
+		authorId: string;
+		type: "public" | "group";
+	};
 	isUpdating: boolean;
 	setIsUpdatingState: Dispatch<SetStateAction<boolean>>;
 	onUpdate?: () => void;
@@ -17,7 +20,7 @@ interface UpdatePostProps {
 }
 
 export default function UpdatePost(props: UpdatePostProps) {
-	const { editor, postID, authorId } = props;
+	const { editor, postData } = props;
 
 	async function updatePost() {
 		const emptyPost = editor.isEmpty || editor.getText().trim().length === 0;
@@ -34,11 +37,13 @@ export default function UpdatePost(props: UpdatePostProps) {
 		props.setIsUpdatingState(true);
 		editor.setEditable(false);
 		try {
-			await PublicPostAPI.update(postID, authorId, {
-				content: editor.getJSON(),
-			});
-			if (props.onUpdate) {
-				props.onUpdate();
+			if (postData.type === "public") {
+				await PublicPostAPI.update(postData.Id, postData.authorId, {
+					content: editor.getJSON(),
+				});
+				if (props.onUpdate) {
+					props.onUpdate();
+				}
 			}
 		} catch (error) {
 			// run the cancel update callback if the update failed
