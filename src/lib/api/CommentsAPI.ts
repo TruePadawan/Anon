@@ -41,6 +41,18 @@ class CommentsAPI {
 		});
 		await handleFailedAPIRequest(response);
 	}
+
+	static async count(commentGroupId: string) {
+		const response = await fetch("/api/get-comments-count", {
+			method: "POST",
+			body: JSON.stringify({
+				commentGroupId,
+			}),
+		});
+		await handleFailedAPIRequest(response);
+		const { count } = await response.json();
+		return Number(count);
+	}
 }
 
 export interface CreateCommentData {
