@@ -1,3 +1,4 @@
+import CommentsAPI from "@/lib/api/CommentsAPI";
 import useSWR from "swr";
 
 interface CommentsCountProps {
@@ -5,10 +6,7 @@ interface CommentsCountProps {
 }
 
 export default function CommentsCount({ commentGroupId }: CommentsCountProps) {
-	const { data: count, isLoading } = useSWR(
-		["/api/get-comments-count", commentGroupId],
-		fetcher
-	);
+	const { data: count, isLoading } = useSWR(commentGroupId, fetcher);
 	return (
 		<p className="w-full text-center font-semibold">
 			{isLoading ? "0 comments" : `${count} comment${count === 1 ? "" : "s"}`}
@@ -16,19 +14,7 @@ export default function CommentsCount({ commentGroupId }: CommentsCountProps) {
 	);
 }
 
-const fetcher = async ([url, groupId]: [string, string]): Promise<number> => {
-	const res = await fetch(url, {
-		method: "POST",
-		body: JSON.stringify({
-			commentGroupId: groupId,
-		}),
-	});
-
-	if (res.ok) {
-		const { count } = await res.json();
-		return count;
-	} else {
-		const { message } = await res.json();
-		throw new Error(message);
-	}
+const fetcher = async (groupId: string): Promise<number> => {
+	const count = await CommentsAPI.count(groupId);
+	return count;
 };
