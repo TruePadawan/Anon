@@ -7,6 +7,7 @@ import { Button, Loader } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import useSWRInfinite from "swr/infinite";
 import useUser from "@/hooks/useUser";
+import CommentsAPI from "@/lib/api/CommentsAPI";
 
 interface CommentsProps {
 	commentGroupID: string;
@@ -14,17 +15,17 @@ interface CommentsProps {
 	commentsPerRequest?: number;
 }
 
-interface CommentID {
-	id: string;
-}
-const fetcher = async (key: string): Promise<CommentID[]> => {
+type FetcherResponse = { id: string }[];
+
+const fetcher = async (key: string): Promise<string[]> => {
 	const response = await fetch(key);
 	if (!response.ok) {
 		const error = await response.json();
 		throw new Error(error.message);
 	}
-	const comments = await response.json();
-	return comments;
+	const commentIDs: FetcherResponse = await response.json();
+	const parsedIDs = commentIDs.map(({ id }) => id);
+	return parsedIDs;
 };
 
 export default function Comments(props: CommentsProps) {
@@ -32,21 +33,21 @@ export default function Comments(props: CommentsProps) {
 	const editor = useEditor({
 		extensions: CommentEditorExtensions,
 	});
-	const [commentIDs, setCommentIDs] = useState<CommentID[]>([]);
+	const [commentIDs, setCommentIDs] = useState<string[]>([]);
 	const [creatingComment, setCreatingComment] = useState(false);
 	const [noMoreComments, setNoMoreComments] = useState(false);
 	const { commentGroupID, commentsPerRequest = 20 } = props;
 
 	// use swr to fetch for comments
 	const { data, isLoading, isValidating, error, setSize } = useSWRInfinite(
-		(index: number, previousComments?: CommentID[]) => {
+		(index: number, previousComments?: string[]) => {
 			if (previousComments && previousComments.length === 0) {
 				setNoMoreComments(true);
 				return null;
 			}
 			if (index === 0)
 				return `/api/get-comment-ids?groupId=${commentGroupID}&limit=${commentsPerRequest}`;
-			const cursor = previousComments?.at(-1)?.id as string;
+			const cursor = previousComments?.at(-1) as string;
 			return `/api/get-comment-ids?groupId=${commentGroupID}&cursor=${cursor}&limit=${commentsPerRequest}`;
 		},
 		fetcher
@@ -75,7 +76,6 @@ export default function Comments(props: CommentsProps) {
 			commentGroupId: commentGroupID,
 			content: editor.getJSON(),
 			authorId: currentUser.id,
-			createdAt: Date.now(),
 		};
 	}
 
@@ -83,17 +83,9 @@ export default function Comments(props: CommentsProps) {
 		setCreatingComment(true);
 		editor?.setEditable(false);
 		try {
-			const comment = getCommentObject();
-			const response = await fetch("/api/create-comment", {
-				method: "POST",
-				body: JSON.stringify(comment),
-			});
-			const responseBody = await response.json();
-			if (!response.ok) {
-				throw new Error(responseBody.message);
-			}
-			const newCommentID: CommentID = { id: responseBody.commentID };
-			setCommentIDs((IDs) => [newCommentID, ...IDs]);
+			const data = getCommentObject();
+			const { id } = await CommentsAPI.create(data);
+			setCommentIDs((IDs) => [id, ...IDs]);
 
 			// clear comment editor after comment is created
 			editor?.commands.clearContent();
@@ -118,7 +110,7 @@ export default function Comments(props: CommentsProps) {
 		});
 	}
 
-	const comments = commentIDs.map(({ id }) => <CommentItem key={id} id={id} />);
+	const comments = commentIDs.map((id) => <CommentItem key={id} id={id} />);
 	const showEditor = currentUser && props.commentsAllowed;
 	return (
 		<div className="w-full flex flex-col gap-2">

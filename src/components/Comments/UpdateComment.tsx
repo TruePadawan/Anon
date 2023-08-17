@@ -3,6 +3,8 @@ import CommentEditor from "../Editor/CommentEditor";
 import { Editor } from "@tiptap/react";
 import { notifications } from "@mantine/notifications";
 import { Dispatch, SetStateAction } from "react";
+import CommentsAPI from "@/lib/api/CommentsAPI";
+import { getErrorMessage } from "@/lib/error-message";
 
 interface UpdateCommentProps {
 	editor: Editor;
@@ -31,27 +33,20 @@ export default function UpdateComment(props: UpdateCommentProps) {
 		// set the editor to read-only while comment is being updated
 		props.setIsUpdatingState(true);
 		editor.setEditable(false);
-
-		const response = await fetch("/api/update-comment", {
-			method: "POST",
-			body: JSON.stringify({
-				id: commentID,
-				authorId,
+		try {
+			await CommentsAPI.update(commentID, authorId, {
 				content: editor.getJSON(),
-			}),
-		});
-		if (response.ok && props.onUpdate) {
-			props.onUpdate();
-		} else if (!response.ok) {
-			const error = await response.json();
+			});
+			if (props.onUpdate) {
+				props.onUpdate();
+			}
+		} catch (error) {
+			props.cancelUpdate();
 			notifications.show({
 				color: "red",
 				title: "Failed to update comment",
-				message: error.message,
+				message: getErrorMessage(error),
 			});
-
-			// run the cancel update callback if the update failed
-			props.cancelUpdate();
 		}
 		props.setIsUpdatingState(false);
 	}
