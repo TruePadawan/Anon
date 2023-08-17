@@ -21,3 +21,13 @@ export function parseAccountName(accountName: string) {
 export function classNames(...classNames: Array<boolean | string>) {
 	return classNames.filter(Boolean).join(" ");
 }
+
+export async function handleFailedAPIRequest(
+	res: Response,
+	fallbackMessage?: string
+) {
+	if (!res.ok) {
+		const { message } = await res.json();
+		throw new Error(message || fallbackMessage || "An unknown error occured");
+	}
+}
