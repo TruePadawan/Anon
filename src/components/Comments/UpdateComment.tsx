@@ -8,8 +8,10 @@ import { getErrorMessage } from "@/lib/error-message";
 
 interface UpdateCommentProps {
 	editor: Editor;
-	commentID: string;
-	authorId: string;
+	commentData: {
+		id: string;
+		authorId: string;
+	};
 	isUpdating: boolean;
 	setIsUpdatingState: Dispatch<SetStateAction<boolean>>;
 	onUpdate?: () => void;
@@ -17,7 +19,7 @@ interface UpdateCommentProps {
 }
 
 export default function UpdateComment(props: UpdateCommentProps) {
-	const { editor, commentID, authorId } = props;
+	const { editor, commentData } = props;
 
 	async function updateComment() {
 		const noContent = editor.isEmpty || editor.getText().trim().length === 0;
@@ -34,7 +36,7 @@ export default function UpdateComment(props: UpdateCommentProps) {
 		props.setIsUpdatingState(true);
 		editor.setEditable(false);
 		try {
-			await CommentsAPI.update(commentID, authorId, {
+			await CommentsAPI.update(commentData.id, commentData.authorId, {
 				content: editor.getJSON(),
 			});
 			if (props.onUpdate) {

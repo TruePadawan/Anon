@@ -155,8 +155,10 @@ export default function CommentItem(props: CommentItemProps) {
 							{inEditMode && (
 								<UpdateComment
 									editor={editor as Editor}
-									commentID={props.data.id}
-									authorId={props.data.authorId}
+									commentData={{
+										id: props.data.id,
+										authorId: author.id,
+									}}
 									isUpdating={isUpdatingComment}
 									setIsUpdatingState={setIsUpdatingComment}
 									onUpdate={stopEditMode}
