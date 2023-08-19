@@ -97,7 +97,7 @@ const PublicPostsPage = () => {
 						</Button>
 					</div>
 				)}
-				<ul className="max-w-4xl w-full flex flex-col gap-2 list-none">
+				<ul className="max-w-4xl w-full flex flex-col gap-2">
 					{isLoading && (
 						<Loader className="mt-2 self-center" size="lg" color="gray" />
 					)}
