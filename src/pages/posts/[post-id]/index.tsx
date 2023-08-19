@@ -30,7 +30,7 @@ const Post = (props: PageProps) => {
 						<PublicPostItem postData={post} currentUser={user} />
 						<Divider label="Comments" labelPosition="center" />
 						<Comments
-							commentGroupID={post.id}
+							commentGroupId={post.id}
 							commentsAllowed={post.commentsAllowed || currentUserIsAuthor}
 						/>
 					</div>

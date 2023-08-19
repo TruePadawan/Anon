@@ -1,63 +1,74 @@
 import { useEditor } from "@tiptap/react";
 import { CommentEditorExtensions } from "@/helpers/global_vars";
 import CommentEditor from "../Editor/CommentEditor";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import CommentItem from "./CommentItem";
 import { Button, Loader } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import useSWRInfinite from "swr/infinite";
 import useUser from "@/hooks/useUser";
-import CommentsAPI from "@/lib/api/CommentsAPI";
+import CommentsAPI, {
+	CommentAPIGetManyParams,
+	CommentFull,
+} from "@/lib/api/CommentsAPI";
 
 interface CommentsProps {
-	commentGroupID: string;
+	commentGroupId: string;
 	commentsAllowed: boolean;
 	commentsPerRequest?: number;
 }
-
-type FetcherResponse = { id: string }[];
-
-const fetcher = async (key: string): Promise<string[]> => {
-	const response = await fetch(key);
-	if (!response.ok) {
-		const error = await response.json();
-		throw new Error(error.message);
-	}
-	const commentIDs: FetcherResponse = await response.json();
-	const parsedIDs = commentIDs.map(({ id }) => id);
-	return parsedIDs;
-};
 
 export default function Comments(props: CommentsProps) {
 	const { user: currentUser } = useUser();
 	const editor = useEditor({
 		extensions: CommentEditorExtensions,
 	});
-	const [commentIDs, setCommentIDs] = useState<string[]>([]);
+	const [commentsData, setCommentsData] = useState<CommentFull[]>([]);
 	const [creatingComment, setCreatingComment] = useState(false);
 	const [noMoreComments, setNoMoreComments] = useState(false);
-	const { commentGroupID, commentsPerRequest = 20 } = props;
-
-	// use swr to fetch for comments
-	const { data, isLoading, isValidating, error, setSize } = useSWRInfinite(
-		(index: number, previousComments?: string[]) => {
-			if (previousComments && previousComments.length === 0) {
-				setNoMoreComments(true);
-				return null;
-			}
-			if (index === 0)
-				return `/api/get-comment-ids?groupId=${commentGroupID}&limit=${commentsPerRequest}`;
-			const cursor = previousComments?.at(-1) as string;
-			return `/api/get-comment-ids?groupId=${commentGroupID}&cursor=${cursor}&limit=${commentsPerRequest}`;
+	const { commentGroupId, commentsPerRequest = 20 } = props;
+	const dbQueryParamsRef = useRef<CommentAPIGetManyParams>({
+		take: commentsPerRequest,
+		where: {
+			commentGroupId,
 		},
-		fetcher
-	);
-
-	useEffect(() => {
-		if (!isLoading && data) {
-			setCommentIDs(data.flat());
+		orderBy: {
+			createdAt: "desc",
+		},
+	});
+	// use swr to fetch for comments
+	const {
+		data: rawCommentsData,
+		isLoading,
+		isValidating,
+		error,
+		setSize,
+	} = useSWRInfinite((index, prevData?: SWRInfiniteData) => {
+		const atEnd = prevData?.comments.length === 0;
+		if (atEnd) {
+			setNoMoreComments(true);
+			return null;
 		}
-	}, [isLoading, data]);
+
+		if (index === 0) {
+			return dbQueryParamsRef.current;
+		}
+
+		return {
+			...dbQueryParamsRef.current,
+			skip: 1,
+			cursor: prevData?.nextCursor,
+		};
+	}, fetchCommentsData);
+
+	// flatten and get the comments data from what useSWRInfinite returns
+	useEffect(() => {
+		if (!isLoading && rawCommentsData) {
+			setCommentsData(
+				rawCommentsData.flatMap((rawComment) => rawComment.comments)
+			);
+		}
+	}, [isLoading, rawCommentsData]);
 
 	function getCommentObject() {
 		if (editor === null) {
@@ -73,7 +84,7 @@ export default function Comments(props: CommentsProps) {
 			throw new Error("A comment can't be empty or just whitespace");
 		}
 		return {
-			commentGroupId: commentGroupID,
+			commentGroupId,
 			content: editor.getJSON(),
 			authorId: currentUser.id,
 		};
@@ -84,8 +95,8 @@ export default function Comments(props: CommentsProps) {
 		editor?.setEditable(false);
 		try {
 			const data = getCommentObject();
-			const { id } = await CommentsAPI.create(data);
-			setCommentIDs((IDs) => [id, ...IDs]);
+			const newComment = await CommentsAPI.create(data);
+			setCommentsData((commentsData) => [newComment, ...commentsData]);
 
 			// clear comment editor after comment is created
 			editor?.commands.clearContent();
@@ -110,7 +121,6 @@ export default function Comments(props: CommentsProps) {
 		});
 	}
 
-	const comments = commentIDs.map((id) => <CommentItem key={id} id={id} />);
 	const showEditor = currentUser && props.commentsAllowed;
 	return (
 		<div className="w-full flex flex-col gap-2">
@@ -133,7 +143,11 @@ export default function Comments(props: CommentsProps) {
 							</Button>
 						</div>
 					)}
-					<ul className="list-none flex flex-col gap-1">{comments}</ul>
+					<ul className="list-none flex flex-col gap-1">
+						{commentsData.map((data) => (
+							<CommentItem key={data.id} data={data} showReplyCount />
+						))}
+					</ul>
 					{!noMoreComments && (
 						<Button
 							type="button"
@@ -152,4 +166,21 @@ export default function Comments(props: CommentsProps) {
 			)}
 		</div>
 	);
+}
+
+interface SWRInfiniteData {
+	comments: CommentFull[];
+	nextCursor: {
+		id?: string;
+	};
+}
+
+async function fetchCommentsData(params: CommentAPIGetManyParams) {
+	const comments = await CommentsAPI.getMany(params);
+	return {
+		comments,
+		nextCursor: {
+			id: comments.at(-1)?.id,
+		},
+	};
 }
