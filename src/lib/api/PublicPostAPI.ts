@@ -1,3 +1,4 @@
+import { handleFailedAPIRequest } from "@/helpers/global_helpers";
 import { PublicPostWithAuthor } from "@/types/types";
 import { Prisma } from "@prisma/client";
 import { JSONContent } from "@tiptap/react";
@@ -16,11 +17,7 @@ class PublicPostAPI {
 			method: "POST",
 			body: JSON.stringify(postData),
 		});
-
-		if (!response.ok) {
-			const { message } = await response.json();
-			throw new Error(message);
-		}
+		await handleFailedAPIRequest(response);
 		const createdPost: PublicPostWithAuthor = await response.json();
 		return createdPost;
 	}
@@ -38,10 +35,7 @@ class PublicPostAPI {
 				data: newData,
 			}),
 		});
-		if (!response.ok) {
-			const { message } = await response.json();
-			throw new Error(message || "An unknown error occured");
-		}
+		await handleFailedAPIRequest(response);
 		const updatedPost: PublicPostWithAuthor = await response.json();
 		return updatedPost;
 	}
@@ -54,10 +48,7 @@ class PublicPostAPI {
 				id: postId,
 			}),
 		});
-		if (!response.ok) {
-			const { message } = await response.json();
-			throw new Error(message || "An unknown error occured");
-		}
+		await handleFailedAPIRequest(response);
 	}
 
 	static async getMany(
@@ -67,20 +58,14 @@ class PublicPostAPI {
 			method: "POST",
 			body: JSON.stringify(params),
 		});
-		if (!response.ok) {
-			const { message } = await response.json();
-			throw new Error(message);
-		}
+		await handleFailedAPIRequest(response);
 		const posts: PublicPostWithAuthor[] = await response.json();
 		return posts;
 	}
 
 	static async getById(postId: string) {
 		const response = await fetch(`/api/get-public-post/${postId}`);
-		if (!response.ok) {
-			const { message } = await response.json();
-			throw new Error(message);
-		}
+		await handleFailedAPIRequest(response);
 		const post: PublicPostWithAuthor = await response.json();
 		return post;
 	}

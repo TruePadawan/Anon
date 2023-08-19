@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/lib/prisma-client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { CreateCommentData } from "@/lib/api/CommentsAPI";
 
 export default async function handler(
 	req: NextApiRequest,
@@ -16,13 +17,16 @@ export default async function handler(
 		if (!session) {
 			res.status(401).json({ message: "Client not authenticated!" });
 		} else {
+			const payload: CreateCommentData = JSON.parse(req.body);
 			try {
-				const createdComment = await prisma.comment.create({
-					data: JSON.parse(req.body),
+				const comment = await prisma.comment.create({
+					data: { ...payload, createdAt: Date.now() },
+					include: {
+						author: true,
+						parentComment: true,
+					},
 				});
-				res.status(200).json({
-					commentID: createdComment.id,
-				});
+				res.status(200).json(comment);
 			} catch (error: any) {
 				res.status(500).json({
 					message: error.message,

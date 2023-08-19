@@ -2,10 +2,10 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/lib/prisma-client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { CommentWithAuthor } from "@/types/types";
 
-export interface DeletePostRequestBody {
-	comment: CommentWithAuthor;
+interface DeleteCommentPayload {
+	id: string;
+	authorId: string;
 }
 
 export default async function handler(
@@ -21,14 +21,14 @@ export default async function handler(
 		if (!session) {
 			res.status(401).json({ message: "Client not authenticated!?" });
 		} else {
-			const requestBody: DeletePostRequestBody = JSON.parse(req.body);
-			const { comment } = requestBody;
-			const currentUserIsAuthor = session.user.id === comment.authorId;
+			const payload: DeleteCommentPayload = JSON.parse(req.body);
+			const { id, authorId } = payload;
+			const currentUserIsAuthor = session.user.id === authorId;
 			if (currentUserIsAuthor) {
 				try {
 					await prisma.comment.delete({
 						where: {
-							id: comment.id,
+							id: id,
 						},
 					});
 					res.status(200).json({ message: "Comment deleted successfully" });

@@ -22,6 +22,8 @@ import { useRef, useState } from "react";
 import { notifications } from "@mantine/notifications";
 import UpdateComment from "./UpdateComment";
 import useUser from "@/hooks/useUser";
+import CommentsAPI from "@/lib/api/CommentsAPI";
+import { getErrorMessage } from "@/lib/error-message";
 
 interface CommentItemProps {
 	id: string;
@@ -122,18 +124,18 @@ export default function CommentItem(props: CommentItemProps) {
 	}
 
 	async function deleteComment() {
-		const response = await fetch("/api/delete-comment", {
-			method: "POST",
-			body: JSON.stringify({ comment: commentData }),
-		});
-		if (response.ok) {
+		try {
+			if (!commentData) {
+				throw new Error("Could not get comment data");
+			}
+
+			await CommentsAPI.remove(commentData.id, commentData.author.id);
 			setCommentDeleted(true);
-		} else {
-			const error = await response.json();
+		} catch (error) {
 			notifications.show({
 				color: "red",
-				title: "Failed to delete post",
-				message: error.message,
+				title: "Failed to delete comment",
+				message: getErrorMessage(error),
 			});
 		}
 		closeConfirmDeleteModal();
