@@ -9,7 +9,7 @@ class CommentsAPI {
 			body: JSON.stringify(data),
 		});
 		await handleFailedAPIRequest(response);
-		const comment: CreatedComment = await response.json();
+		const comment: CommentFull = await response.json();
 		return comment;
 	}
 
@@ -53,6 +53,24 @@ class CommentsAPI {
 		const { count } = await response.json();
 		return Number(count);
 	}
+
+	static async getMany(params?: CommentAPIGetManyParams) {
+		const response = await fetch("/api/get-comments", {
+			method: "POST",
+			body: JSON.stringify(params),
+		});
+		await handleFailedAPIRequest(response);
+		const comments: CommentFull[] = await response.json();
+		return comments;
+	}
+}
+
+export interface CommentAPIGetManyParams {
+	take?: number;
+	where?: Prisma.CommentWhereInput;
+	orderBy?: Prisma.CommentOrderByWithRelationInput;
+	cursor?: Prisma.CommentWhereInput;
+	skip?: number;
 }
 
 export interface CreateCommentData {
@@ -65,10 +83,10 @@ export interface UpdateCommentPayload {
 	content?: JSONContent;
 }
 
-const createdComment = Prisma.validator<Prisma.CommentArgs>()({
+const commentFull = Prisma.validator<Prisma.CommentArgs>()({
 	include: { author: true, parentComment: true },
 });
 
-export type CreatedComment = Prisma.CommentGetPayload<typeof createdComment>;
+export type CommentFull = Prisma.CommentGetPayload<typeof commentFull>;
 
 export default CommentsAPI;

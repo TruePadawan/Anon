@@ -1,8 +1,10 @@
 import { Avatar, useMantineTheme } from "@mantine/core";
+import { CSSProperties } from "react";
 
 interface PostItemProps {
 	wrapper: {
 		className?: string;
+		style?: CSSProperties;
 		children: React.ReactNode;
 	};
 	side: {
@@ -27,11 +29,15 @@ interface PostItemProps {
 
 function PostItem(props: PostItemProps["wrapper"]) {
 	const theme = useMantineTheme();
-	const { className, children } = props;
+	const {
+		className,
+		children,
+		style = { backgroundColor: theme.colors.dark[7] },
+	} = props;
 	return (
 		<div
-			className={`flex flex-col p-1 rounded-md ${className || ""}`}
-			style={{ backgroundColor: theme.colors.dark[7] }}>
+			className={`flex flex-col gap-1 p-1 rounded-md ${className || ""}`}
+			style={style}>
 			{children}
 		</div>
 	);

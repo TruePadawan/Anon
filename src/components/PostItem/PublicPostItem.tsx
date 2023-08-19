@@ -1,7 +1,7 @@
 import { RichTextEditor } from "@mantine/tiptap";
 import { Content, Editor, useEditor } from "@tiptap/react";
 import { PostEditorExtensions } from "@/helpers/global_vars";
-import { ActionIcon, Alert, Button, Menu, Modal, Spoiler } from "@mantine/core";
+import { ActionIcon, Button, Menu, Modal, Spoiler } from "@mantine/core";
 import { PublicPostWithAuthor } from "@/types/types";
 import moment from "moment";
 import Link from "next/link";
@@ -29,10 +29,6 @@ interface PublicPostItemProps {
 	showCommentsCount?: boolean;
 }
 
-interface PublicPostHeadingProps {
-	postData: PublicPostWithAuthor;
-}
-
 const PublicPostItem = forwardRef(function PublicPostItem(
 	props: PublicPostItemProps,
 	ref: Ref<HTMLLIElement>
@@ -58,10 +54,8 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 
 	if (postDeleted) {
 		return (
-			<li className="flex justify-center">
-				<Alert className="grow text-center" color="dark" variant="filled">
-					Post deleted successfully
-				</Alert>
+			<li className="text-center text-sm list-none p-3">
+				Post deleted successfully
 			</li>
 		);
 	}
@@ -120,7 +114,7 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 
 	const currentUserIsAuthor = currentUser?.id === author.id;
 	return (
-		<li ref={ref} className={`list-none ${props.className || ""}`}>
+		<li ref={ref} className="list-none">
 			<PostItem className={className}>
 				<div className="flex gap-1.5 py-1 px-1">
 					<PostItem.Side>
@@ -236,6 +230,10 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 		</li>
 	);
 });
+
+interface PublicPostHeadingProps {
+	postData: PublicPostWithAuthor;
+}
 
 function PublicPostHeading(props: PublicPostHeadingProps) {
 	const { postData } = props;
