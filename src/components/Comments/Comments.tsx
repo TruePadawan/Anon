@@ -1,16 +1,14 @@
 import { useEditor } from "@tiptap/react";
 import { CommentEditorExtensions } from "@/helpers/global_vars";
 import CommentEditor from "../Editor/CommentEditor";
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import CommentItem from "./CommentItem";
 import { Button, Loader } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import useSWRInfinite from "swr/infinite";
 import useUser from "@/hooks/useUser";
-import CommentsAPI, {
-	CommentAPIGetManyParams,
-	CommentFull,
-} from "@/lib/api/CommentsAPI";
+import useComments from "@/hooks/useComments";
+import { getErrorMessage } from "@/lib/error-message";
+import { useIntersection } from "@mantine/hooks";
 
 interface CommentsProps {
 	commentGroupId: string;
@@ -23,107 +21,70 @@ export default function Comments(props: CommentsProps) {
 	const editor = useEditor({
 		extensions: CommentEditorExtensions,
 	});
-	const [commentsData, setCommentsData] = useState<CommentFull[]>([]);
 	const [creatingComment, setCreatingComment] = useState(false);
-	const [noMoreComments, setNoMoreComments] = useState(false);
 	const { commentGroupId, commentsPerRequest = 20 } = props;
-	const dbQueryParamsRef = useRef<CommentAPIGetManyParams>({
-		take: commentsPerRequest,
-		where: {
-			commentGroupId,
-		},
-		orderBy: {
-			createdAt: "desc",
-		},
+	const { commentsData, isLoading, createComment, loadMoreComments } =
+		useComments({
+			where: {
+				commentGroupId,
+			},
+			orderBy: {
+				createdAt: "desc",
+			},
+			take: commentsPerRequest,
+		});
+	const intersectionRootElRef = useRef(null);
+	const { entry, ref: infiniteScrollTriggerElRef } = useIntersection({
+		threshold: 0.25,
 	});
-	// use swr to fetch for comments
-	const {
-		data: rawCommentsData,
-		isLoading,
-		isValidating,
-		error,
-		setSize,
-	} = useSWRInfinite((index, prevData?: SWRInfiniteData) => {
-		const atEnd = prevData?.comments.length === 0;
-		if (atEnd) {
-			setNoMoreComments(true);
-			return null;
-		}
+	const loadMoreCommentsRef = useRef(loadMoreComments);
 
-		if (index === 0) {
-			return dbQueryParamsRef.current;
-		}
-
-		return {
-			...dbQueryParamsRef.current,
-			skip: 1,
-			cursor: prevData?.nextCursor,
-		};
-	}, fetchCommentsData);
-
-	// flatten and get the comments data from what useSWRInfinite returns
+	// load more posts when the second to last post is in view
 	useEffect(() => {
-		if (!isLoading && rawCommentsData) {
-			setCommentsData(
-				rawCommentsData.flatMap((rawComment) => rawComment.comments)
-			);
-		}
-	}, [isLoading, rawCommentsData]);
+		const timeoutID = setTimeout(() => {
+			if (entry?.isIntersecting) {
+				loadMoreCommentsRef.current();
+			}
+		}, 800);
+		return () => clearTimeout(timeoutID);
+	}, [entry?.isIntersecting]);
 
-	function getCommentObject() {
+	async function handleCommentSubmit() {
 		if (editor === null) {
-			throw new Error("Failed to initialize editor");
-		} else if (!currentUser) {
-			throw new Error("Unsigned user can't make comments");
+			notifications.show({
+				color: "red",
+				title: "Cannot get comment content",
+				message: "Editor not initialized",
+			});
+			return;
 		}
-
-		const invalidComment =
-			editor.isEmpty || editor.getText().trim().length === 0;
-
-		if (invalidComment) {
-			throw new Error("A comment can't be empty or just whitespace");
-		}
-		return {
-			commentGroupId,
-			content: editor.getJSON(),
-			authorId: currentUser.id,
-		};
-	}
-
-	async function createComment() {
 		setCreatingComment(true);
 		editor?.setEditable(false);
-		try {
-			const data = getCommentObject();
-			const newComment = await CommentsAPI.create(data);
-			setCommentsData((commentsData) => [newComment, ...commentsData]);
 
+		try {
+			const noComment = editor.isEmpty || editor.getText().trim().length === 0;
+			if (noComment) {
+				throw new Error("A comment can't be empty or just whitespace");
+			}
+			await createComment(editor.getJSON(), commentGroupId);
 			// clear comment editor after comment is created
 			editor?.commands.clearContent();
-		} catch (error: any) {
+		} catch (error) {
 			console.error(error);
 			notifications.show({
 				color: "red",
 				title: "Failed to create comment",
-				message: error.message,
+				message: getErrorMessage(error),
 			});
 		}
+
 		setCreatingComment(false);
 		editor?.setEditable(true);
 	}
 
-	if (error) {
-		console.error(error);
-		notifications.show({
-			color: "red",
-			title: "Error",
-			message: error.message,
-		});
-	}
-
 	const showEditor = currentUser && props.commentsAllowed;
 	return (
-		<div className="w-full flex flex-col gap-2">
+		<div className="w-full flex flex-col gap-2" ref={intersectionRootElRef}>
 			{isLoading && (
 				<Loader className="mx-auto mt-3" color="gray" variant="bars" />
 			)}
@@ -137,50 +98,27 @@ export default function Comments(props: CommentsProps) {
 								className="mt-1 w-full"
 								size="md"
 								color="gray"
-								onClick={createComment}
+								onClick={handleCommentSubmit}
 								disabled={creatingComment}>
 								Post comment
 							</Button>
 						</div>
 					)}
 					<ul className="list-none flex flex-col gap-1">
-						{commentsData.map((data) => (
-							<CommentItem key={data.id} data={data} showReplyCount />
-						))}
+						{commentsData.map((data, index) => {
+							const secondToLast = index === commentsData.length - 2;
+							return (
+								<CommentItem
+									ref={secondToLast ? infiniteScrollTriggerElRef : null}
+									key={data.id}
+									data={data}
+									showReplyCount
+								/>
+							);
+						})}
 					</ul>
-					{!noMoreComments && (
-						<Button
-							type="button"
-							variant="light"
-							color="gray"
-							onClick={() => setSize((_size) => _size + 1)}
-							loaderPosition="center"
-							loading={isValidating}>
-							Load more comments
-						</Button>
-					)}
-					{noMoreComments && (
-						<p className="text-sm text-center mt-2">All comments loaded</p>
-					)}
 				</>
 			)}
 		</div>
 	);
-}
-
-interface SWRInfiniteData {
-	comments: CommentFull[];
-	nextCursor: {
-		id?: string;
-	};
-}
-
-async function fetchCommentsData(params: CommentAPIGetManyParams) {
-	const comments = await CommentsAPI.getMany(params);
-	return {
-		comments,
-		nextCursor: {
-			id: comments.at(-1)?.id,
-		},
-	};
 }
