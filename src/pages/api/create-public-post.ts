@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/lib/prisma-client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { CreatePublicPostData } from "@/lib/api/PublicPostAPI";
 
 export default async function handler(
 	req: NextApiRequest,
@@ -16,9 +17,10 @@ export default async function handler(
 		if (!session) {
 			res.status(401).json({ message: "Client not authenticated!" });
 		} else {
+			const payload: CreatePublicPostData = JSON.parse(req.body);
 			try {
 				const createdPost = await prisma.publicPost.create({
-					data: JSON.parse(req.body),
+					data: { ...payload, createdAt: Date.now() },
 					include: {
 						author: true,
 					},

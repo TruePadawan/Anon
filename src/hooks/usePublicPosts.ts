@@ -60,18 +60,16 @@ export default function usePublicPosts(params?: UsePublicPostsParams) {
 
 	async function createPublicPost(content: JSONContent) {
 		if (!user) {
-			throw new Error("Unauthenticated user can't create a post");
+			throw new Error("Client is unauthenticated");
 		}
 
-		const newPost = await PublicPostAPI.create(content, user.id);
-		setPosts((posts) => {
-			return [newPost, ...posts];
-		});
+		const newPost = await PublicPostAPI.create({ content, authorId: user.id });
+		setPosts((posts) => [newPost, ...posts]);
 		return newPost;
 	}
 
-	async function loadMorePosts() {
-		setSize((_size) => _size + 1);
+	function loadMorePosts() {
+		setSize((size) => size + 1);
 	}
 
 	return { posts, isLoading, createPublicPost, loadMorePosts };

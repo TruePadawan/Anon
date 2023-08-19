@@ -13,7 +13,7 @@ import moment from "moment";
 import Link from "next/link";
 import { CommentEditorExtensions } from "@/helpers/global_vars";
 import { useDisclosure } from "@mantine/hooks";
-import { useRef, useState } from "react";
+import { forwardRef, useRef, useState, Ref } from "react";
 import { notifications } from "@mantine/notifications";
 import UpdateComment from "./UpdateComment";
 import useUser from "@/hooks/useUser";
@@ -27,7 +27,10 @@ interface CommentItemProps {
 	className?: string;
 }
 
-export default function CommentItem(props: CommentItemProps) {
+const CommentItem = forwardRef(function CommentItem(
+	props: CommentItemProps,
+	ref: Ref<HTMLLIElement>
+) {
 	const { user: currentUser } = useUser();
 	const [commentDeleted, setCommentDeleted] = useState(false);
 	const theme = useMantineTheme();
@@ -92,7 +95,7 @@ export default function CommentItem(props: CommentItemProps) {
 	const { author } = props.data;
 	const currentUserIsAuthor = currentUser?.id === author.id;
 	return (
-		<li className="list-none">
+		<li ref={ref} className="list-none">
 			<PostItem className={props.className} style={listItemStyles}>
 				<div className="flex gap-1.5 py-1 px-1">
 					<PostItem.Side>
@@ -190,7 +193,7 @@ export default function CommentItem(props: CommentItemProps) {
 			</PostItem>
 		</li>
 	);
-}
+});
 
 interface CommentItemHeadingProps {
 	commentData: CommentFull;
@@ -213,3 +216,5 @@ function CommentItemHeading(props: CommentItemHeadingProps) {
 		</div>
 	);
 }
+
+export default CommentItem;
