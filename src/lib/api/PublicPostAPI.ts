@@ -52,7 +52,7 @@ class PublicPostAPI {
 	}
 
 	static async getMany(
-		params?: GetManyParams
+		params?: PublicPostAPIGetManyParams
 	): Promise<PublicPostWithAuthor[]> {
 		const response = await fetch("/api/get-public-posts", {
 			method: "POST",
@@ -82,7 +82,7 @@ interface UpdatePublicPostPayload {
 	commentsAllowed?: boolean;
 }
 
-export interface GetManyParams {
+export interface PublicPostAPIGetManyParams {
 	take?: number;
 	where?: Prisma.PublicPostWhereInput;
 	orderBy?: Prisma.PublicPostOrderByWithRelationInput;
