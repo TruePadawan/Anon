@@ -6,12 +6,10 @@ import { Button } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useEditor } from "@tiptap/react";
 import { useState } from "react";
-import { useSWRConfig } from "swr";
 
 export default function ReplyToComment(props: ReplyToCommentProps) {
 	const [isPostingReply, setIsPostingReply] = useState(false);
 	const editor = useEditor({ extensions: CommentEditorExtensions });
-	const { mutate } = useSWRConfig();
 
 	async function postReply() {
 		try {
@@ -33,9 +31,6 @@ export default function ReplyToComment(props: ReplyToCommentProps) {
 				parentId: props.commentData.id,
 			});
 			setIsPostingReply(false);
-
-			// trigger revalidation for the parent comments' reply count
-			mutate(`/api/get-reply-count/${props.commentData.id}`);
 			props.onReplyPosted();
 		} catch (error) {
 			notifications.show({
