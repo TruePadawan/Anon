@@ -26,7 +26,7 @@ import CommentsAPI, { CommentFull } from "@/lib/api/CommentsAPI";
 import { getErrorMessage } from "@/lib/error-message";
 import PostItem from "../PostItem/PostItem";
 import { ReplyCount } from "./CommentsCount";
-import CommentEditor from "../Editor/CommentEditor";
+import ReplyToComment from "./ReplyToComment";
 
 interface CommentItemProps {
 	data: CommentFull;
@@ -45,7 +45,6 @@ const CommentItem = forwardRef(function CommentItem(
 		editable: false,
 		extensions: CommentEditorExtensions,
 	});
-	const replyEditor = useEditor({ extensions: CommentEditorExtensions });
 	const [
 		confirmDeleteModalOpened,
 		{ open: openConfirmDeleteModal, close: closeConfirmDeleteModal },
@@ -64,23 +63,20 @@ const CommentItem = forwardRef(function CommentItem(
 		);
 	}
 
-	function showReplyEditor() {
+	function enterReplyMode() {
 		toggleReplyMode(true);
 	}
 
-	function cancelReplyMode() {
-		replyEditor?.commands.clearContent();
+	function endReplyMode() {
 		toggleReplyMode(false);
 	}
 
 	function startEditMode() {
 		editorContentRef.current = editor?.getHTML();
-		editor?.setEditable(true);
 		toggleEditMode(true);
 	}
 
 	function stopEditMode() {
-		editor?.setEditable(false);
 		toggleEditMode(false);
 	}
 
@@ -139,7 +135,7 @@ const CommentItem = forwardRef(function CommentItem(
 											<Menu.Label>General</Menu.Label>
 											<Menu.Item
 												icon={<IconMessage size={16} />}
-												onClick={showReplyEditor}>
+												onClick={enterReplyMode}>
 												Reply
 											</Menu.Item>
 											<Menu.Label>Manage</Menu.Label>
@@ -221,22 +217,11 @@ const CommentItem = forwardRef(function CommentItem(
 					</PostItem.Main>
 				</div>
 				{inReplyMode && (
-					<div className="my-2 flex flex-col gap-1">
-						<CommentEditor editor={replyEditor} />
-						<div className="flex flex-col gap-1">
-							<Button size="xs" radius="xs" color="green">
-								Post reply
-							</Button>
-							<Button
-								size="xs"
-								radius="xs"
-								color="red"
-								variant="light"
-								onClick={cancelReplyMode}>
-								Cancel
-							</Button>
-						</div>
-					</div>
+					<ReplyToComment
+						commentData={props.data}
+						onCancel={endReplyMode}
+						onReplyPosted={endReplyMode}
+					/>
 				)}
 				{props.showReplyCount && (
 					<PostItem.Footer>
