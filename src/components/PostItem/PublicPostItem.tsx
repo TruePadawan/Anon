@@ -62,12 +62,10 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 
 	function startEditMode() {
 		editorContentRef.current = editor?.getHTML();
-		editor?.setEditable(true);
 		setInEditMode(true);
 	}
 
 	function stopEditMode() {
-		editor?.setEditable(false);
 		setInEditMode(false);
 	}
 
