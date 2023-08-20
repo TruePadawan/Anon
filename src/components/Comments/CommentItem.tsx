@@ -26,6 +26,7 @@ import CommentsAPI, { CommentFull } from "@/lib/api/CommentsAPI";
 import { getErrorMessage } from "@/lib/error-message";
 import PostItem from "../PostItem/PostItem";
 import { ReplyCount } from "./CommentsCount";
+import CommentEditor from "../Editor/CommentEditor";
 
 interface CommentItemProps {
 	data: CommentFull;
@@ -44,11 +45,13 @@ const CommentItem = forwardRef(function CommentItem(
 		editable: false,
 		extensions: CommentEditorExtensions,
 	});
+	const replyEditor = useEditor({ extensions: CommentEditorExtensions });
 	const [
 		confirmDeleteModalOpened,
 		{ open: openConfirmDeleteModal, close: closeConfirmDeleteModal },
 	] = useDisclosure(false);
-	const [inEditMode, setInEditMode] = useState(false);
+	const [inEditMode, toggleEditMode] = useState(false);
+	const [inReplyMode, toggleReplyMode] = useState(false);
 	const [isUpdatingComment, setIsUpdatingComment] = useState(false);
 	const editorContentRef = useRef(editor?.getHTML());
 	const listItemStyles = { backgroundColor: theme.colors.dark[6] };
@@ -61,15 +64,24 @@ const CommentItem = forwardRef(function CommentItem(
 		);
 	}
 
+	function showReplyEditor() {
+		toggleReplyMode(true);
+	}
+
+	function cancelReplyMode() {
+		replyEditor?.commands.clearContent();
+		toggleReplyMode(false);
+	}
+
 	function startEditMode() {
 		editorContentRef.current = editor?.getHTML();
 		editor?.setEditable(true);
-		setInEditMode(true);
+		toggleEditMode(true);
 	}
 
 	function stopEditMode() {
 		editor?.setEditable(false);
-		setInEditMode(false);
+		toggleEditMode(false);
 	}
 
 	// restore editor content to what it was pre-edit before stopping edit mode
@@ -125,7 +137,9 @@ const CommentItem = forwardRef(function CommentItem(
 										</Menu.Target>
 										<Menu.Dropdown>
 											<Menu.Label>General</Menu.Label>
-											<Menu.Item icon={<IconMessage size={16} />}>
+											<Menu.Item
+												icon={<IconMessage size={16} />}
+												onClick={showReplyEditor}>
 												Reply
 											</Menu.Item>
 											<Menu.Label>Manage</Menu.Label>
@@ -152,10 +166,16 @@ const CommentItem = forwardRef(function CommentItem(
 										<div className="flex flex-col gap-1.5">
 											<p>Are you sure you want to delete this comment?</p>
 											<div className="flex flex-col gap-1">
-												<Button color="green" onClick={deleteComment}>
+												<Button
+													radius="xs"
+													color="green"
+													onClick={deleteComment}>
 													Yes
 												</Button>
-												<Button color="red" onClick={closeConfirmDeleteModal}>
+												<Button
+													radius="xs"
+													color="red"
+													onClick={closeConfirmDeleteModal}>
 													No
 												</Button>
 											</div>
@@ -200,6 +220,24 @@ const CommentItem = forwardRef(function CommentItem(
 						</PostItem.Content>
 					</PostItem.Main>
 				</div>
+				{inReplyMode && (
+					<div className="my-2 flex flex-col gap-1">
+						<CommentEditor editor={replyEditor} />
+						<div className="flex flex-col gap-1">
+							<Button size="xs" radius="xs" color="green">
+								Post reply
+							</Button>
+							<Button
+								size="xs"
+								radius="xs"
+								color="red"
+								variant="light"
+								onClick={cancelReplyMode}>
+								Cancel
+							</Button>
+						</div>
+					</div>
+				)}
 				{props.showReplyCount && (
 					<PostItem.Footer>
 						<ReplyCount commentId={props.data.id} />
