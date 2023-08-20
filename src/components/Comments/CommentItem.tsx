@@ -20,6 +20,7 @@ import useUser from "@/hooks/useUser";
 import CommentsAPI, { CommentFull } from "@/lib/api/CommentsAPI";
 import { getErrorMessage } from "@/lib/error-message";
 import PostItem from "../PostItem/PostItem";
+import { ReplyCount } from "./CommentsCount";
 
 interface CommentItemProps {
 	data: CommentFull;
@@ -190,6 +191,11 @@ const CommentItem = forwardRef(function CommentItem(
 						</PostItem.Content>
 					</PostItem.Main>
 				</div>
+				{props.showReplyCount && (
+					<PostItem.Footer>
+						<ReplyCount commentId={props.data.id} />
+					</PostItem.Footer>
+				)}
 			</PostItem>
 		</li>
 	);
