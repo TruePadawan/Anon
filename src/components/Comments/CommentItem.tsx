@@ -7,7 +7,12 @@ import {
 	Spoiler,
 } from "@mantine/core";
 import { RichTextEditor } from "@mantine/tiptap";
-import { IconDots, IconEdit, IconTrash } from "@tabler/icons-react";
+import {
+	IconDots,
+	IconEdit,
+	IconTrash,
+	IconMessage,
+} from "@tabler/icons-react";
 import { Content, Editor, useEditor } from "@tiptap/react";
 import moment from "moment";
 import Link from "next/link";
@@ -119,6 +124,10 @@ const CommentItem = forwardRef(function CommentItem(
 											</ActionIcon>
 										</Menu.Target>
 										<Menu.Dropdown>
+											<Menu.Label>General</Menu.Label>
+											<Menu.Item icon={<IconMessage size={16} />}>
+												Reply
+											</Menu.Item>
 											<Menu.Label>Manage</Menu.Label>
 											<Menu.Item
 												icon={<IconEdit size={16} />}
