@@ -84,6 +84,7 @@ export interface CreateCommentData {
 	content: JSONContent;
 	authorId: string;
 	commentGroupId: string;
+	parentId?: string;
 }
 
 export interface UpdateCommentPayload {
