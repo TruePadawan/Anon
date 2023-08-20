@@ -27,6 +27,9 @@ export default function Comments(props: CommentsProps) {
 		useComments({
 			where: {
 				commentGroupId,
+				parentComment: {
+					is: null,
+				},
 			},
 			orderBy: {
 				createdAt: "desc",
