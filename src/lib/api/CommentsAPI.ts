@@ -54,6 +54,13 @@ class CommentsAPI {
 		return Number(count);
 	}
 
+	static async replyCount(commentId: string) {
+		const response = await fetch(`/api/get-reply-count/${commentId}`);
+		await handleFailedAPIRequest(response);
+		const { count } = await response.json();
+		return Number(count);
+	}
+
 	static async getMany(params?: CommentAPIGetManyParams) {
 		const response = await fetch("/api/get-comments", {
 			method: "POST",
