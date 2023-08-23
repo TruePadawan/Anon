@@ -9,9 +9,11 @@ import useUser from "@/hooks/useUser";
 import useComments from "@/hooks/useComments";
 import { getErrorMessage } from "@/lib/error-message";
 import { useIntersection } from "@mantine/hooks";
+import { Prisma } from "@prisma/client";
 
 interface CommentsProps {
 	commentGroupId: string;
+	where: Prisma.CommentWhereInput;
 	commentsAllowed: boolean;
 	commentsPerRequest?: number;
 }
@@ -25,12 +27,7 @@ export default function Comments(props: CommentsProps) {
 	const { commentGroupId, commentsPerRequest = 20 } = props;
 	const { commentsData, isLoading, createComment, loadMoreComments } =
 		useComments({
-			where: {
-				commentGroupId,
-				parentComment: {
-					is: null,
-				},
-			},
+			where: props.where,
 			orderBy: {
 				createdAt: "desc",
 			},

@@ -37,6 +37,12 @@ const Post = (props: PageProps) => {
 						<Divider label="Comments" labelPosition="center" />
 						<Comments
 							commentGroupId={post.id}
+							where={{
+								commentGroupId: post.id,
+								parentComment: {
+									is: null,
+								},
+							}}
 							commentsAllowed={post.commentsAllowed || currentUserIsAuthor}
 						/>
 					</div>
