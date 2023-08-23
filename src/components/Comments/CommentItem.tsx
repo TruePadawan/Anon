@@ -27,7 +27,6 @@ import { getErrorMessage } from "@/lib/error-message";
 import PostItem from "../PostItem/PostItem";
 import { ReplyCount } from "./CommentsCount";
 import ReplyToComment from "./ReplyToComment";
-import { useRouter } from "next/router";
 
 interface CommentItemProps {
 	data: CommentFull;
@@ -55,7 +54,6 @@ const CommentItem = forwardRef(function CommentItem(
 	const [inReplyMode, toggleReplyMode] = useState(false);
 	const [isUpdatingComment, setIsUpdatingComment] = useState(false);
 	const editorContentRef = useRef(editor?.getHTML());
-	const router = useRouter();
 	const listItemStyles = { backgroundColor: theme.colors.dark[6] };
 
 	if (commentDeleted) {
@@ -105,14 +103,6 @@ const CommentItem = forwardRef(function CommentItem(
 		closeConfirmDeleteModal();
 	}
 
-	function viewReplies() {
-		let url = router.asPath;
-		if (props.postType === "public") {
-			url = `/posts/${props.data.commentGroupId}/${props.data.id}`;
-		}
-		router.push(url);
-	}
-
 	// set editor content after comment data is fetched
 	if (editor?.isEmpty) {
 		editor.commands.setContent(props.data.content as Content);
@@ -120,6 +110,7 @@ const CommentItem = forwardRef(function CommentItem(
 
 	const { author } = props.data;
 	const currentUserIsAuthor = currentUser?.id === author.id;
+	const repliesUrl = `/posts/${props.data.commentGroupId}/${props.data.id}`;
 	return (
 		<li ref={ref} className="list-none">
 			<PostItem className={props.className} style={listItemStyles}>
@@ -143,22 +134,23 @@ const CommentItem = forwardRef(function CommentItem(
 								</Menu.Target>
 								<Menu.Dropdown>
 									<Menu.Label>General</Menu.Label>
+									<Menu.Item
+										icon={<IconMessage size={16} />}
+										component={Link}
+										href={repliesUrl}>
+										View replies
+									</Menu.Item>
 									{currentUser && (
-										<>
-											<Menu.Item
-												icon={<IconMessage size={16} />}
-												onClick={viewReplies}>
-												View replies
-											</Menu.Item>
-										</>
-									)}
-									{currentUserIsAuthor && (
 										<>
 											<Menu.Item
 												icon={<IconMessage size={16} />}
 												onClick={enterReplyMode}>
 												Reply
 											</Menu.Item>
+										</>
+									)}
+									{currentUserIsAuthor && (
+										<>
 											<Menu.Label>Manage</Menu.Label>
 											<Menu.Item
 												icon={<IconEdit size={16} />}
