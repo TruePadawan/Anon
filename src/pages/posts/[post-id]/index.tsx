@@ -87,7 +87,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
 	});
 
 	return {
-		props: { post, currentUser: user },
+		props: { key: post?.id, post, currentUser: user },
 	};
 };
 

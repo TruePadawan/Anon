@@ -97,7 +97,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
 	});
 
 	return {
-		props: { commentData, currentUser: user },
+		props: { key: commentId, commentData, currentUser: user },
 	};
 };
 
