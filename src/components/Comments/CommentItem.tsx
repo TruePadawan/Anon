@@ -27,9 +27,11 @@ import { getErrorMessage } from "@/lib/error-message";
 import PostItem from "../PostItem/PostItem";
 import { ReplyCount } from "./CommentsCount";
 import ReplyToComment from "./ReplyToComment";
+import { useRouter } from "next/router";
 
 interface CommentItemProps {
 	data: CommentFull;
+	postType: "public" | "group";
 	showReplyCount?: boolean;
 	className?: string;
 }
@@ -53,6 +55,7 @@ const CommentItem = forwardRef(function CommentItem(
 	const [inReplyMode, toggleReplyMode] = useState(false);
 	const [isUpdatingComment, setIsUpdatingComment] = useState(false);
 	const editorContentRef = useRef(editor?.getHTML());
+	const router = useRouter();
 	const listItemStyles = { backgroundColor: theme.colors.dark[6] };
 
 	if (commentDeleted) {
@@ -101,6 +104,15 @@ const CommentItem = forwardRef(function CommentItem(
 		}
 		closeConfirmDeleteModal();
 	}
+
+	function viewReplies() {
+		let url = router.asPath;
+		if (props.postType === "public") {
+			url = `/posts/${props.data.commentGroupId}/${props.data.id}`;
+		}
+		router.push(url);
+	}
+
 	// set editor content after comment data is fetched
 	if (editor?.isEmpty) {
 		editor.commands.setContent(props.data.content as Content);
@@ -123,16 +135,25 @@ const CommentItem = forwardRef(function CommentItem(
 					<PostItem.Main>
 						<PostItem.Header>
 							<CommentItemHeading commentData={props.data} />
-							{currentUserIsAuthor && (
-								<>
-									<Menu>
-										<Menu.Target>
-											<ActionIcon>
-												<IconDots />
-											</ActionIcon>
-										</Menu.Target>
-										<Menu.Dropdown>
-											<Menu.Label>General</Menu.Label>
+							<Menu>
+								<Menu.Target>
+									<ActionIcon>
+										<IconDots />
+									</ActionIcon>
+								</Menu.Target>
+								<Menu.Dropdown>
+									<Menu.Label>General</Menu.Label>
+									{currentUser && (
+										<>
+											<Menu.Item
+												icon={<IconMessage size={16} />}
+												onClick={viewReplies}>
+												View replies
+											</Menu.Item>
+										</>
+									)}
+									{currentUserIsAuthor && (
+										<>
 											<Menu.Item
 												icon={<IconMessage size={16} />}
 												onClick={enterReplyMode}>
@@ -152,33 +173,34 @@ const CommentItem = forwardRef(function CommentItem(
 												disabled={inEditMode || isUpdatingComment}>
 												Delete
 											</Menu.Item>
-										</Menu.Dropdown>
-									</Menu>
-									<Modal
-										opened={confirmDeleteModalOpened}
-										onClose={closeConfirmDeleteModal}
-										title="Confirm Action"
-										centered>
-										<div className="flex flex-col gap-1.5">
-											<p>Are you sure you want to delete this comment?</p>
-											<div className="flex flex-col gap-1">
-												<Button
-													radius="xs"
-													color="green"
-													onClick={deleteComment}>
-													Yes
-												</Button>
-												<Button
-													radius="xs"
-													color="red"
-													onClick={closeConfirmDeleteModal}>
-													No
-												</Button>
-											</div>
-										</div>
-									</Modal>
-								</>
-							)}
+
+											<Modal
+												opened={confirmDeleteModalOpened}
+												onClose={closeConfirmDeleteModal}
+												title="Confirm Action"
+												centered>
+												<div className="flex flex-col gap-1.5">
+													<p>Are you sure you want to delete this comment?</p>
+													<div className="flex flex-col gap-1">
+														<Button
+															radius="xs"
+															color="green"
+															onClick={deleteComment}>
+															Yes
+														</Button>
+														<Button
+															radius="xs"
+															color="red"
+															onClick={closeConfirmDeleteModal}>
+															No
+														</Button>
+													</div>
+												</div>
+											</Modal>
+										</>
+									)}
+								</Menu.Dropdown>
+							</Menu>
 						</PostItem.Header>
 						<PostItem.Content>
 							{inEditMode && (
