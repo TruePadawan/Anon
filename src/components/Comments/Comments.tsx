@@ -84,6 +84,18 @@ export default function Comments(props: CommentsProps) {
 	}
 
 	const showEditor = currentUser && props.commentsAllowed;
+	const comments = commentsData.map((data, index) => {
+		const secondToLast = index === commentsData.length - 2;
+		return (
+			<CommentItem
+				ref={secondToLast ? infiniteScrollTriggerElRef : null}
+				key={data.id}
+				data={data}
+				postType={props.postType}
+				showReplyCount
+			/>
+		);
+	});
 	return (
 		<div className="w-full flex flex-col gap-2" ref={intersectionRootElRef}>
 			{isLoading && (
@@ -106,18 +118,10 @@ export default function Comments(props: CommentsProps) {
 						</div>
 					)}
 					<ul className="list-none flex flex-col gap-1">
-						{commentsData.map((data, index) => {
-							const secondToLast = index === commentsData.length - 2;
-							return (
-								<CommentItem
-									ref={secondToLast ? infiniteScrollTriggerElRef : null}
-									key={data.id}
-									data={data}
-									postType={props.postType}
-									showReplyCount
-								/>
-							);
-						})}
+						{comments.length !== 0 && <>{comments}</>}
+						{comments.length === 0 && (
+							<p className="text-center text-sm">No comments</p>
+						)}
 					</ul>
 				</>
 			)}
