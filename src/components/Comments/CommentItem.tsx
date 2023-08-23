@@ -173,34 +173,30 @@ const CommentItem = forwardRef(function CommentItem(
 												disabled={inEditMode || isUpdatingComment}>
 												Delete
 											</Menu.Item>
-
-											<Modal
-												opened={confirmDeleteModalOpened}
-												onClose={closeConfirmDeleteModal}
-												title="Confirm Action"
-												centered>
-												<div className="flex flex-col gap-1.5">
-													<p>Are you sure you want to delete this comment?</p>
-													<div className="flex flex-col gap-1">
-														<Button
-															radius="xs"
-															color="green"
-															onClick={deleteComment}>
-															Yes
-														</Button>
-														<Button
-															radius="xs"
-															color="red"
-															onClick={closeConfirmDeleteModal}>
-															No
-														</Button>
-													</div>
-												</div>
-											</Modal>
 										</>
 									)}
 								</Menu.Dropdown>
 							</Menu>
+							<Modal
+								opened={confirmDeleteModalOpened}
+								onClose={closeConfirmDeleteModal}
+								title="Confirm Action"
+								centered>
+								<div className="flex flex-col gap-1.5">
+									<p>Are you sure you want to delete this comment?</p>
+									<div className="flex flex-col gap-1">
+										<Button radius="xs" color="green" onClick={deleteComment}>
+											Yes
+										</Button>
+										<Button
+											radius="xs"
+											color="red"
+											onClick={closeConfirmDeleteModal}>
+											No
+										</Button>
+									</div>
+								</div>
+							</Modal>
 						</PostItem.Header>
 						<PostItem.Content>
 							{inEditMode && (
