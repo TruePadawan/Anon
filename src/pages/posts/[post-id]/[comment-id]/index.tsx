@@ -45,9 +45,10 @@ const Post = (props: PageProps) => {
 						Go to post
 					</Button>
 					<div className="flex flex-col gap-3">
-						<CommentItem data={commentData} />
+						<CommentItem data={commentData} postType="public" />
 						<Divider label="Replies" labelPosition="center" />
 						<Comments
+							postType="public"
 							commentGroupId={commentData.commentGroupId}
 							where={{
 								parentId: commentData.id,

@@ -12,6 +12,7 @@ import { useIntersection } from "@mantine/hooks";
 import { Prisma } from "@prisma/client";
 
 interface CommentsProps {
+	postType: "public" | "group";
 	commentGroupId: string;
 	where: Prisma.CommentWhereInput;
 	commentsAllowed: boolean;
@@ -112,6 +113,7 @@ export default function Comments(props: CommentsProps) {
 									ref={secondToLast ? infiniteScrollTriggerElRef : null}
 									key={data.id}
 									data={data}
+									postType={props.postType}
 									showReplyCount
 								/>
 							);

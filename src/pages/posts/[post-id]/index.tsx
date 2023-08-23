@@ -36,6 +36,7 @@ const Post = (props: PageProps) => {
 						/>
 						<Divider label="Comments" labelPosition="center" />
 						<Comments
+							postType="public"
 							commentGroupId={post.id}
 							where={{
 								commentGroupId: post.id,
