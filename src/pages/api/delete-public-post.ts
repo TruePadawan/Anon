@@ -43,6 +43,7 @@ export default async function handler(
 								},
 							});
 						}
+						// delete post after deleting comments
 						await client.publicPost.delete({
 							where: {
 								id: postData.id,
