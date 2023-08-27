@@ -26,10 +26,28 @@ export default async function handler(
 			const currentUserIsAuthor = session.user.id === authorId;
 			if (currentUserIsAuthor) {
 				try {
-					await prisma.comment.delete({
-						where: {
-							id: id,
-						},
+					await prisma.$transaction(async (client) => {
+						const childComments = await client.comment.findMany({
+							where: {
+								parentId: id,
+							},
+							orderBy: {
+								createdAt: "desc",
+							},
+						});
+						// deleteMany doesn't work due to the self relation
+						for (let i = 0; i < childComments.length; i++) {
+							await client.comment.delete({
+								where: {
+									id: childComments[i].id,
+								},
+							});
+						}
+						await client.comment.delete({
+							where: {
+								id: id,
+							},
+						});
 					});
 					res.status(200).json({ message: "Comment deleted successfully" });
 				} catch (error: any) {

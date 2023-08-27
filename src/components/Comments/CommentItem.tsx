@@ -7,7 +7,12 @@ import {
 	Spoiler,
 } from "@mantine/core";
 import { RichTextEditor } from "@mantine/tiptap";
-import { IconDots, IconEdit, IconTrash } from "@tabler/icons-react";
+import {
+	IconDots,
+	IconEdit,
+	IconTrash,
+	IconMessage,
+} from "@tabler/icons-react";
 import { Content, Editor, useEditor } from "@tiptap/react";
 import moment from "moment";
 import Link from "next/link";
@@ -20,9 +25,12 @@ import useUser from "@/hooks/useUser";
 import CommentsAPI, { CommentFull } from "@/lib/api/CommentsAPI";
 import { getErrorMessage } from "@/lib/error-message";
 import PostItem from "../PostItem/PostItem";
+import { ReplyCount } from "./CommentsCount";
+import ReplyToComment from "./ReplyToComment";
 
 interface CommentItemProps {
 	data: CommentFull;
+	postType: "public" | "group";
 	showReplyCount?: boolean;
 	className?: string;
 }
@@ -42,7 +50,8 @@ const CommentItem = forwardRef(function CommentItem(
 		confirmDeleteModalOpened,
 		{ open: openConfirmDeleteModal, close: closeConfirmDeleteModal },
 	] = useDisclosure(false);
-	const [inEditMode, setInEditMode] = useState(false);
+	const [inEditMode, toggleEditMode] = useState(false);
+	const [inReplyMode, toggleReplyMode] = useState(false);
 	const [isUpdatingComment, setIsUpdatingComment] = useState(false);
 	const editorContentRef = useRef(editor?.getHTML());
 	const listItemStyles = { backgroundColor: theme.colors.dark[6] };
@@ -55,15 +64,21 @@ const CommentItem = forwardRef(function CommentItem(
 		);
 	}
 
+	function enterReplyMode() {
+		toggleReplyMode(true);
+	}
+
+	function endReplyMode() {
+		toggleReplyMode(false);
+	}
+
 	function startEditMode() {
 		editorContentRef.current = editor?.getHTML();
-		editor?.setEditable(true);
-		setInEditMode(true);
+		toggleEditMode(true);
 	}
 
 	function stopEditMode() {
-		editor?.setEditable(false);
-		setInEditMode(false);
+		toggleEditMode(false);
 	}
 
 	// restore editor content to what it was pre-edit before stopping edit mode
@@ -87,6 +102,7 @@ const CommentItem = forwardRef(function CommentItem(
 		}
 		closeConfirmDeleteModal();
 	}
+
 	// set editor content after comment data is fetched
 	if (editor?.isEmpty) {
 		editor.commands.setContent(props.data.content as Content);
@@ -94,6 +110,7 @@ const CommentItem = forwardRef(function CommentItem(
 
 	const { author } = props.data;
 	const currentUserIsAuthor = currentUser?.id === author.id;
+	const repliesUrl = `/posts/${props.data.commentGroupId}/${props.data.id}`;
 	return (
 		<li ref={ref} className="list-none">
 			<PostItem className={props.className} style={listItemStyles}>
@@ -109,15 +126,31 @@ const CommentItem = forwardRef(function CommentItem(
 					<PostItem.Main>
 						<PostItem.Header>
 							<CommentItemHeading commentData={props.data} />
-							{currentUserIsAuthor && (
-								<>
-									<Menu>
-										<Menu.Target>
-											<ActionIcon>
-												<IconDots />
-											</ActionIcon>
-										</Menu.Target>
-										<Menu.Dropdown>
+							<Menu>
+								<Menu.Target>
+									<ActionIcon>
+										<IconDots />
+									</ActionIcon>
+								</Menu.Target>
+								<Menu.Dropdown>
+									<Menu.Label>General</Menu.Label>
+									<Menu.Item
+										icon={<IconMessage size={16} />}
+										component={Link}
+										href={repliesUrl}>
+										View replies
+									</Menu.Item>
+									{currentUser && (
+										<>
+											<Menu.Item
+												icon={<IconMessage size={16} />}
+												onClick={enterReplyMode}>
+												Reply
+											</Menu.Item>
+										</>
+									)}
+									{currentUserIsAuthor && (
+										<>
 											<Menu.Label>Manage</Menu.Label>
 											<Menu.Item
 												icon={<IconEdit size={16} />}
@@ -132,27 +165,30 @@ const CommentItem = forwardRef(function CommentItem(
 												disabled={inEditMode || isUpdatingComment}>
 												Delete
 											</Menu.Item>
-										</Menu.Dropdown>
-									</Menu>
-									<Modal
-										opened={confirmDeleteModalOpened}
-										onClose={closeConfirmDeleteModal}
-										title="Confirm Action"
-										centered>
-										<div className="flex flex-col gap-1.5">
-											<p>Are you sure you want to delete this comment?</p>
-											<div className="flex flex-col gap-1">
-												<Button color="green" onClick={deleteComment}>
-													Yes
-												</Button>
-												<Button color="red" onClick={closeConfirmDeleteModal}>
-													No
-												</Button>
-											</div>
-										</div>
-									</Modal>
-								</>
-							)}
+										</>
+									)}
+								</Menu.Dropdown>
+							</Menu>
+							<Modal
+								opened={confirmDeleteModalOpened}
+								onClose={closeConfirmDeleteModal}
+								title="Confirm Action"
+								centered>
+								<div className="flex flex-col gap-1.5">
+									<p>Are you sure you want to delete this comment?</p>
+									<div className="flex flex-col gap-1">
+										<Button radius="xs" color="green" onClick={deleteComment}>
+											Yes
+										</Button>
+										<Button
+											radius="xs"
+											color="red"
+											onClick={closeConfirmDeleteModal}>
+											No
+										</Button>
+									</div>
+								</div>
+							</Modal>
 						</PostItem.Header>
 						<PostItem.Content>
 							{inEditMode && (
@@ -190,6 +226,18 @@ const CommentItem = forwardRef(function CommentItem(
 						</PostItem.Content>
 					</PostItem.Main>
 				</div>
+				{inReplyMode && (
+					<ReplyToComment
+						commentData={props.data}
+						onCancel={endReplyMode}
+						onReplyPosted={endReplyMode}
+					/>
+				)}
+				{props.showReplyCount && (
+					<PostItem.Footer>
+						<ReplyCount commentId={props.data.id} />
+					</PostItem.Footer>
+				)}
 			</PostItem>
 		</li>
 	);

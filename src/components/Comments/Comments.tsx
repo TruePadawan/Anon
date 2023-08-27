@@ -9,9 +9,12 @@ import useUser from "@/hooks/useUser";
 import useComments from "@/hooks/useComments";
 import { getErrorMessage } from "@/lib/error-message";
 import { useIntersection } from "@mantine/hooks";
+import { Prisma } from "@prisma/client";
 
 interface CommentsProps {
+	postType: "public" | "group";
 	commentGroupId: string;
+	where: Prisma.CommentWhereInput;
 	commentsAllowed: boolean;
 	commentsPerRequest?: number;
 }
@@ -25,9 +28,7 @@ export default function Comments(props: CommentsProps) {
 	const { commentGroupId, commentsPerRequest = 20 } = props;
 	const { commentsData, isLoading, createComment, loadMoreComments } =
 		useComments({
-			where: {
-				commentGroupId,
-			},
+			where: props.where,
 			orderBy: {
 				createdAt: "desc",
 			},
@@ -83,6 +84,18 @@ export default function Comments(props: CommentsProps) {
 	}
 
 	const showEditor = currentUser && props.commentsAllowed;
+	const comments = commentsData.map((data, index) => {
+		const secondToLast = index === commentsData.length - 2;
+		return (
+			<CommentItem
+				ref={secondToLast ? infiniteScrollTriggerElRef : null}
+				key={data.id}
+				data={data}
+				postType={props.postType}
+				showReplyCount
+			/>
+		);
+	});
 	return (
 		<div className="w-full flex flex-col gap-2" ref={intersectionRootElRef}>
 			{isLoading && (
@@ -105,17 +118,10 @@ export default function Comments(props: CommentsProps) {
 						</div>
 					)}
 					<ul className="list-none flex flex-col gap-1">
-						{commentsData.map((data, index) => {
-							const secondToLast = index === commentsData.length - 2;
-							return (
-								<CommentItem
-									ref={secondToLast ? infiniteScrollTriggerElRef : null}
-									key={data.id}
-									data={data}
-									showReplyCount
-								/>
-							);
-						})}
+						{comments.length !== 0 && <>{comments}</>}
+						{comments.length === 0 && (
+							<p className="text-center text-sm">No comments</p>
+						)}
 					</ul>
 				</>
 			)}

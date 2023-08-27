@@ -25,10 +25,30 @@ export default async function handler(
 			const currentUserIsAuthor = session.user.id === postData.authorId;
 			if (currentUserIsAuthor) {
 				try {
-					await prisma.publicPost.delete({
-						where: {
-							id: postData.id,
-						},
+					// delete the posts and all its comments
+					await prisma.$transaction(async (client) => {
+						const comments = await client.comment.findMany({
+							where: {
+								commentGroupId: postData.id,
+							},
+							orderBy: {
+								createdAt: "desc",
+							},
+						});
+						// deleteMany doesn't work due to the self relation
+						for (let i = 0; i < comments.length; i++) {
+							await client.comment.delete({
+								where: {
+									id: comments[i].id,
+								},
+							});
+						}
+						// delete post after deleting comments
+						await client.publicPost.delete({
+							where: {
+								id: postData.id,
+							},
+						});
 					});
 					res.status(200).json({ message: "Post deleted successfully" });
 				} catch (error: any) {

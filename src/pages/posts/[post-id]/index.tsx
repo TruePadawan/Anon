@@ -6,15 +6,18 @@ import { IconError404 } from "@tabler/icons-react";
 import PublicPostItem from "@/components/PostItem/PublicPostItem";
 import Comments from "@/components/Comments/Comments";
 import { Divider } from "@mantine/core";
-import useUser from "@/hooks/useUser";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { UserProfile } from "@prisma/client";
 
 interface PageProps {
 	post: PublicPostWithAuthor | null;
+	currentUser: UserProfile | null;
 }
+
 const Post = (props: PageProps) => {
-	const { user } = useUser();
-	const { post } = props;
-	const currentUserIsAuthor = user?.id === post?.authorId;
+	const { post, currentUser } = props;
+	const currentUserIsAuthor = currentUser?.id === post?.authorId;
 	return (
 		<>
 			<Navbar />
@@ -27,10 +30,20 @@ const Post = (props: PageProps) => {
 			{post && (
 				<main className="grow flex justify-center">
 					<div className="max-w-4xl w-full flex flex-col gap-4">
-						<PublicPostItem postData={post} currentUser={user} />
+						<PublicPostItem
+							postData={post}
+							currentUser={currentUser || undefined}
+						/>
 						<Divider label="Comments" labelPosition="center" />
 						<Comments
+							postType="public"
 							commentGroupId={post.id}
+							where={{
+								commentGroupId: post.id,
+								parentComment: {
+									is: null,
+								},
+							}}
 							commentsAllowed={post.commentsAllowed || currentUserIsAuthor}
 						/>
 					</div>
@@ -52,6 +65,16 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
 		};
 	}
 
+	// get profile of signed in user
+	const session = await getServerSession(context.req, context.res, authOptions);
+	const user = !session
+		? null
+		: await prisma.userProfile.findUnique({
+				where: {
+					userId: session.user.id,
+				},
+		  });
+
 	// query db for post data
 	const postID = context.params["post-id"] as string;
 	const post = await prisma.publicPost.findUnique({
@@ -64,7 +87,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
 	});
 
 	return {
-		props: { post },
+		props: { key: post?.id, post, currentUser: user },
 	};
 };
 
