@@ -76,10 +76,10 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
 		  });
 
 	// query db for post data
-	const postID = context.params["post-id"] as string;
+	const postId = context.params["post-id"] as string;
 	const post = await prisma.publicPost.findUnique({
 		where: {
-			id: postID,
+			id: postId,
 		},
 		include: {
 			author: true,
@@ -87,7 +87,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
 	});
 
 	return {
-		props: { key: post?.id, post, currentUser: user },
+		props: { key: postId, post, currentUser: user },
 	};
 };
 
