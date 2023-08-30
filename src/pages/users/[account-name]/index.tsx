@@ -2,7 +2,7 @@ import Navbar from "@/components/Navbar/Navbar";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
 import ProfileInfo from "@/components/ProfileInfo/ProfileInfo";
-import { Button } from "@mantine/core";
+import { Button, Modal } from "@mantine/core";
 import { useState } from "react";
 import EditProfileInfo from "@/components/ProfileInfo/EditProfileInfo";
 import { useRouter } from "next/router";
@@ -10,6 +10,7 @@ import { prisma } from "@/lib/prisma-client";
 import { UserProfile } from "@prisma/client";
 import ProfileLayout from "@/layout/ProfileLayout";
 import useUser from "@/hooks/useUser";
+import { useDisclosure } from "@mantine/hooks";
 
 export interface ProfileProps {
 	profile: UserProfile | null;
@@ -19,6 +20,8 @@ const Profile = (props: ProfileProps) => {
 	const [isEditingProfile, setIsEditingProfile] = useState(false);
 	const router = useRouter();
 	const { user } = useUser();
+	const [dialogIsOpen, { open: openDialog, close: closeDialog }] =
+		useDisclosure(false);
 	const { profile } = props;
 
 	if (profile === null) {
@@ -34,7 +37,7 @@ const Profile = (props: ProfileProps) => {
 			</>
 		);
 	}
-	const isEditingAllowed = profile.accountName === user?.accountName;
+	const sameUser = profile.accountName === user?.accountName;
 
 	return (
 		<>
@@ -56,14 +59,49 @@ const Profile = (props: ProfileProps) => {
 					{!isEditingProfile && (
 						<>
 							<ProfileInfo {...profile} />
-							{isEditingAllowed && (
-								<Button
-									type="button"
-									color="gray"
-									onClick={() => setIsEditingProfile(true)}
-									className="max-w-lg w-full">
-									Edit
-								</Button>
+							{sameUser && (
+								<>
+									<Button
+										type="button"
+										color="gray"
+										onClick={() => setIsEditingProfile(true)}
+										className="max-w-lg w-full">
+										Edit
+									</Button>
+									<Button
+										className="max-w-lg w-full"
+										variant="filled"
+										color="red"
+										onClick={openDialog}>
+										DELETE ACCOUNT
+									</Button>
+									<Modal
+										title="Confirm Action"
+										opened={dialogIsOpen}
+										onClose={closeDialog}
+										centered
+										withCloseButton={false}
+										closeOnClickOutside={false}>
+										<div className="flex flex-col gap-1.5">
+											<p className="text-sm">
+												Are you sure you want to delete your profile? It is
+												permanent and all your comments, posts and groups will
+												be deleted
+											</p>
+											<div className="flex flex-col gap-1">
+												<Button color="red">
+													Yes, I want to permanently delete my account
+												</Button>
+												<Button
+													variant="light"
+													color="green"
+													onClick={closeDialog}>
+													No
+												</Button>
+											</div>
+										</div>
+									</Modal>
+								</>
 							)}
 						</>
 					)}
