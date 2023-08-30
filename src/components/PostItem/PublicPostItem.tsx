@@ -63,10 +63,12 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 	function startEditMode() {
 		editorContentRef.current = editor?.getHTML();
 		setInEditMode(true);
+		editor?.setEditable(true);
 	}
 
 	function stopEditMode() {
 		setInEditMode(false);
+		editor?.setEditable(true);
 	}
 
 	// restore editor content to what it was pre-edit before stopping edit mode

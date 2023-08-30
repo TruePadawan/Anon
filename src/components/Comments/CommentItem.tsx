@@ -75,10 +75,12 @@ const CommentItem = forwardRef(function CommentItem(
 	function startEditMode() {
 		editorContentRef.current = editor?.getHTML();
 		toggleEditMode(true);
+		editor?.setEditable(true);
 	}
 
 	function stopEditMode() {
 		toggleEditMode(false);
+		editor?.setEditable(false);
 	}
 
 	// restore editor content to what it was pre-edit before stopping edit mode
