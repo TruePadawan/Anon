@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/lib/prisma-client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { deleteCommentWithChildren } from "./delete-comment";
 
 interface RequestBody {
 	authorId: string;
@@ -31,17 +32,15 @@ export default async function handler(
 							where: {
 								commentGroupId: postData.id,
 							},
+							select: {
+								id: true,
+							},
 							orderBy: {
 								createdAt: "desc",
 							},
 						});
-						// deleteMany doesn't work due to the self relation
-						for (let i = 0; i < comments.length; i++) {
-							await client.comment.delete({
-								where: {
-									id: comments[i].id,
-								},
-							});
+						for (const comment of comments) {
+							await deleteCommentWithChildren(client, comment.id);
 						}
 						// delete post after deleting comments
 						await client.publicPost.delete({

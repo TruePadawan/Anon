@@ -2,6 +2,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/lib/prisma-client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { Prisma, PrismaClient } from "@prisma/client";
+import { DefaultArgs } from "@prisma/client/runtime/library";
 
 interface DeleteCommentPayload {
 	id: string;
@@ -27,27 +29,7 @@ export default async function handler(
 			if (currentUserIsAuthor) {
 				try {
 					await prisma.$transaction(async (client) => {
-						const childComments = await client.comment.findMany({
-							where: {
-								parentId: id,
-							},
-							orderBy: {
-								createdAt: "desc",
-							},
-						});
-						// deleteMany doesn't work due to the self relation
-						for (let i = 0; i < childComments.length; i++) {
-							await client.comment.delete({
-								where: {
-									id: childComments[i].id,
-								},
-							});
-						}
-						await client.comment.delete({
-							where: {
-								id: id,
-							},
-						});
+						await deleteCommentWithChildren(client, id);
 					});
 					res.status(200).json({ message: "Comment deleted successfully" });
 				} catch (error: any) {
@@ -63,3 +45,44 @@ export default async function handler(
 		}
 	}
 }
+
+export async function deleteCommentWithChildren(
+	prismaClient: Client,
+	commentId: string
+) {
+	const children = await prismaClient.comment.findMany({
+		where: {
+			parentId: commentId,
+		},
+		select: {
+			id: true,
+			_count: {
+				select: { replies: true },
+			},
+		},
+	});
+
+	for (const child of children) {
+		// recursively delete child comments that have replies, instantly delete comments with no replies
+		if (child._count.replies > 0) {
+			await deleteCommentWithChildren(prismaClient, child.id);
+		} else {
+			await prismaClient.comment.delete({
+				where: {
+					id: child.id,
+				},
+			});
+		}
+	}
+
+	await prismaClient.comment.delete({
+		where: {
+			id: commentId,
+		},
+	});
+}
+
+type Client = Omit<
+	PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
+	"$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
+>;
