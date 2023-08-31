@@ -52,6 +52,7 @@ const Post = (props: PageProps) => {
 							commentGroupId={commentData.commentGroupId}
 							where={{
 								parentId: commentData.id,
+								isDeleted: false,
 							}}
 							commentsAllowed={false}
 						/>

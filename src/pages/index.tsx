@@ -15,6 +15,9 @@ import { useIntersection } from "@mantine/hooks";
 const PublicPostsPage = () => {
 	const { user, isValidating: verifyingUser } = useUser();
 	const { createPublicPost, posts, isLoading, loadMorePosts } = usePublicPosts({
+		where: {
+			isDeleted: false,
+		},
 		orderBy: {
 			createdAt: "desc",
 		},

@@ -40,6 +40,7 @@ const Post = (props: PageProps) => {
 							commentGroupId={post.id}
 							where={{
 								commentGroupId: post.id,
+								isDeleted: false,
 								parentComment: {
 									is: null,
 								},
