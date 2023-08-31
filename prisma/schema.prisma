@@ -63,38 +63,41 @@ model User {
 }
 
 model PublicPost {
-  id              String      @id @default(auto()) @map("_id") @db.ObjectId
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
   content         Json
-  author          UserProfile @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId        String      @db.ObjectId
-  commentsAllowed Boolean     @default(true)
+  author          UserProfile? @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId        String?      @db.ObjectId
+  commentsAllowed Boolean      @default(true)
   createdAt       Int
+  isDeleted       Boolean      @default(false)
 }
 
 model GroupPost {
-  id              String      @id @default(auto()) @map("_id") @db.ObjectId
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
   content         Json
-  author          UserProfile @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId        String      @db.ObjectId
-  commentsAllowed Boolean     @default(true)
+  author          UserProfile? @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId        String?      @db.ObjectId
+  commentsAllowed Boolean      @default(true)
   createdAt       Int
-  group           Group       @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  groupId         String      @db.ObjectId
+  group           Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId         String       @db.ObjectId
   isApproved      Boolean
+  isDeleted       Boolean      @default(false)
 }
 
 model Comment {
-  id             String      @id @default(auto()) @map("_id") @db.ObjectId
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
   commentGroupId String
   content        Json
-  author         UserProfile @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId       String      @db.ObjectId
+  author         UserProfile? @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId       String?      @db.ObjectId
   createdAt      Int
-  editedAt       Int         @default(0)
+  editedAt       Int          @default(0)
   // self relation that handles a comment having replies
-  parentComment  Comment?    @relation("replies", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  replies        Comment[]   @relation("replies")
-  parentId       String?     @db.ObjectId
+  parentComment  Comment?     @relation("replies", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies        Comment[]    @relation("replies")
+  parentId       String?      @db.ObjectId
+  isDeleted      Boolean      @default(false)
 }
 
 model Group {
