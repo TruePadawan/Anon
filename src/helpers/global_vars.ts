@@ -31,6 +31,8 @@ export const CommentEditorExtensions = [
 	}),
 	Underline,
 	Link,
+	TextStyle,
+	Color,
 ];
 
 export const DELETED_POST_CONTENT = {
