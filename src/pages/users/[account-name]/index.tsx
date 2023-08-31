@@ -11,6 +11,9 @@ import { UserProfile } from "@prisma/client";
 import ProfileLayout from "@/layout/ProfileLayout";
 import useUser from "@/hooks/useUser";
 import { useDisclosure } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
+import { getErrorMessage } from "@/lib/error-message";
+import { signOut } from "next-auth/react";
 
 export interface ProfileProps {
 	profile: UserProfile | null;
@@ -22,6 +25,7 @@ const Profile = (props: ProfileProps) => {
 	const { user } = useUser();
 	const [dialogIsOpen, { open: openDialog, close: closeDialog }] =
 		useDisclosure(false);
+	const [deletingProfile, setDeletingProfile] = useState(false);
 	const { profile } = props;
 
 	if (profile === null) {
@@ -39,6 +43,21 @@ const Profile = (props: ProfileProps) => {
 	}
 	const sameUser = profile.accountName === user?.accountName;
 
+	async function deleteProfile() {
+		setDeletingProfile(true);
+		const response = await fetch("/api/delete-profile");
+		if (response.ok) {
+			await signOut({ callbackUrl: "/" });
+		} else {
+			const error = await response.json();
+			notifications.show({
+				color: "red",
+				title: "Action failed",
+				message: getErrorMessage(error),
+			});
+		}
+		setDeletingProfile(false);
+	}
 	return (
 		<>
 			<Head>
@@ -89,13 +108,17 @@ const Profile = (props: ProfileProps) => {
 												be deleted
 											</p>
 											<div className="flex flex-col gap-1">
-												<Button color="red">
+												<Button
+													color="red"
+													onClick={deleteProfile}
+													disabled={deletingProfile}>
 													Yes, I want to permanently delete my account
 												</Button>
 												<Button
 													variant="light"
 													color="green"
-													onClick={closeDialog}>
+													onClick={closeDialog}
+													disabled={deletingProfile}>
 													No
 												</Button>
 											</div>
