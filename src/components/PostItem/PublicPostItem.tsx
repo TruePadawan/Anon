@@ -46,19 +46,11 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 	});
 	const [inEditMode, setInEditMode] = useState(false);
 	const [isUpdatingPost, setIsUpdatingPost] = useState(false);
-	const [postDeleted, setPostDeleted] = useState(false);
+	const [postIsDeleted, setPostIsDeleted] = useState(postData.isDeleted);
 	const [commentsAllowed, setCommentsAllowed] = useState(
 		postData.commentsAllowed
 	);
 	const editorContentRef = useRef(editor?.getHTML());
-
-	if (postDeleted) {
-		return (
-			<li className="text-center text-sm list-none p-3">
-				Post deleted successfully
-			</li>
-		);
-	}
 
 	function startEditMode() {
 		editorContentRef.current = editor?.getHTML();
@@ -80,9 +72,11 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 	}
 
 	async function deletePost() {
+		if (!author) return;
+
 		try {
-			await PublicPostAPI.remove(postData.id, postData.authorId);
-			setPostDeleted(true);
+			await PublicPostAPI.remove(postData.id, author.id);
+			setPostIsDeleted(true);
 		} catch (error) {
 			notifications.show({
 				color: "red",
@@ -94,11 +88,13 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 	}
 
 	async function toggleComments() {
+		if (!author) return;
+
 		setIsUpdatingPost(true);
-		const { id, authorId } = postData;
+		const { id } = postData;
 		try {
-			const { commentsAllowed } = await PublicPostAPI.getById(postData.id);
-			const updatedPost = await PublicPostAPI.update(id, authorId, {
+			const { commentsAllowed } = await PublicPostAPI.getById(id);
+			const updatedPost = await PublicPostAPI.update(id, author.id, {
 				commentsAllowed: !commentsAllowed,
 			});
 			setCommentsAllowed(updatedPost.commentsAllowed);
@@ -112,7 +108,8 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 		setIsUpdatingPost(false);
 	}
 
-	const currentUserIsAuthor = currentUser?.id === author.id;
+	const isAuthor = currentUser && author && currentUser.id === author?.id;
+	const postIsEditable = !postIsDeleted && isAuthor;
 	return (
 		<li ref={ref} className="list-none">
 			<PostItem className={className}>
@@ -121,8 +118,8 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 						<PostItem.Avatar
 							variant="filled"
 							radius="xl"
-							color={author.color}
-							src={author.avatarUrl}
+							color={author?.color || "dark"}
+							src={author?.avatarUrl}
 						/>
 					</PostItem.Side>
 					<PostItem.Main>
@@ -142,7 +139,7 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 										href={`/posts/${postData.id}`}>
 										View full post
 									</Menu.Item>
-									{currentUserIsAuthor && (
+									{postIsEditable && (
 										<>
 											<Menu.Label>Manage</Menu.Label>
 											<Menu.Item
@@ -189,12 +186,12 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 							</Modal>
 						</PostItem.Header>
 						<PostItem.Content>
-							{inEditMode && (
+							{postIsEditable && inEditMode && (
 								<UpdatePost
 									editor={editor as Editor}
 									postData={{
 										Id: postData.id,
-										authorId: postData.authorId,
+										authorId: author.id,
 										type: "public",
 									}}
 									isUpdating={isUpdatingPost}
@@ -240,12 +237,17 @@ function PublicPostHeading(props: PublicPostHeadingProps) {
 	const creationDate = moment(postData.createdAt).fromNow(true);
 	return (
 		<div className="flex items-center gap-0.5">
-			<Link href={`/users/${author.accountName}`}>
-				<span className="font-semibold">{author.displayName}</span>
-			</Link>
-			<Link href={`/users/${author.accountName}`}>
-				<span className="text-gray-500 text-sm">{`@${author.accountName}`}</span>
-			</Link>
+			{author && (
+				<>
+					<Link href={`/users/${author.accountName}`}>
+						<span className="font-semibold">{author.displayName}</span>
+					</Link>
+					<Link href={`/users/${author.accountName}`}>
+						<span className="text-gray-500 text-sm">{`@${author.accountName}`}</span>
+					</Link>
+				</>
+			)}
+			{!author && <span className="font-semibold">{`[deleted]`}</span>}
 			<span>·</span>
 			<span className="text-gray-500 text-sm">{creationDate}</span>
 		</div>
