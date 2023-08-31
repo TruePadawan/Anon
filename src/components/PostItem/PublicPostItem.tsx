@@ -1,6 +1,9 @@
 import { RichTextEditor } from "@mantine/tiptap";
 import { Content, Editor, useEditor } from "@tiptap/react";
-import { PostEditorExtensions } from "@/helpers/global_vars";
+import {
+	DELETED_POST_CONTENT,
+	PostEditorExtensions,
+} from "@/helpers/global_vars";
 import { ActionIcon, Button, Menu, Modal, Spoiler } from "@mantine/core";
 import { PublicPostWithAuthor } from "@/types/types";
 import moment from "moment";
@@ -77,6 +80,7 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 		try {
 			await PublicPostAPI.remove(postData.id, author.id);
 			setPostIsDeleted(true);
+			editor?.commands.setContent(DELETED_POST_CONTENT);
 		} catch (error) {
 			notifications.show({
 				color: "red",
@@ -108,7 +112,7 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 		setIsUpdatingPost(false);
 	}
 
-	const isAuthor = currentUser && author && currentUser.id === author?.id;
+	const isAuthor = currentUser && author && currentUser.id === author.id;
 	const postIsEditable = !postIsDeleted && isAuthor;
 	return (
 		<li ref={ref} className="list-none">
