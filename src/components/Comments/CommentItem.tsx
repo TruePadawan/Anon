@@ -16,7 +16,10 @@ import {
 import { Content, Editor, useEditor } from "@tiptap/react";
 import moment from "moment";
 import Link from "next/link";
-import { CommentEditorExtensions } from "@/helpers/global_vars";
+import {
+	CommentEditorExtensions,
+	DELETED_COMMENT_CONTENT,
+} from "@/helpers/global_vars";
 import { useDisclosure } from "@mantine/hooks";
 import { forwardRef, useRef, useState, Ref } from "react";
 import { notifications } from "@mantine/notifications";
@@ -40,11 +43,14 @@ const CommentItem = forwardRef(function CommentItem(
 	ref: Ref<HTMLLIElement>
 ) {
 	const { user: currentUser } = useUser();
-	const [commentDeleted, setCommentDeleted] = useState(false);
+	const [commentIsDeleted, setCommentIsDeleted] = useState(
+		props.data.isDeleted
+	);
 	const theme = useMantineTheme();
 	const editor = useEditor({
 		editable: false,
 		extensions: CommentEditorExtensions,
+		content: props.data.content as Content,
 	});
 	const [
 		confirmDeleteModalOpened,
@@ -55,14 +61,7 @@ const CommentItem = forwardRef(function CommentItem(
 	const [isUpdatingComment, setIsUpdatingComment] = useState(false);
 	const editorContentRef = useRef(editor?.getHTML());
 	const listItemStyles = { backgroundColor: theme.colors.dark[6] };
-
-	if (commentDeleted) {
-		return (
-			<li className="text-center text-sm list-none p-3" style={listItemStyles}>
-				Comment deleted successfully
-			</li>
-		);
-	}
+	const { author } = props.data;
 
 	function enterReplyMode() {
 		toggleReplyMode(true);
@@ -92,9 +91,12 @@ const CommentItem = forwardRef(function CommentItem(
 	}
 
 	async function deleteComment() {
+		if (!author) return;
+
 		try {
-			await CommentsAPI.remove(props.data.id, props.data.author.id);
-			setCommentDeleted(true);
+			await CommentsAPI.remove(props.data.id, author.id);
+			setCommentIsDeleted(true);
+			editor?.commands.setContent(DELETED_COMMENT_CONTENT);
 		} catch (error) {
 			notifications.show({
 				color: "red",
@@ -105,14 +107,10 @@ const CommentItem = forwardRef(function CommentItem(
 		closeConfirmDeleteModal();
 	}
 
-	// set editor content after comment data is fetched
-	if (editor?.isEmpty) {
-		editor.commands.setContent(props.data.content as Content);
-	}
-
-	const { author } = props.data;
-	const currentUserIsAuthor = currentUser?.id === author.id;
+	const isAuthor = currentUser && author && currentUser.id === author.id;
 	const repliesUrl = `/posts/${props.data.commentGroupId}/${props.data.id}`;
+	const allowReplies = currentUser && !commentIsDeleted;
+	const commentIsEditable = !commentIsDeleted && isAuthor;
 	return (
 		<li ref={ref} className="list-none">
 			<PostItem className={props.className} style={listItemStyles}>
@@ -121,8 +119,8 @@ const CommentItem = forwardRef(function CommentItem(
 						<PostItem.Avatar
 							variant="filled"
 							radius="xl"
-							color={author.color}
-							src={author.avatarUrl}
+							color={author?.color || "dark"}
+							src={author?.avatarUrl}
 						/>
 					</PostItem.Side>
 					<PostItem.Main>
@@ -142,7 +140,7 @@ const CommentItem = forwardRef(function CommentItem(
 										href={repliesUrl}>
 										View replies
 									</Menu.Item>
-									{currentUser && (
+									{allowReplies && (
 										<>
 											<Menu.Item
 												icon={<IconMessage size={16} />}
@@ -151,7 +149,7 @@ const CommentItem = forwardRef(function CommentItem(
 											</Menu.Item>
 										</>
 									)}
-									{currentUserIsAuthor && (
+									{commentIsEditable && (
 										<>
 											<Menu.Label>Manage</Menu.Label>
 											<Menu.Item
@@ -193,7 +191,7 @@ const CommentItem = forwardRef(function CommentItem(
 							</Modal>
 						</PostItem.Header>
 						<PostItem.Content>
-							{inEditMode && (
+							{commentIsEditable && inEditMode && (
 								<UpdateComment
 									editor={editor as Editor}
 									commentData={{
@@ -255,12 +253,17 @@ function CommentItemHeading(props: CommentItemHeadingProps) {
 
 	return (
 		<div className="flex items-center gap-0.5">
-			<Link href={`/users/${author.accountName}`}>
-				<span className="font-semibold">{author.displayName}</span>
-			</Link>
-			<Link href={`/users/${author.accountName}`}>
-				<span className="text-gray-500 text-sm">{`@${author.accountName}`}</span>
-			</Link>
+			{author && (
+				<>
+					<Link href={`/users/${author.accountName}`}>
+						<span className="font-semibold">{author.displayName}</span>
+					</Link>
+					<Link href={`/users/${author.accountName}`}>
+						<span className="text-gray-500 text-sm">{`@${author.accountName}`}</span>
+					</Link>
+				</>
+			)}
+			{!author && <span className="font-semibold">{`[deleted]`}</span>}
 			<span>·</span>
 			<span className="text-gray-500 text-sm">{creationDate}</span>
 		</div>
