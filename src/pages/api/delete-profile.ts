@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma-client";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 import { deleteCommentWithChildren } from "./delete-comment";
+import { v2 as cloudinary } from "cloudinary";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const session = await getServerSession(req, res, authOptions);
@@ -43,6 +44,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					},
 				});
 			});
+			await cloudinary.uploader.destroy(profileId);
 			res.status(200).json({ message: "Profile deleted successfully" });
 		} catch (error) {
 			res.status(403).json({
