@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { DefaultArgs } from "@prisma/client/runtime/library";
+import { DELETED_COMMENT_CONTENT } from "@/helpers/global_vars";
 
 interface DeleteCommentPayload {
 	id: string;
@@ -27,10 +28,30 @@ export default async function handler(
 			const { id, authorId } = payload;
 			const currentUserIsAuthor = session.user.id === authorId;
 			if (currentUserIsAuthor) {
+				const replyCount = await prisma.comment.count({
+					where: {
+						parentId: id,
+					},
+				});
 				try {
-					await prisma.$transaction(async (client) => {
-						await deleteCommentWithChildren(client, id);
-					});
+					// if comment has no replies, delete it from db else update its content to a generic content and set its `isDeleted` to true
+					if (replyCount === 0) {
+						await prisma.comment.delete({
+							where: {
+								id,
+							},
+						});
+					} else {
+						await prisma.comment.update({
+							where: {
+								id,
+							},
+							data: {
+								isDeleted: true,
+								content: DELETED_COMMENT_CONTENT,
+							},
+						});
+					}
 					res.status(200).json({ message: "Comment deleted successfully" });
 				} catch (error: any) {
 					res.status(500).json({
@@ -46,43 +67,43 @@ export default async function handler(
 	}
 }
 
-export async function deleteCommentWithChildren(
-	prismaClient: Client,
-	commentId: string
-) {
-	const children = await prismaClient.comment.findMany({
-		where: {
-			parentId: commentId,
-		},
-		select: {
-			id: true,
-			_count: {
-				select: { replies: true },
-			},
-		},
-	});
+// export async function deleteCommentWithChildren(
+// 	prismaClient: Client,
+// 	commentId: string
+// ) {
+// 	const children = await prismaClient.comment.findMany({
+// 		where: {
+// 			parentId: commentId,
+// 		},
+// 		select: {
+// 			id: true,
+// 			_count: {
+// 				select: { replies: true },
+// 			},
+// 		},
+// 	});
 
-	for (const child of children) {
-		// recursively delete child comments that have replies, instantly delete comments with no replies
-		if (child._count.replies > 0) {
-			await deleteCommentWithChildren(prismaClient, child.id);
-		} else {
-			await prismaClient.comment.delete({
-				where: {
-					id: child.id,
-				},
-			});
-		}
-	}
+// 	for (const child of children) {
+// 		// recursively delete child comments that have replies, instantly delete comments with no replies
+// 		if (child._count.replies > 0) {
+// 			await deleteCommentWithChildren(prismaClient, child.id);
+// 		} else {
+// 			await prismaClient.comment.delete({
+// 				where: {
+// 					id: child.id,
+// 				},
+// 			});
+// 		}
+// 	}
 
-	await prismaClient.comment.delete({
-		where: {
-			id: commentId,
-		},
-	});
-}
+// 	await prismaClient.comment.delete({
+// 		where: {
+// 			id: commentId,
+// 		},
+// 	});
+// }
 
-type Client = Omit<
-	PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
-	"$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
->;
+// type Client = Omit<
+// 	PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
+// 	"$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
+// >;

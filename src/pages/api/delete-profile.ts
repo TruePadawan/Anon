@@ -3,7 +3,6 @@ import { getErrorMessage } from "@/lib/error-message";
 import { prisma } from "@/lib/prisma-client";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
-import { deleteCommentWithChildren } from "./delete-comment";
 import { v2 as cloudinary } from "cloudinary";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -17,33 +16,84 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		 * cascading deletes will handle deleting posts, groups e.t.c
 		 */
 		try {
-			const { id: profileId, comments } =
-				await prisma.userProfile.findUniqueOrThrow({
+			const { id: profileId } = await prisma.userProfile.findUniqueOrThrow({
+				where: {
+					id: session.user.id,
+				},
+				select: {
+					id: true,
+				},
+			});
+			await prisma.$transaction(async (client) => {
+				// delete public posts with no replies
+				const publicPosts = await client.publicPost.findMany({
 					where: {
-						id: session.user.id,
+						authorId: profileId,
 					},
 					select: {
 						id: true,
-						comments: {
-							select: {
-								id: true,
+					},
+				});
+				for (const post of publicPosts) {
+					const postCommentCount = await client.comment.count({
+						where: {
+							commentGroupId: post.id,
+						},
+					});
+					if (postCommentCount === 0) {
+						await client.publicPost.delete({
+							where: {
+								id: post.id,
 							},
+						});
+					}
+				}
+
+				// delete group posts with no replies
+				const groupPosts = await client.groupPost.findMany({
+					where: {
+						authorId: profileId,
+					},
+					select: {
+						id: true,
+					},
+				});
+				for (const post of groupPosts) {
+					const postCommentCount = await client.comment.count({
+						where: {
+							commentGroupId: post.id,
+						},
+					});
+					if (postCommentCount === 0) {
+						await client.groupPost.delete({
+							where: {
+								id: post.id,
+							},
+						});
+					}
+				}
+
+				// delete comments with no replies
+				await client.comment.deleteMany({
+					where: {
+						authorId: profileId,
+						replies: {
+							none: {},
 						},
 					},
 				});
 
-			await prisma.$transaction(async (client) => {
-				// delete comments recursively due to self-relation not allowing cascading deletes
-				for (const comment of comments) {
-					await deleteCommentWithChildren(client, comment.id);
-				}
-
-				await prisma.userProfile.delete({
+				await client.userProfile.delete({
 					where: {
 						id: profileId,
 					},
 				});
+				/**
+				 * Prisma takes care of removing users from groups theyre in (cascading deletes),
+				 * For Comments with replies and Posts with comments, the author is set to null which says their account is deleted
+				 */
 			});
+			// delete profile picture
 			await cloudinary.uploader.destroy(profileId);
 			res.status(200).json({ message: "Profile deleted successfully" });
 		} catch (error) {
