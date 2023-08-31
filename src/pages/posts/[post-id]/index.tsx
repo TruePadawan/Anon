@@ -17,39 +17,44 @@ interface PageProps {
 
 const Post = (props: PageProps) => {
 	const { post, currentUser } = props;
-	const currentUserIsAuthor = currentUser?.id === post?.authorId;
-	return (
-		<>
-			<Navbar />
-			{!post && (
+	if (!post) {
+		return (
+			<>
+				<Navbar />
 				<main className="flex flex-col justify-center items-center grow">
 					<IconError404 size="10rem" />
 					<p className="text-xl font-semibold">POST NOT FOUND</p>
 				</main>
-			)}
-			{post && (
-				<main className="grow flex justify-center">
-					<div className="max-w-4xl w-full flex flex-col gap-4">
-						<PublicPostItem
-							postData={post}
-							currentUser={currentUser || undefined}
-						/>
-						<Divider label="Comments" labelPosition="center" />
-						<Comments
-							postType="public"
-							commentGroupId={post.id}
-							where={{
-								commentGroupId: post.id,
-								isDeleted: false,
-								parentComment: {
-									is: null,
-								},
-							}}
-							commentsAllowed={post.commentsAllowed || currentUserIsAuthor}
-						/>
-					</div>
-				</main>
-			)}
+			</>
+		);
+	}
+	const currentUserIsAuthor = currentUser?.id === post?.authorId;
+	const allowComments =
+		!post.isDeleted && (post.commentsAllowed || currentUserIsAuthor);
+	return (
+		<>
+			<Navbar />
+			<main className="grow flex justify-center">
+				<div className="max-w-4xl w-full flex flex-col gap-4">
+					<PublicPostItem
+						postData={post}
+						currentUser={currentUser || undefined}
+					/>
+					<Divider label="Comments" labelPosition="center" />
+					<Comments
+						postType="public"
+						commentGroupId={post.id}
+						where={{
+							commentGroupId: post.id,
+							isDeleted: false,
+							parentComment: {
+								is: null,
+							},
+						}}
+						commentsAllowed={allowComments}
+					/>
+				</div>
+			</main>
 		</>
 	);
 };
