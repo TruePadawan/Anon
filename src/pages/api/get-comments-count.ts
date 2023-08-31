@@ -16,6 +16,7 @@ export default async function handler(
 			const count = await prisma.comment.count({
 				where: {
 					commentGroupId,
+					isDeleted: false,
 				},
 			});
 			res.status(200).json({ count });
