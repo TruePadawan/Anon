@@ -32,3 +32,61 @@ export const CommentEditorExtensions = [
 	Underline,
 	Link,
 ];
+
+export const DELETED_POST_CONTENT = {
+	type: "doc",
+	content: [
+		{
+			type: "paragraph",
+			attrs: {
+				textAlign: "left",
+			},
+			content: [
+				{
+					type: "text",
+					marks: [
+						{
+							type: "italic",
+						},
+						{
+							type: "textStyle",
+							attrs: {
+								color: "#868e96",
+							},
+						},
+					],
+					text: "[This post has been deleted]",
+				},
+			],
+		},
+	],
+};
+
+export const DELETED_COMMENT_CONTENT = {
+	type: "doc",
+	content: [
+		{
+			type: "paragraph",
+			attrs: {
+				textAlign: "left",
+			},
+			content: [
+				{
+					type: "text",
+					marks: [
+						{
+							type: "italic",
+						},
+						{
+							type: "textStyle",
+							attrs: {
+								color: "#868e96",
+							},
+						},
+					],
+					text: "[This comment has been deleted]",
+				},
+			],
+		},
+	],
+};
