@@ -4,7 +4,7 @@ import useSWR from "swr";
 
 export default function CommentsCount(props: CommentsCountProps) {
 	const { data: count, isLoading } = useSWR(
-		[props.commentGroupId, props.postType],
+		[props.postId, props.postType],
 		fetchCommentCount
 	);
 	return (
@@ -34,7 +34,7 @@ async function fetchReplyCount(commentId: string) {
 }
 
 interface CommentsCountProps {
-	commentGroupId: string;
+	postId: string;
 	postType: PostType;
 }
 
