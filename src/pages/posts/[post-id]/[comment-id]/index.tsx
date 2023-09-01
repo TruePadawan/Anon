@@ -8,7 +8,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { UserProfile } from "@prisma/client";
 import CommentItem from "@/components/Comments/CommentItem";
-import { CommentFull } from "@/lib/api/CommentsAPI";
+import CommentsAPI, { CommentFull } from "@/lib/api/CommentsAPI";
 import Link from "next/link";
 
 interface PageProps {
@@ -29,7 +29,11 @@ const Post = (props: PageProps) => {
 			</>
 		);
 	}
-	const postUrl = `/posts/${commentData.commentGroupId}`;
+	const postUrl = CommentsAPI.getPostUrl(commentData, "public");
+	const { publicPostId } = commentData;
+	if (!publicPostId) {
+		throw new Error("Comment is not linked to a public post");
+	}
 	return (
 		<>
 			<Navbar />
@@ -49,7 +53,7 @@ const Post = (props: PageProps) => {
 						<Divider label="Replies" labelPosition="center" />
 						<Comments
 							postType="public"
-							commentGroupId={commentData.commentGroupId}
+							postId={publicPostId}
 							where={{
 								parentId: commentData.id,
 								isDeleted: false,

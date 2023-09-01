@@ -76,9 +76,17 @@ class CommentsAPI {
 	static getRepliesUrl(comment: CommentFull) {
 		const { publicPostId, groupPostId, id } = comment;
 		if (!publicPostId && !groupPostId)
-			throw new Error("Comment not linked to a post");
+			throw new Error("Comment is not linked to a post");
 		const commentGroupId = publicPostId ?? groupPostId;
 		return `/posts/${commentGroupId}/${id}`;
+	}
+
+	static getPostUrl(comment: CommentFull, postType: PostType) {
+		const { publicPostId, groupPostId } = comment;
+		if (!publicPostId && !groupPostId)
+			throw new Error("Comment is not linked to a post");
+		const postId = postType === "public" ? publicPostId : groupPostId;
+		return `/posts/${postId}`;
 	}
 }
 
