@@ -43,11 +43,11 @@ class CommentsAPI {
 		await handleFailedAPIRequest(response);
 	}
 
-	static async count(commentGroupId: string, postType: PostType) {
+	static async count(postId: string, postType: PostType) {
 		const response = await fetch("/api/get-comments-count", {
 			method: "POST",
 			body: JSON.stringify({
-				commentGroupId,
+				postId,
 				postType,
 			}),
 		});
@@ -77,8 +77,8 @@ class CommentsAPI {
 		const { publicPostId, groupPostId, id } = comment;
 		if (!publicPostId && !groupPostId)
 			throw new Error("Comment is not linked to a post");
-		const commentGroupId = publicPostId ?? groupPostId;
-		return `/posts/${commentGroupId}/${id}`;
+		const postId = publicPostId ?? groupPostId;
+		return `/posts/${postId}/${id}`;
 	}
 
 	static getPostId(comment: CommentFull, postType: PostType) {

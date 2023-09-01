@@ -6,11 +6,11 @@ export default async function handler(
 	req: NextApiRequest,
 	res: NextApiResponse
 ) {
-	const { commentGroupId, postType }: RequestBody = JSON.parse(req.body);
-	if (req.method !== "POST" && !commentGroupId) {
+	const { postId, postType }: RequestBody = JSON.parse(req.body);
+	if (req.method !== "POST" && !postId) {
 		res.status(400).json({
 			message:
-				"Invalid request, This endpoint takes a POST request with the commentGroupId in the body",
+				"Invalid request, This endpoint takes a POST request with the postId in the body",
 		});
 	} else {
 		try {
@@ -18,13 +18,13 @@ export default async function handler(
 				postType === "public"
 					? await prisma.comment.count({
 							where: {
-								publicPostId: commentGroupId,
+								publicPostId: postId,
 								isDeleted: false,
 							},
 					  })
 					: await prisma.comment.count({
 							where: {
-								groupPostId: commentGroupId,
+								groupPostId: postId,
 								isDeleted: false,
 							},
 					  });
@@ -39,6 +39,6 @@ export default async function handler(
 }
 
 interface RequestBody {
-	commentGroupId: string;
+	postId: string;
 	postType: PostType;
 }
