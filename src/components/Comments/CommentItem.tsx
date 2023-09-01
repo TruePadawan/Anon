@@ -111,6 +111,7 @@ const CommentItem = forwardRef(function CommentItem(
 	const repliesUrl = CommentsAPI.getRepliesUrl(props.data);
 	const allowReplies = currentUser && !commentIsDeleted;
 	const commentIsEditable = !commentIsDeleted && isAuthor;
+	const showReplyEditor = inReplyMode && allowReplies;
 	return (
 		<li ref={ref} className="list-none">
 			<PostItem className={props.className} style={listItemStyles}>
@@ -226,9 +227,11 @@ const CommentItem = forwardRef(function CommentItem(
 						</PostItem.Content>
 					</PostItem.Main>
 				</div>
-				{inReplyMode && (
+				{showReplyEditor && (
 					<ReplyToComment
 						commentData={props.data}
+						postType={props.postType}
+						authorId={currentUser.id}
 						onCancel={endReplyMode}
 						onReplyPosted={endReplyMode}
 					/>
