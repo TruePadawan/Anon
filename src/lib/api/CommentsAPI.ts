@@ -92,8 +92,9 @@ export interface CommentAPIGetManyParams {
 
 export interface CreateCommentData {
 	content: JSONContent;
+	postId: string;
 	authorId: string;
-	commentGroupId: string;
+	postType: PostType;
 	parentId?: string;
 }
 

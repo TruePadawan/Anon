@@ -4,6 +4,7 @@ import { JSONContent } from "@tiptap/react";
 import { useEffect, useRef, useState } from "react";
 import useSWRInfinite from "swr/infinite";
 import useUser from "./useUser";
+import { PostType } from "@/types/types";
 
 /**
  * useComments takes db query params as an argument which controls the comments returned
@@ -48,14 +49,19 @@ export default function useComments(params?: UseCommentsParams) {
 		}
 	}, [isLoading, rawCommentsData]);
 
-	async function createComment(content: JSONContent, commentGroupId: string) {
+	async function createComment(
+		content: JSONContent,
+		postId: string,
+		postType: PostType
+	) {
 		if (!user) {
 			throw new Error("Client is unauthenticated");
 		}
 		const newCommentData = await CommentsAPI.create({
 			content,
-			commentGroupId,
+			postId,
 			authorId: user.id,
+			postType,
 		});
 		setCommentsData((commentsData) => [newCommentData, ...commentsData]);
 		return newCommentData;
