@@ -70,6 +70,7 @@ model PublicPost {
   commentsAllowed Boolean      @default(true)
   createdAt       Int
   isDeleted       Boolean      @default(false)
+  comments        Comment[]
 }
 
 model GroupPost {
@@ -83,21 +84,28 @@ model GroupPost {
   groupId         String       @db.ObjectId
   isApproved      Boolean
   isDeleted       Boolean      @default(false)
+  comments        Comment[]
 }
 
 model Comment {
-  id             String       @id @default(auto()) @map("_id") @db.ObjectId
-  commentGroupId String
-  content        Json
-  author         UserProfile? @relation(fields: [authorId], references: [id], onDelete: SetNull)
-  authorId       String?      @db.ObjectId
-  createdAt      Int
-  editedAt       Int          @default(0)
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  // relation for linking a comment to a public post
+  publicPost    PublicPost?  @relation(fields: [publicPostId], references: [id], onDelete: SetNull)
+  publicPostId  String?      @db.ObjectId
+  // relation for linking a comment to a group post
+  groupPost     GroupPost?   @relation(fields: [groupPostId], references: [id], onDelete: SetNull)
+  groupPostId   String?      @db.ObjectId
+  content       Json
+  // relation for linking a comment to a profile
+  author        UserProfile? @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  authorId      String?      @db.ObjectId
+  createdAt     Int
+  editedAt      Int          @default(0)
   // self relation that handles a comment having replies
-  parentComment  Comment?     @relation("replies", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  replies        Comment[]    @relation("replies")
-  parentId       String?      @db.ObjectId
-  isDeleted      Boolean      @default(false)
+  parentComment Comment?     @relation("replies", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies       Comment[]    @relation("replies")
+  parentId      String?      @db.ObjectId
+  isDeleted     Boolean      @default(false)
 }
 
 model Group {
