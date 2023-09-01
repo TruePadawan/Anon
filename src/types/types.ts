@@ -25,3 +25,5 @@ const groupWithSettings = Prisma.validator<Prisma.GroupArgs>()({
 export type GroupWithSettings = Prisma.GroupGetPayload<
 	typeof groupWithSettings
 >;
+
+export type PostType = "public" | "group";
