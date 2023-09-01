@@ -70,6 +70,14 @@ class CommentsAPI {
 		const comments: CommentFull[] = await response.json();
 		return comments;
 	}
+
+	static getRepliesUrl(comment: CommentFull) {
+		const { publicPostId, groupPostId, id } = comment;
+		if (!publicPostId && !groupPostId)
+			throw new Error("Comment not linked to a post");
+		const commentGroupId = publicPostId ?? groupPostId;
+		return `/posts/${commentGroupId}/${id}`;
+	}
 }
 
 export interface CommentAPIGetManyParams {

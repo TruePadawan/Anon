@@ -27,7 +27,7 @@ export default async function handler(
 			if (currentUserIsAuthor) {
 				const postCommentsNumber = await prisma.comment.count({
 					where: {
-						commentGroupId: postData.id,
+						publicPostId: postData.id,
 					},
 				});
 				try {

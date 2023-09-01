@@ -108,7 +108,7 @@ const CommentItem = forwardRef(function CommentItem(
 	}
 
 	const isAuthor = currentUser && author && currentUser.id === author.id;
-	const repliesUrl = `/posts/${props.data.commentGroupId}/${props.data.id}`;
+	const repliesUrl = CommentsAPI.getRepliesUrl(props.data);
 	const allowReplies = currentUser && !commentIsDeleted;
 	const commentIsEditable = !commentIsDeleted && isAuthor;
 	return (
