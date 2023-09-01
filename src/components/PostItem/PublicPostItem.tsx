@@ -223,7 +223,9 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 					</PostItem.Main>
 				</div>
 				<PostItem.Footer>
-					{showCommentsCount && <CommentsCount commentGroupId={postData.id} />}
+					{showCommentsCount && (
+						<CommentsCount commentGroupId={postData.id} postType="public" />
+					)}
 				</PostItem.Footer>
 			</PostItem>
 		</li>

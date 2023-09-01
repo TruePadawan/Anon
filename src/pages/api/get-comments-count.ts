@@ -1,11 +1,12 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/lib/prisma-client";
+import { PostType } from "@/types/types";
 
 export default async function handler(
 	req: NextApiRequest,
 	res: NextApiResponse
 ) {
-	const { commentGroupId } = JSON.parse(req.body);
+	const { commentGroupId, postType }: RequestBody = JSON.parse(req.body);
 	if (req.method !== "POST" && !commentGroupId) {
 		res.status(400).json({
 			message:
@@ -13,12 +14,20 @@ export default async function handler(
 		});
 	} else {
 		try {
-			const count = await prisma.comment.count({
-				where: {
-					commentGroupId,
-					isDeleted: false,
-				},
-			});
+			const count =
+				postType === "public"
+					? await prisma.comment.count({
+							where: {
+								publicPostId: commentGroupId,
+								isDeleted: false,
+							},
+					  })
+					: await prisma.comment.count({
+							where: {
+								groupPostId: commentGroupId,
+								isDeleted: false,
+							},
+					  });
 			res.status(200).json({ count });
 		} catch (error: any) {
 			console.error(error);
@@ -27,4 +36,9 @@ export default async function handler(
 			});
 		}
 	}
+}
+
+interface RequestBody {
+	commentGroupId: string;
+	postType: PostType;
 }

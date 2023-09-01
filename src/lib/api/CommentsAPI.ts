@@ -1,4 +1,5 @@
 import { handleFailedAPIRequest } from "@/helpers/global_helpers";
+import { PostType } from "@/types/types";
 import { Comment, Prisma } from "@prisma/client";
 import { JSONContent } from "@tiptap/react";
 
@@ -42,11 +43,12 @@ class CommentsAPI {
 		await handleFailedAPIRequest(response);
 	}
 
-	static async count(commentGroupId: string) {
+	static async count(commentGroupId: string, postType: PostType) {
 		const response = await fetch("/api/get-comments-count", {
 			method: "POST",
 			body: JSON.stringify({
 				commentGroupId,
+				postType,
 			}),
 		});
 		await handleFailedAPIRequest(response);

@@ -1,8 +1,12 @@
 import CommentsAPI from "@/lib/api/CommentsAPI";
+import { PostType } from "@/types/types";
 import useSWR from "swr";
 
-export default function CommentsCount({ commentGroupId }: CommentsCountProps) {
-	const { data: count, isLoading } = useSWR(commentGroupId, fetchCommentCount);
+export default function CommentsCount(props: CommentsCountProps) {
+	const { data: count, isLoading } = useSWR(
+		[props.commentGroupId, props.postType],
+		fetchCommentCount
+	);
 	return (
 		<p className="w-full text-center font-semibold">
 			{isLoading ? "Getting number of comments" : `Comments (${count})`}
@@ -19,8 +23,8 @@ export function ReplyCount({ commentId }: ReplyCountProps) {
 	);
 }
 
-async function fetchCommentCount(groupId: string) {
-	const count = await CommentsAPI.count(groupId);
+async function fetchCommentCount(data: [string, PostType]) {
+	const count = await CommentsAPI.count(...data);
 	return count;
 }
 
@@ -31,6 +35,7 @@ async function fetchReplyCount(commentId: string) {
 
 interface CommentsCountProps {
 	commentGroupId: string;
+	postType: PostType;
 }
 
 interface ReplyCountProps {
