@@ -25,53 +25,25 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				},
 			});
 			await prisma.$transaction(async (client) => {
-				// delete public posts with no replies
-				const publicPosts = await client.publicPost.findMany({
+				/**
+				 * delete posts from database only if it has no comments,
+				 * posts with comments have their publicPostId/groupPostId set to null via Prisma
+				 */
+				await client.publicPost.deleteMany({
 					where: {
-						authorId: profileId,
-					},
-					select: {
-						id: true,
+						comments: {
+							none: {},
+						},
 					},
 				});
-				for (const post of publicPosts) {
-					const postCommentCount = await client.comment.count({
-						where: {
-							commentGroupId: post.id,
-						},
-					});
-					if (postCommentCount === 0) {
-						await client.publicPost.delete({
-							where: {
-								id: post.id,
-							},
-						});
-					}
-				}
 
-				// delete group posts with no replies
-				const groupPosts = await client.groupPost.findMany({
+				await client.groupPost.deleteMany({
 					where: {
-						authorId: profileId,
-					},
-					select: {
-						id: true,
+						comments: {
+							none: {},
+						},
 					},
 				});
-				for (const post of groupPosts) {
-					const postCommentCount = await client.comment.count({
-						where: {
-							commentGroupId: post.id,
-						},
-					});
-					if (postCommentCount === 0) {
-						await client.groupPost.delete({
-							where: {
-								id: post.id,
-							},
-						});
-					}
-				}
 
 				// delete comments with no replies
 				await client.comment.deleteMany({
@@ -89,7 +61,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 					},
 				});
 				/**
-				 * Prisma takes care of removing users from groups theyre in (cascading deletes),
+				 * Prisma takes care of deleting groups that the user owns,
+				 * and removing the user from groups theyre in (cascading deletes),
 				 * For Comments with replies and Posts with comments, the author is set to null which says their account is deleted
 				 */
 			});
