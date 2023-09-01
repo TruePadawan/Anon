@@ -30,10 +30,7 @@ const Post = (props: PageProps) => {
 		);
 	}
 	const postUrl = CommentsAPI.getPostUrl(commentData, "public");
-	const { publicPostId } = commentData;
-	if (!publicPostId) {
-		throw new Error("Comment is not linked to a public post");
-	}
+	const postId = CommentsAPI.getPostId(commentData, "public");
 	return (
 		<>
 			<Navbar />
@@ -53,7 +50,7 @@ const Post = (props: PageProps) => {
 						<Divider label="Replies" labelPosition="center" />
 						<Comments
 							postType="public"
-							postId={publicPostId}
+							postId={postId}
 							where={{
 								parentId: commentData.id,
 								isDeleted: false,

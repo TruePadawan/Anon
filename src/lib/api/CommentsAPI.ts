@@ -81,11 +81,16 @@ class CommentsAPI {
 		return `/posts/${commentGroupId}/${id}`;
 	}
 
-	static getPostUrl(comment: CommentFull, postType: PostType) {
+	static getPostId(comment: CommentFull, postType: PostType) {
 		const { publicPostId, groupPostId } = comment;
 		if (!publicPostId && !groupPostId)
 			throw new Error("Comment is not linked to a post");
 		const postId = postType === "public" ? publicPostId : groupPostId;
+		return postId as string;
+	}
+
+	static getPostUrl(comment: CommentFull, postType: PostType) {
+		const postId = this.getPostId(comment, postType);
 		return `/posts/${postId}`;
 	}
 }
