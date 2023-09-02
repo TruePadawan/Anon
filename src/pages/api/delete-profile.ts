@@ -26,11 +26,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 			});
 			await prisma.$transaction(async (client) => {
 				/**
-				 * delete posts from database only if it has no comments,
+				 * delete the user's posts from database only if it has no comments,
 				 * posts with comments have their publicPostId/groupPostId set to null via Prisma
 				 */
 				await client.publicPost.deleteMany({
 					where: {
+						authorId: profileId,
 						comments: {
 							none: {},
 						},
@@ -39,6 +40,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
 				await client.groupPost.deleteMany({
 					where: {
+						authorId: profileId,
 						comments: {
 							none: {},
 						},
