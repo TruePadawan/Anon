@@ -55,8 +55,8 @@ const Profile = (props: ProfileProps) => {
 				title: "Action failed",
 				message: getErrorMessage(error),
 			});
+			setDeletingProfile(false);
 		}
-		setDeletingProfile(false);
 	}
 	return (
 		<>
