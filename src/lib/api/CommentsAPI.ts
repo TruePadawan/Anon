@@ -1,4 +1,5 @@
 import { handleFailedAPIRequest } from "@/helpers/global_helpers";
+import { PostType } from "@/types/types";
 import { Comment, Prisma } from "@prisma/client";
 import { JSONContent } from "@tiptap/react";
 
@@ -42,11 +43,12 @@ class CommentsAPI {
 		await handleFailedAPIRequest(response);
 	}
 
-	static async count(commentGroupId: string) {
+	static async count(postId: string, postType: PostType) {
 		const response = await fetch("/api/get-comments-count", {
 			method: "POST",
 			body: JSON.stringify({
-				commentGroupId,
+				postId,
+				postType,
 			}),
 		});
 		await handleFailedAPIRequest(response);
@@ -70,6 +72,27 @@ class CommentsAPI {
 		const comments: CommentFull[] = await response.json();
 		return comments;
 	}
+
+	static getRepliesUrl(comment: CommentFull) {
+		const { publicPostId, groupPostId, id } = comment;
+		if (!publicPostId && !groupPostId)
+			throw new Error("Comment is not linked to a post");
+		const postId = publicPostId ?? groupPostId;
+		return `/posts/${postId}/${id}`;
+	}
+
+	static getPostId(comment: CommentFull, postType: PostType) {
+		const { publicPostId, groupPostId } = comment;
+		if (!publicPostId && !groupPostId)
+			throw new Error("Comment is not linked to a post");
+		const postId = postType === "public" ? publicPostId : groupPostId;
+		return postId as string;
+	}
+
+	static getPostUrl(comment: CommentFull, postType: PostType) {
+		const postId = this.getPostId(comment, postType);
+		return `/posts/${postId}`;
+	}
 }
 
 export interface CommentAPIGetManyParams {
@@ -82,8 +105,9 @@ export interface CommentAPIGetManyParams {
 
 export interface CreateCommentData {
 	content: JSONContent;
+	postId: string;
 	authorId: string;
-	commentGroupId: string;
+	postType: PostType;
 	parentId?: string;
 }
 

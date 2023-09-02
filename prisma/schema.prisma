@@ -63,62 +63,68 @@ model User {
 }
 
 model PublicPost {
-  id              String      @id @default(auto()) @map("_id") @db.ObjectId
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
   content         Json
-  author          UserProfile @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId        String      @db.ObjectId
-  commentsAllowed Boolean     @default(true)
+  author          UserProfile? @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  authorId        String?      @db.ObjectId
+  commentsAllowed Boolean      @default(true)
   createdAt       Int
+  isDeleted       Boolean      @default(false)
+  comments        Comment[]
 }
 
 model GroupPost {
-  id              String      @id @default(auto()) @map("_id") @db.ObjectId
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
   content         Json
-  author          UserProfile @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId        String      @db.ObjectId
-  commentsAllowed Boolean     @default(true)
+  author          UserProfile? @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  authorId        String?      @db.ObjectId
+  commentsAllowed Boolean      @default(true)
   createdAt       Int
-  group           Group       @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  groupId         String      @db.ObjectId
+  group           Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId         String       @db.ObjectId
   isApproved      Boolean
+  isDeleted       Boolean      @default(false)
+  comments        Comment[]
 }
 
 model Comment {
-  id             String      @id @default(auto()) @map("_id") @db.ObjectId
-  commentGroupId String
-  content        Json
-  author         UserProfile @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId       String      @db.ObjectId
-  createdAt      Int
-  editedAt       Int         @default(0)
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  // relation for linking a comment to a public post
+  publicPost    PublicPost?  @relation(fields: [publicPostId], references: [id], onDelete: SetNull)
+  publicPostId  String?      @db.ObjectId
+  // relation for linking a comment to a group post
+  groupPost     GroupPost?   @relation(fields: [groupPostId], references: [id], onDelete: SetNull)
+  groupPostId   String?      @db.ObjectId
+  content       Json
+  // relation for linking a comment to a profile
+  author        UserProfile? @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  authorId      String?      @db.ObjectId
+  createdAt     Int
+  editedAt      Int          @default(0)
   // self relation that handles a comment having replies
-  parentComment  Comment?    @relation("replies", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  replies        Comment[]   @relation("replies")
-  parentId       String?     @db.ObjectId
+  parentComment Comment?     @relation("replies", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies       Comment[]    @relation("replies")
+  parentId      String?      @db.ObjectId
+  isDeleted     Boolean      @default(false)
 }
 
 model Group {
-  id           String        @id @default(auto()) @map("_id") @db.ObjectId
-  admin        UserProfile   @relation(fields: [adminId], references: [id], onDelete: Cascade)
-  adminId      String        @db.ObjectId
-  name         String        @unique
-  desc         String?
-  banner_url   String?
-  createdAt    Int
-  // a group MUST have a referenced group settings document which can't be deleted while the group exists
-  settings     GroupSettings @relation(fields: [settingsId], references: [id], onDelete: Restrict)
-  groupPosts   GroupPost[]
-  settingsId   String        @unique @db.ObjectId
-  groupMembers GroupMember[]
-}
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  admin      UserProfile @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  adminId    String      @db.ObjectId
+  name       String      @unique
+  desc       String?
+  banner_url String?
+  createdAt  Int
 
-model GroupSettings {
-  id                 String  @id @default(auto()) @map("_id") @db.ObjectId
+  // group settings
   groupJoinId        String  @unique @default(uuid())
   isAnonymous        Boolean
   autoMemberApproval Boolean
   autoPostApproval   Boolean
-  group              Group?
+
+  groupPosts   GroupPost[]
+  groupMembers GroupMember[]
 }
 
 model GroupMember {

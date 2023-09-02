@@ -28,36 +28,27 @@ export default async function handler(
 			req.body
 		);
 		try {
-			// run a transaction that creates a group and its settings document, and also creates a single GroupMember document for the admin
-			const settings = await prisma.groupSettings.create({
+			// run a transaction that creates a group and also creates a single GroupMember document for the admin
+			const group = await prisma.group.create({
 				data: {
+					adminId: groupData.adminId,
+					name: groupData.name,
+					desc: groupData.desc,
+					createdAt: Date.now(),
+					groupMembers: {
+						create: [
+							{
+								userProfileId: groupData.adminId,
+								membershipStatus: "JOINED",
+							},
+						],
+					},
 					isAnonymous: settingsData.isAnonymous,
 					autoMemberApproval: settingsData.autoMemberApproval,
 					autoPostApproval: settingsData.autoPostApproval,
-					group: {
-						create: {
-							adminId: groupData.adminId,
-							name: groupData.name,
-							desc: groupData.desc,
-							createdAt: Date.now(),
-							groupMembers: {
-								create: [
-									{
-										userProfileId: groupData.adminId,
-										membershipStatus: "JOINED",
-									},
-								],
-							},
-						},
-					},
-				},
-				include: {
-					group: true,
 				},
 			});
-			res
-				.status(200)
-				.json({ message: "Group created successfully", group: settings.group });
+			res.status(200).json({ message: "Group created successfully", group });
 		} catch (error: any) {
 			console.error(error);
 			res

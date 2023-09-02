@@ -2,6 +2,7 @@ import CommentEditor from "@/components/Editor/CommentEditor";
 import { CommentEditorExtensions } from "@/helpers/global_vars";
 import CommentsAPI, { CommentFull } from "@/lib/api/CommentsAPI";
 import { getErrorMessage } from "@/lib/error-message";
+import { PostType } from "@/types/types";
 import { Button } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useEditor } from "@tiptap/react";
@@ -26,8 +27,9 @@ export default function ReplyToComment(props: ReplyToCommentProps) {
 			editor.setEditable(false);
 			await CommentsAPI.create({
 				content: editor.getJSON(),
-				authorId: props.commentData.authorId,
-				commentGroupId: props.commentData.commentGroupId,
+				authorId: props.authorId,
+				postId: CommentsAPI.getPostId(props.commentData, props.postType),
+				postType: props.postType,
 				parentId: props.commentData.id,
 			});
 			setIsPostingReply(false);
@@ -70,6 +72,8 @@ export default function ReplyToComment(props: ReplyToCommentProps) {
 
 interface ReplyToCommentProps {
 	commentData: CommentFull;
+	postType: PostType;
+	authorId: string;
 	onCancel: () => void;
 	onReplyPosted: () => void;
 }

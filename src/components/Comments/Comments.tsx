@@ -10,10 +10,11 @@ import useComments from "@/hooks/useComments";
 import { getErrorMessage } from "@/lib/error-message";
 import { useIntersection } from "@mantine/hooks";
 import { Prisma } from "@prisma/client";
+import { PostType } from "@/types/types";
 
 interface CommentsProps {
-	postType: "public" | "group";
-	commentGroupId: string;
+	postType: PostType;
+	postId: string;
 	where: Prisma.CommentWhereInput;
 	commentsAllowed: boolean;
 	commentsPerRequest?: number;
@@ -25,7 +26,7 @@ export default function Comments(props: CommentsProps) {
 		extensions: CommentEditorExtensions,
 	});
 	const [creatingComment, setCreatingComment] = useState(false);
-	const { commentGroupId, commentsPerRequest = 20 } = props;
+	const { postId, postType, commentsPerRequest = 20 } = props;
 	const { commentsData, isLoading, createComment, loadMoreComments } =
 		useComments({
 			where: props.where,
@@ -67,7 +68,7 @@ export default function Comments(props: CommentsProps) {
 			if (noComment) {
 				throw new Error("A comment can't be empty or just whitespace");
 			}
-			await createComment(editor.getJSON(), commentGroupId);
+			await createComment(editor.getJSON(), postId, postType);
 			// clear comment editor after comment is created
 			editor?.commands.clearContent();
 		} catch (error) {
@@ -91,7 +92,7 @@ export default function Comments(props: CommentsProps) {
 				ref={secondToLast ? infiniteScrollTriggerElRef : null}
 				key={data.id}
 				data={data}
-				postType={props.postType}
+				postType={postType}
 				showReplyCount
 			/>
 		);

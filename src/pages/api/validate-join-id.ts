@@ -15,16 +15,13 @@ export default async function handler(
 		if (!id) {
 			res.status(400).json({ messsage: "Join ID not provided" });
 		} else {
-			const groupSettings = await prisma.groupSettings.findUnique({
+			const group = await prisma.group.findUnique({
 				where: {
 					groupJoinId: id,
 				},
-				include: {
-					group: true,
-				},
 			});
-			if (groupSettings) {
-				res.status(200).json(groupSettings.group);
+			if (group) {
+				res.status(200).json(group);
 			} else {
 				res.status(404).json({ message: `Group with ID ${id} not found` });
 			}

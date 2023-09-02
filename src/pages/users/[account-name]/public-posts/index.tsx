@@ -20,6 +20,7 @@ const PublicPostsSection = (props: PublicPostsSectionProps) => {
 	const { posts, isLoading, loadMorePosts } = usePublicPosts({
 		where: {
 			authorId: profile?.id,
+			isDeleted: false,
 		},
 		take: 10,
 	});
