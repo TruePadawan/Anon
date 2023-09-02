@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma-client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { CreateCommentData } from "@/lib/api/CommentsAPI";
+import { Prisma } from "@prisma/client";
 
 export default async function handler(
 	req: NextApiRequest,
@@ -19,61 +20,14 @@ export default async function handler(
 		} else {
 			const payload: CreateCommentData = JSON.parse(req.body);
 			try {
-				if (payload.postType === "public") {
-					const comment = await prisma.comment.create({
-						data: {
-							content: payload.content,
-							author: {
-								connect: {
-									id: payload.authorId,
-								},
-							},
-							publicPost: {
-								connect: {
-									id: payload.postId,
-								},
-							},
-							parentComment: {
-								connect: {
-									id: payload.parentId,
-								},
-							},
-							createdAt: Date.now(),
-						},
-						include: {
-							author: true,
-							parentComment: true,
-						},
-					});
-					res.status(200).json(comment);
-				} else {
-					const comment = await prisma.comment.create({
-						data: {
-							content: payload.content,
-							author: {
-								connect: {
-									id: payload.authorId,
-								},
-							},
-							groupPost: {
-								connect: {
-									id: payload.postId,
-								},
-							},
-							parentComment: {
-								connect: {
-									id: payload.parentId,
-								},
-							},
-							createdAt: Date.now(),
-						},
-						include: {
-							author: true,
-							parentComment: true,
-						},
-					});
-					res.status(200).json(comment);
-				}
+				const comment = await prisma.comment.create({
+					data: generateQueryData(payload),
+					include: {
+						author: true,
+						parentComment: true,
+					},
+				});
+				res.status(200).json(comment);
 			} catch (error: any) {
 				res.status(500).json({
 					message: error.message,
@@ -81,4 +35,40 @@ export default async function handler(
 			}
 		}
 	}
+}
+
+function generateQueryData(payload: CreateCommentData) {
+	const data: Prisma.CommentCreateInput = {
+		content: payload.content,
+		author: {
+			connect: {
+				id: payload.authorId,
+			},
+		},
+		createdAt: Date.now(),
+	};
+
+	if (payload.postType === "public") {
+		data.publicPost = {
+			connect: {
+				id: payload.postId,
+			},
+		};
+	} else {
+		data.groupPost = {
+			connect: {
+				id: payload.postId,
+			},
+		};
+	}
+
+	if (payload.parentId !== undefined) {
+		data.parentComment = {
+			connect: {
+				id: payload.parentId,
+			},
+		};
+	}
+
+	return data;
 }
