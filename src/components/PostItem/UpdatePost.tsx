@@ -19,6 +19,9 @@ interface UpdatePostProps {
 	cancelUpdate: () => void;
 }
 
+/**
+ * React component which renders an interface for updating a post
+ */
 export default function UpdatePost(props: UpdatePostProps) {
 	const { editor, postData } = props;
 

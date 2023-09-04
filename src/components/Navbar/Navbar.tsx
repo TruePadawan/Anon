@@ -16,6 +16,9 @@ interface NavbarProps {
 	toIndex?: boolean;
 }
 
+/**
+ * React component representing the Navigation bar of the site
+ */
 export default function Navbar({ toIndex }: NavbarProps) {
 	const router = useRouter();
 	const { user, status, mutate } = useUser();

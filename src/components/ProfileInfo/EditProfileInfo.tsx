@@ -19,6 +19,9 @@ interface EditProfileInfoProps {
 	onUpdate?: () => void;
 }
 
+/**
+ * React component which provides an interface for editing profile information like avatar, account/display name
+ */
 const EditProfileInfo = (props: EditProfileInfoProps) => {
 	const { mutate } = useSWRConfig();
 	const [formIsValid, setFormIsValid] = useState(false);

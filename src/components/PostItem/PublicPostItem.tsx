@@ -32,6 +32,9 @@ interface PublicPostItemProps {
 	showCommentsCount?: boolean;
 }
 
+/**
+ * React component which renders a single public post
+ */
 const PublicPostItem = forwardRef(function PublicPostItem(
 	props: PublicPostItemProps,
 	ref: Ref<HTMLLIElement>

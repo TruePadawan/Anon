@@ -1,10 +1,4 @@
-import {
-	ActionIcon,
-	Badge,
-	Collapse,
-	Text,
-	useMantineTheme,
-} from "@mantine/core";
+import { ActionIcon, Badge, Collapse, Text } from "@mantine/core";
 import { IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -16,9 +10,11 @@ interface GroupItemProps {
 	anonymous: boolean;
 }
 
+/**
+ * React component for rendering a single group
+ */
 export default function GroupItem(props: GroupItemProps) {
 	const [descIsShowing, setDescIsShowing] = useState(false);
-	const theme = useMantineTheme();
 
 	function toggleDesc() {
 		setDescIsShowing((val: boolean) => !val);

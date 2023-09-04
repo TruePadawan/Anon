@@ -3,6 +3,9 @@ import { UserProfile } from "@prisma/client";
 import { IMG_HEIGHT, IMG_WIDTH } from "./vars";
 import { TextInput, Textarea } from "@mantine/core";
 
+/**
+ * React component which renders profile information like avatar, account name and display name
+ */
 const ProfileInfo = (props: UserProfile) => {
 	return (
 		<div className="flex flex-col items-center gap-4 max-w-lg w-full">

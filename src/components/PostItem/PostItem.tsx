@@ -27,6 +27,9 @@ interface PostItemProps {
 	};
 }
 
+/**
+ * React abstract component which is used for building other components
+ */
 function PostItem(props: PostItemProps["wrapper"]) {
 	const theme = useMantineTheme();
 	const {

@@ -8,6 +8,9 @@ export interface NavLinkProps {
 	children: React.ReactNode;
 }
 
+/**
+ * React component representing a navigation link
+ */
 export default function NavLink(props: NavLinkProps) {
 	const { href, disabled, active, children, ...otherProps } = props;
 

@@ -9,6 +9,9 @@ export interface ProfileMenuProps {
 	onSignoutMenuItemClicked: () => void;
 }
 
+/**
+ * React component which renders a navbar menu
+ */
 export default function ProfileMenu(props: ProfileMenuProps) {
 	const [menuOpened, setMenuOpened] = useState(false);
 	const { displayName } = props;
