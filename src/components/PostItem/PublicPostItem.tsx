@@ -81,7 +81,7 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 		if (!author) return;
 
 		try {
-			await PublicPostAPI.remove(postData.id, author.id);
+			await PublicPostAPI.remove(postData.id);
 			setPostIsDeleted(true);
 			editor?.commands.setContent(DELETED_POST_CONTENT);
 		} catch (error) {
@@ -101,7 +101,7 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 		const { id } = postData;
 		try {
 			const { commentsAllowed } = await PublicPostAPI.getById(id);
-			const updatedPost = await PublicPostAPI.update(id, author.id, {
+			const updatedPost = await PublicPostAPI.update(id, {
 				commentsAllowed: !commentsAllowed,
 			});
 			setCommentsAllowed(updatedPost.commentsAllowed);
