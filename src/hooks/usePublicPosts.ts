@@ -1,23 +1,11 @@
-import PublicPostAPI from "@/lib/api/PublicPostAPI";
-import { Prisma } from "@prisma/client";
+import PublicPostAPI, {
+	PublicPostAPIGetManyParams,
+} from "@/lib/api/PublicPostAPI";
 import { JSONContent } from "@tiptap/react";
 import { useEffect, useRef, useState } from "react";
 import useUser from "./useUser";
 import { PublicPostWithAuthor } from "@/types/types";
 import useSWRInfinite from "swr/infinite";
-
-interface UsePublicPostsParams {
-	take?: number;
-	where?: Prisma.PublicPostWhereInput;
-	orderBy?: Prisma.PublicPostOrderByWithRelationInput;
-}
-
-interface SWRInfiniteData {
-	posts: PublicPostWithAuthor[];
-	nextCursor: {
-		id?: string;
-	};
-}
 
 /**
  * React hook for getting a list of public posts
@@ -77,4 +65,11 @@ export default function usePublicPosts(params?: UsePublicPostsParams) {
 	}
 
 	return { posts, isLoading, createPublicPost, loadMorePosts };
+}
+
+type UsePublicPostsParams = Omit<PublicPostAPIGetManyParams, "skip" | "cursor">;
+
+interface SWRInfiniteData {
+	posts: PublicPostWithAuthor[];
+	nextCursor: PublicPostAPIGetManyParams["cursor"];
 }

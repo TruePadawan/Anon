@@ -76,12 +76,9 @@ export interface UpdatePublicPostPayload {
 	commentsAllowed?: boolean;
 }
 
-export interface PublicPostAPIGetManyParams {
-	take?: number;
-	where?: Prisma.PublicPostWhereInput;
-	orderBy?: Prisma.PublicPostOrderByWithRelationInput;
-	cursor?: Prisma.PublicPostWhereInput;
-	skip?: number;
-}
+export type PublicPostAPIGetManyParams = Omit<
+	Prisma.PublicPostFindManyArgs,
+	"distinct" | "select" | "include"
+>;
 
 export default PublicPostAPI;
