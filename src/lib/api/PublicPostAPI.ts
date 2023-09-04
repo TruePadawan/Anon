@@ -4,9 +4,15 @@ import { Prisma } from "@prisma/client";
 import { JSONContent } from "@tiptap/react";
 
 /**
- * This class defines an interface for managing public posts
+ * Static class which provides an interface for performing CRUD operations on public posts
  */
 class PublicPostAPI {
+	/**
+	 * Creates a single public post in the database,
+	 * an error is thrown if the process fails
+	 * @param data the post's data
+	 * @returns the document of the created post
+	 */
 	static async create(data: CreatePublicPostData) {
 		const response = await fetch("/api/create-public-post", {
 			method: "POST",
@@ -17,16 +23,18 @@ class PublicPostAPI {
 		return createdPost;
 	}
 
-	static async update(
-		postId: string,
-		authorId: string,
-		newData: UpdatePublicPostPayload
-	) {
+	/**
+	 * Updates a single public post in the database,
+	 * an error is thrown if the process fails
+	 * @param postId the ID of the post to be updated
+	 * @param newData the new data of the post
+	 * @returns the updated document of the post
+	 */
+	static async update(postId: string, newData: UpdatePublicPostPayload) {
 		const response = await fetch("/api/update-public-post", {
 			method: "POST",
 			body: JSON.stringify({
 				id: postId,
-				authorId,
 				data: newData,
 			}),
 		});
@@ -35,17 +43,26 @@ class PublicPostAPI {
 		return updatedPost;
 	}
 
-	static async remove(postId: string, authorId: string) {
+	/**
+	 * Deletes a single public post from the database,
+	 * an error is thrown if the process fails
+	 * @param postId the ID of the post
+	 */
+	static async remove(postId: string) {
 		const response = await fetch("/api/delete-public-post", {
 			method: "POST",
 			body: JSON.stringify({
-				authorId,
 				id: postId,
 			}),
 		});
 		await handleFailedAPIRequest(response);
 	}
 
+	/**
+	 * Gets a list of public post documents
+	 * @param params Prisma query objects for controlling the returned comments
+	 * @returns a list of public post documents
+	 */
 	static async getMany(
 		params?: PublicPostAPIGetManyParams
 	): Promise<PublicPostWithAuthor[]> {
@@ -58,6 +75,11 @@ class PublicPostAPI {
 		return posts;
 	}
 
+	/**
+	 * Gets a single public post
+	 * @param postId the ID of the post
+	 * @returns the post document
+	 */
 	static async getById(postId: string) {
 		const response = await fetch(`/api/get-public-post/${postId}`);
 		await handleFailedAPIRequest(response);
