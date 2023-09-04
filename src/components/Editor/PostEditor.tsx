@@ -5,6 +5,9 @@ interface PostEditorProps {
 	editor: Editor | null;
 }
 
+/**
+ * Rich Text Editor component for posts
+ */
 export default function PostEditor(props: PostEditorProps) {
 	return (
 		<RichTextEditor editor={props.editor} spellCheck={false}>
