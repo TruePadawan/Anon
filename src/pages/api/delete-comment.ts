@@ -2,14 +2,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/lib/prisma-client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { Prisma, PrismaClient } from "@prisma/client";
-import { DefaultArgs } from "@prisma/client/runtime/library";
 import { DELETED_COMMENT_CONTENT } from "@/helpers/global_vars";
-
-interface DeleteCommentPayload {
-	id: string;
-	authorId: string;
-}
+import { getUserProfile } from "./get-user-profile";
 
 export default async function handler(
 	req: NextApiRequest,
@@ -24,10 +18,11 @@ export default async function handler(
 		if (!session) {
 			res.status(401).json({ message: "Client not authenticated!?" });
 		} else {
-			const payload: DeleteCommentPayload = JSON.parse(req.body);
-			const { id, authorId } = payload;
-			const currentUserIsAuthor = session.user.id === authorId;
-			if (currentUserIsAuthor) {
+			const payload: Payload = JSON.parse(req.body);
+			const { id } = payload;
+			const profileData = await getUserProfile(session);
+			const isAuthorized = session.user.id === profileData?.userId;
+			if (isAuthorized) {
 				const replyCount = await prisma.comment.count({
 					where: {
 						parentId: id,
@@ -67,43 +62,6 @@ export default async function handler(
 	}
 }
 
-// export async function deleteCommentWithChildren(
-// 	prismaClient: Client,
-// 	commentId: string
-// ) {
-// 	const children = await prismaClient.comment.findMany({
-// 		where: {
-// 			parentId: commentId,
-// 		},
-// 		select: {
-// 			id: true,
-// 			_count: {
-// 				select: { replies: true },
-// 			},
-// 		},
-// 	});
-
-// 	for (const child of children) {
-// 		// recursively delete child comments that have replies, instantly delete comments with no replies
-// 		if (child._count.replies > 0) {
-// 			await deleteCommentWithChildren(prismaClient, child.id);
-// 		} else {
-// 			await prismaClient.comment.delete({
-// 				where: {
-// 					id: child.id,
-// 				},
-// 			});
-// 		}
-// 	}
-
-// 	await prismaClient.comment.delete({
-// 		where: {
-// 			id: commentId,
-// 		},
-// 	});
-// }
-
-// type Client = Omit<
-// 	PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
-// 	"$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
-// >;
+interface Payload {
+	id: string;
+}

@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/lib/prisma-client";
-import { getServerSession } from "next-auth";
+import { Session, getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
 export default async function handler(
@@ -17,12 +17,8 @@ export default async function handler(
 			res.status(200).json({ user: null });
 		} else {
 			try {
-				const user = await prisma.userProfile.findUnique({
-					where: {
-						userId: session.user.id,
-					},
-				});
-				res.status(200).json({ user });
+				const profileData = await getUserProfile(session);
+				res.status(200).json({ user: profileData });
 			} catch (error: any) {
 				console.error(error);
 				res.status(500).json({
@@ -31,4 +27,13 @@ export default async function handler(
 			}
 		}
 	}
+}
+
+export async function getUserProfile(session: Session) {
+	const profileData = await prisma.userProfile.findUnique({
+		where: {
+			userId: session.user.id,
+		},
+	});
+	return profileData;
 }

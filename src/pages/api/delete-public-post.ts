@@ -3,11 +3,7 @@ import { prisma } from "@/lib/prisma-client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { DELETED_POST_CONTENT } from "@/helpers/global_vars";
-
-interface RequestBody {
-	authorId: string;
-	id: string;
-}
+import { getUserProfile } from "./get-user-profile";
 
 export default async function handler(
 	req: NextApiRequest,
@@ -22,17 +18,18 @@ export default async function handler(
 		if (!session) {
 			res.status(401).json({ message: "Client not authenticated!?" });
 		} else {
-			const postData: RequestBody = JSON.parse(req.body);
-			const currentUserIsAuthor = session.user.id === postData.authorId;
-			if (currentUserIsAuthor) {
-				const postCommentsNumber = await prisma.comment.count({
+			const postData: Payload = JSON.parse(req.body);
+			const profileData = await getUserProfile(session);
+			const isAuthorized = session.user.id === profileData?.userId;
+			if (isAuthorized) {
+				const commentCount = await prisma.comment.count({
 					where: {
 						publicPostId: postData.id,
 					},
 				});
 				try {
 					// delete the post from database only if it has no comments, else use reddit's style of handling 'deleted' posts
-					if (postCommentsNumber === 0) {
+					if (commentCount === 0) {
 						await prisma.publicPost.delete({
 							where: {
 								id: postData.id,
@@ -62,4 +59,8 @@ export default async function handler(
 			}
 		}
 	}
+}
+
+interface Payload {
+	id: string;
 }
