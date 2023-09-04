@@ -39,7 +39,7 @@ export default function UpdateComment(props: UpdateCommentProps) {
 		props.setIsUpdatingState(true);
 		editor.setEditable(false);
 		try {
-			await CommentsAPI.update(commentData.id, commentData.authorId, {
+			await CommentsAPI.update(commentData.id, {
 				content: editor.getJSON(),
 			});
 			if (props.onUpdate) {
