@@ -71,7 +71,7 @@ export interface CreatePublicPostData {
 	content: JSONContent;
 }
 
-interface UpdatePublicPostPayload {
+export interface UpdatePublicPostPayload {
 	content?: JSONContent;
 	commentsAllowed?: boolean;
 }
