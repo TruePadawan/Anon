@@ -1,5 +1,7 @@
-import CommentsAPI, { CommentFull } from "@/lib/api/CommentsAPI";
-import { Prisma } from "@prisma/client";
+import CommentsAPI, {
+	CommentAPIGetManyParams,
+	CommentFull,
+} from "@/lib/api/CommentsAPI";
 import { JSONContent } from "@tiptap/react";
 import { useEffect, useRef, useState } from "react";
 import useSWRInfinite from "swr/infinite";
@@ -80,15 +82,9 @@ export default function useComments(params?: UseCommentsParams) {
 	};
 }
 
-interface UseCommentsParams {
-	take?: number;
-	where?: Prisma.CommentWhereInput;
-	orderBy?: Prisma.CommentOrderByWithRelationInput;
-}
+type UseCommentsParams = Omit<CommentAPIGetManyParams, "skip" | "cursor">;
 
 interface SWRInfiniteData {
 	comments: CommentFull[];
-	nextCursor: {
-		id?: string;
-	};
+	nextCursor: CommentAPIGetManyParams["cursor"];
 }
