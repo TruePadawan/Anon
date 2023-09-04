@@ -19,6 +19,10 @@ interface SWRInfiniteData {
 	};
 }
 
+/**
+ * React hook for getting a list of public posts
+ * @param params Prisma query objects for controlling the posts returned
+ */
 export default function usePublicPosts(params?: UsePublicPostsParams) {
 	const [posts, setPosts] = useState<PublicPostWithAuthor[]>([]);
 	const paramsRef = useRef(params);

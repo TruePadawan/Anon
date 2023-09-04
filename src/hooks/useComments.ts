@@ -7,7 +7,8 @@ import useUser from "./useUser";
 import { PostType } from "@/types/types";
 
 /**
- * useComments takes db query params as an argument which controls the comments returned
+ * React hook for getting a list of comments
+ * @param params Prisma query objects for controlling the comments returned
  */
 export default function useComments(params?: UseCommentsParams) {
 	const [commentsData, setCommentsData] = useState<CommentFull[]>([]);

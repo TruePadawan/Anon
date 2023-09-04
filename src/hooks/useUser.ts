@@ -2,6 +2,10 @@ import { UserProfile } from "@prisma/client";
 import useSWR from "swr";
 
 type AuthStatus = "GETTING_USER" | "HAS_USER" | "NO_USER";
+
+/**
+ * React hook for getting the profile data of the currently signed in user
+ */
 export default function useUser() {
 	const {
 		data: user,

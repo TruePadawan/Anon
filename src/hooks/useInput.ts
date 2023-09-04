@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 
 /**
-    * `useInput` hook manages the value of an input element.  
+    * React hook for managing the value of an input and validating it.  
     Using debouncing, it validates the input's value when it changes and keeps track
-    of its validation status.  
+    of its validation status.
     * @param validators - an array of validator functions
     * @param options - extra options for useInput hook like an initial value and a transform function
 */
