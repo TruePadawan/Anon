@@ -1,6 +1,11 @@
 import { Base64 } from "@/types/types";
 import { UploadApiOptions, UploadApiResponse } from "cloudinary";
 
+/**
+ * Converts a file into binary data
+ * @param file the file to be converted
+ * @returns a `string` or an `ArrayBuffer` if successful, else `null`
+ */
 export function getBase64(file: File): Promise<Base64 | null> {
 	return new Promise((resolve, reject) => {
 		const reader = new FileReader();

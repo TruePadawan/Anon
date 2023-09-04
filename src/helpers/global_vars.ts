@@ -5,7 +5,9 @@ import Link from "@tiptap/extension-link";
 import { Color } from "@tiptap/extension-color";
 import TextStyle from "@tiptap/extension-text-style";
 
-// tiptap extensions for the post editor
+/**
+ * Tiptap extensions for the post editor
+ */
 export const PostEditorExtensions = [
 	StarterKit.configure({
 		horizontalRule: false,
@@ -20,7 +22,9 @@ export const PostEditorExtensions = [
 	Color,
 ];
 
-// tiptap extensions for the comment editor
+/**
+ * Tiptap extensions for the comment editor
+ */
 export const CommentEditorExtensions = [
 	StarterKit.configure({
 		horizontalRule: false,
@@ -35,6 +39,9 @@ export const CommentEditorExtensions = [
 	Color,
 ];
 
+/**
+ * Editor content representing a deleted post
+ */
 export const DELETED_POST_CONTENT = {
 	type: "doc",
 	content: [
@@ -64,6 +71,9 @@ export const DELETED_POST_CONTENT = {
 	],
 };
 
+/**
+ * Editor content representing a deleted comment
+ */
 export const DELETED_COMMENT_CONTENT = {
 	type: "doc",
 	content: [
