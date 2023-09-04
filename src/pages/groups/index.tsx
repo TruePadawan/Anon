@@ -8,10 +8,10 @@ import { authOptions } from "@/lib/auth";
 import { IconSearchOff } from "@tabler/icons-react";
 import { classNames } from "@/helpers/global_helpers";
 import GroupItem from "@/components/GroupItem/GroupItem";
-import { GroupWithSettings } from "@/types/types";
+import { Group } from "@prisma/client";
 
 interface PageProps {
-	groups: GroupWithSettings[];
+	groups: Group[];
 }
 
 const GroupsPage = (props: PageProps) => {
@@ -20,14 +20,14 @@ const GroupsPage = (props: PageProps) => {
 		event.preventDefault();
 	}
 
-	const groupItems = props.groups.map((group: GroupWithSettings) => {
+	const groupItems = props.groups.map((group: Group) => {
 		return (
 			<Grid.Col key={group.id} sm={6} md={4} lg={3}>
 				<GroupItem
 					id={group.id}
 					name={group.name}
 					desc={group.desc}
-					anonymous={group.settings.isAnonymous}
+					anonymous={group.isAnonymous}
 				/>
 			</Grid.Col>
 		);
@@ -89,21 +89,17 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 	res,
 }) => {
 	const session = await getServerSession(req, res, authOptions);
-	const groups = await prisma.groupMember.findMany({
+	const memberships = await prisma.groupMember.findMany({
 		where: {
 			userProfileId: session?.user.id,
 		},
 		select: {
-			group: {
-				include: {
-					settings: true,
-				},
-			},
+			group: true,
 		},
 	});
 	return {
 		props: {
-			groups: groups.map((obj: { group: GroupWithSettings }) => obj.group),
+			groups: memberships.map(({ group }) => group),
 		},
 	};
 };
