@@ -8,7 +8,8 @@ import { JSONContent } from "@tiptap/react";
  */
 class CommentsAPI {
 	/**
-	 * Creates a single comment in the database, an error is thrown if the process fails
+	 * Creates a single comment in the database,
+	 * an error is thrown if the process fails
 	 * @param data the comment's data
 	 * @returns the document of the created comment
 	 */
@@ -23,9 +24,10 @@ class CommentsAPI {
 	}
 
 	/**
-	 * Updates a single comment in the database, an error is thrown if the process fails
+	 * Updates a single comment in the database,
+	 * an error is thrown if the process fails
 	 * @param id the ID of the comment to be updated
-	 * @param newData the new data to be put in the comment
+	 * @param newData the new data of the comment
 	 * @returns the document of the updated comment
 	 */
 	static async update(id: string, newData: UpdateCommentPayload) {
@@ -42,7 +44,8 @@ class CommentsAPI {
 	}
 
 	/**
-	 * Deletes a single comment, an error is thrown if the process fails
+	 * Deletes a single comment from the database,
+	 * an error is thrown if the process fails
 	 * @param id the ID of the comment to be deleted
 	 */
 	static async remove(id: string) {
@@ -56,7 +59,8 @@ class CommentsAPI {
 	}
 
 	/**
-	 * Gets the number of comments under a post, an error is thrown if the process fails
+	 * Gets the number of comments under a post,
+	 * an error is thrown if the process fails
 	 * @param postId the ID of the post
 	 * @param postType the type of post (Public or Group)
 	 * @returns the number of comments
@@ -75,7 +79,8 @@ class CommentsAPI {
 	}
 
 	/**
-	 * Gets the number of replies under a comment, an error is thrown if the process fails
+	 * Gets the number of replies under a comment,
+	 * an error is thrown if the process fails
 	 * @param commentId the ID of the
 	 * @returns the number of replies
 	 */
@@ -87,7 +92,8 @@ class CommentsAPI {
 	}
 
 	/**
-	 * Gets a list of comment documents, an error is thrown if the process fails
+	 * Gets a list of comment documents,
+	 * an error is thrown if the process fails
 	 * @param params Prisma query objects for controlling the returned comments
 	 * @returns a list of comment comments
 	 */
@@ -102,7 +108,8 @@ class CommentsAPI {
 	}
 
 	/**
-	 * Forms the reply url of a comment, an error is thrown if the process fails
+	 * Forms the reply url of a comment,
+	 * an error is thrown if the process fails
 	 * @param comment the data of the comment
 	 * @returns a string which represents a relative url
 	 */
