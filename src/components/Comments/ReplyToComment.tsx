@@ -8,6 +8,9 @@ import { notifications } from "@mantine/notifications";
 import { useEditor } from "@tiptap/react";
 import { useState } from "react";
 
+/**
+ * React component which renders an interface for replying to a comment
+ */
 export default function ReplyToComment(props: ReplyToCommentProps) {
 	const [isPostingReply, setIsPostingReply] = useState(false);
 	const editor = useEditor({ extensions: CommentEditorExtensions });

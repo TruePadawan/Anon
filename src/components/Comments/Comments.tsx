@@ -20,6 +20,10 @@ interface CommentsProps {
 	commentsPerRequest?: number;
 }
 
+/**
+ * React component for rendering a list of comments,
+ * comments are loaded infinitely
+ */
 export default function Comments(props: CommentsProps) {
 	const { user: currentUser } = useUser();
 	const editor = useEditor({

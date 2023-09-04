@@ -2,6 +2,9 @@ import CommentsAPI from "@/lib/api/CommentsAPI";
 import { PostType } from "@/types/types";
 import useSWR from "swr";
 
+/**
+ * React component for rendering the number of comments under a post
+ */
 export default function CommentsCount(props: CommentsCountProps) {
 	const { data: count, isLoading } = useSWR(
 		[props.postId, props.postType],
@@ -14,6 +17,9 @@ export default function CommentsCount(props: CommentsCountProps) {
 	);
 }
 
+/**
+ * React component for rendering the number of replies under a comment
+ */
 export function ReplyCount({ commentId }: ReplyCountProps) {
 	const { data: count, isLoading } = useSWR(commentId, fetchReplyCount);
 	return (

@@ -18,6 +18,9 @@ interface UpdateCommentProps {
 	cancelUpdate: () => void;
 }
 
+/**
+ * React component which renders an interface for updating a comment
+ */
 export default function UpdateComment(props: UpdateCommentProps) {
 	const { editor, commentData } = props;
 

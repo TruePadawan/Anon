@@ -38,6 +38,9 @@ interface CommentItemProps {
 	className?: string;
 }
 
+/**
+ * React component for rendering a single comment
+ */
 const CommentItem = forwardRef(function CommentItem(
 	props: CommentItemProps,
 	ref: Ref<HTMLLIElement>
