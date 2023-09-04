@@ -251,8 +251,9 @@ interface CommentItemHeadingProps {
 }
 
 function CommentItemHeading(props: CommentItemHeadingProps) {
-	const { author } = props.commentData;
-	const creationDate = moment(props.commentData.createdAt).fromNow(true);
+	const { author, createdAt, editedAt } = props.commentData;
+	const creationDate = moment(createdAt).fromNow(true);
+	const editedAtDate = editedAt ? moment(editedAt).fromNow(true) : null;
 
 	return (
 		<div className="flex items-center gap-0.5">
@@ -269,6 +270,12 @@ function CommentItemHeading(props: CommentItemHeadingProps) {
 			{!author && <span className="font-semibold">{`[deleted]`}</span>}
 			<span>·</span>
 			<span className="text-gray-500 text-sm">{creationDate}</span>
+			{editedAt && (
+				<>
+					<span>·</span>
+					<span className="text-gray-500 text-sm">{`edited ${editedAtDate} ago`}</span>
+				</>
+			)}
 		</div>
 	);
 }

@@ -69,6 +69,7 @@ model PublicPost {
   authorId        String?      @db.ObjectId
   commentsAllowed Boolean      @default(true)
   createdAt       Int
+  editedAt        Int?
   isDeleted       Boolean      @default(false)
   comments        Comment[]
 }
@@ -80,6 +81,7 @@ model GroupPost {
   authorId        String?      @db.ObjectId
   commentsAllowed Boolean      @default(true)
   createdAt       Int
+  editedAt        Int?
   group           Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
   groupId         String       @db.ObjectId
   isApproved      Boolean
@@ -100,7 +102,7 @@ model Comment {
   author        UserProfile? @relation(fields: [authorId], references: [id], onDelete: SetNull)
   authorId      String?      @db.ObjectId
   createdAt     Int
-  editedAt      Int          @default(0)
+  editedAt      Int?
   // self relation that handles a comment having replies
   parentComment Comment?     @relation("replies", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   replies       Comment[]    @relation("replies")

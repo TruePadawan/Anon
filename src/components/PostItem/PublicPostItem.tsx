@@ -237,10 +237,10 @@ interface PublicPostHeadingProps {
 }
 
 function PublicPostHeading(props: PublicPostHeadingProps) {
-	const { postData } = props;
-	const { author } = postData;
+	const { author, createdAt, editedAt } = props.postData;
+	const creationDate = moment(createdAt).fromNow(true);
+	const editedAtDate = editedAt ? moment(editedAt).fromNow(true) : null;
 
-	const creationDate = moment(postData.createdAt).fromNow(true);
 	return (
 		<div className="flex items-center gap-0.5">
 			{author && (
@@ -256,6 +256,12 @@ function PublicPostHeading(props: PublicPostHeadingProps) {
 			{!author && <span className="font-semibold">{`[deleted]`}</span>}
 			<span>·</span>
 			<span className="text-gray-500 text-sm">{creationDate}</span>
+			{editedAt && (
+				<>
+					<span>·</span>
+					<span className="text-gray-500 text-sm">{`edited ${editedAtDate} ago`}</span>
+				</>
+			)}
 		</div>
 	);
 }
