@@ -45,12 +45,11 @@ class CommentsAPI {
 	 * Deletes a single comment, an error is thrown if the process fails
 	 * @param id the ID of the comment to be deleted
 	 */
-	static async remove(id: string, authorId: string) {
+	static async remove(id: string) {
 		const response = await fetch("/api/delete-comment", {
 			method: "POST",
 			body: JSON.stringify({
 				id,
-				authorId,
 			}),
 		});
 		await handleFailedAPIRequest(response);

@@ -97,7 +97,7 @@ const CommentItem = forwardRef(function CommentItem(
 		if (!author) return;
 
 		try {
-			await CommentsAPI.remove(props.data.id, author.id);
+			await CommentsAPI.remove(props.data.id);
 			setCommentIsDeleted(true);
 			editor?.commands.setContent(DELETED_COMMENT_CONTENT);
 		} catch (error) {
