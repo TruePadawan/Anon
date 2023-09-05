@@ -1,7 +1,5 @@
-/**
- * Errors are weird in TypeScript so I'm using this suggestion by Kent C Dodds
- * https://kentcdodds.com/blog/get-a-catch-block-error-message-with-typescript
- */
+// Errors are weird in TypeScript so I'm using this suggestion by Kent C Dodds
+// https://kentcdodds.com/blog/get-a-catch-block-error-message-with-typescript
 
 type ErrorWithMessage = {
 	message: string;
@@ -28,7 +26,11 @@ function toErrorWithMessage(maybeError: unknown): ErrorWithMessage {
 	}
 }
 
-// Just get me a message from that error
+/**
+ * Extracts out the error message out of an error-like object
+ * @param error the error-like object
+ * @returns error message
+ */
 export function getErrorMessage(error: unknown) {
 	return toErrorWithMessage(error).message;
 }

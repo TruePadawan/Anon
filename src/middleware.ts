@@ -2,6 +2,7 @@ import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+// Prevent unsigned client from accessing /groups/* and /join-group route
 export async function middleware(request: NextRequest) {
 	const token = await getToken({
 		req: request,
@@ -15,7 +16,6 @@ export async function middleware(request: NextRequest) {
 	}
 }
 
-// See "Matching Paths" below to learn more
 export const config = {
 	matcher: ["/groups/:path*", "/join-group"],
 };
