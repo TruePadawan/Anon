@@ -31,7 +31,7 @@ import PostItem from "../PostItem/PostItem";
 import { ReplyCount } from "./CommentsCount";
 import ReplyToComment from "./ReplyToComment";
 
-interface CommentItemProps {
+export interface CommentItemProps {
 	data: CommentFull;
 	postType: "public" | "group";
 	showReplyCount?: boolean;
