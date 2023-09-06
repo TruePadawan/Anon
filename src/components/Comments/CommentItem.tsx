@@ -160,14 +160,16 @@ const CommentItem = forwardRef(function CommentItem(
 											<Menu.Item
 												icon={<IconEdit size={16} />}
 												onClick={startEditMode}
-												disabled={inEditMode || isUpdatingComment}>
+												disabled={inEditMode || isUpdatingComment}
+												data-cy="edit-menu-item">
 												Edit
 											</Menu.Item>
 											<Menu.Item
 												color="red"
 												icon={<IconTrash size={16} />}
 												onClick={openConfirmDeleteModal}
-												disabled={inEditMode || isUpdatingComment}>
+												disabled={inEditMode || isUpdatingComment}
+												data-cy="delete-menu-item">
 												Delete
 											</Menu.Item>
 										</>
