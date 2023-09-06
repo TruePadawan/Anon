@@ -49,14 +49,15 @@ export default function ReplyToComment(props: ReplyToCommentProps) {
 
 	return (
 		<div className="my-2 flex flex-col gap-1">
-			<CommentEditor editor={editor} />
+			<CommentEditor editor={editor} data-cy="reply-editor" />
 			<div className="flex flex-col gap-1">
 				<Button
 					size="xs"
 					radius="xs"
 					color="green"
 					disabled={isPostingReply}
-					onClick={postReply}>
+					onClick={postReply}
+					data-cy="submit-reply">
 					Post reply
 				</Button>
 				<Button

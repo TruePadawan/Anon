@@ -131,7 +131,7 @@ const CommentItem = forwardRef(function CommentItem(
 						<PostItem.Header>
 							<CommentItemHeading commentData={props.data} />
 							<Menu>
-								<Menu.Target>
+								<Menu.Target data-cy="menu-target">
 									<ActionIcon>
 										<IconDots />
 									</ActionIcon>
@@ -148,7 +148,8 @@ const CommentItem = forwardRef(function CommentItem(
 										<>
 											<Menu.Item
 												icon={<IconMessage size={16} />}
-												onClick={enterReplyMode}>
+												onClick={enterReplyMode}
+												data-cy="reply-menu-item">
 												Reply
 											</Menu.Item>
 										</>
