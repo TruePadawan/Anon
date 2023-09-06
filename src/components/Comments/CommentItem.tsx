@@ -99,7 +99,6 @@ const CommentItem = forwardRef(function CommentItem(
 		try {
 			await CommentsAPI.remove(props.data.id);
 			setCommentIsDeleted(true);
-			editor?.commands.setContent(DELETED_COMMENT_CONTENT);
 		} catch (error) {
 			notifications.show({
 				color: "red",
@@ -108,6 +107,10 @@ const CommentItem = forwardRef(function CommentItem(
 			});
 		}
 		closeConfirmDeleteModal();
+	}
+
+	if (commentIsDeleted) {
+		editor?.commands.setContent(DELETED_COMMENT_CONTENT);
 	}
 
 	const isAuthor = currentUser && author && currentUser.id === author.id;
