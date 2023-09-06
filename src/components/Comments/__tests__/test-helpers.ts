@@ -13,7 +13,7 @@ export const commentItemProps: CommentItemProps = {
 					content: [
 						{
 							type: "text",
-							text: "Hello",
+							text: "",
 						},
 					],
 				},
