@@ -16,7 +16,7 @@ const domElements = {
 	confirmDeleteBtn: "[data-cy='delete-comment']",
 };
 
-describe.skip("<CommentItem />: Replies", () => {
+describe("<CommentItem />: Replies", () => {
 	beforeEach(() => {
 		cy.intercept("GET", "/api/get-user-profile", { fixture: "profile.json" });
 		cy.intercept("POST", "/api/create-comment", { fixture: "comment.json" });
@@ -80,7 +80,7 @@ describe.skip("<CommentItem />: Replies", () => {
 	});
 });
 
-describe.skip("<CommentItem>: Updates", () => {
+describe("<CommentItem>: Updates", () => {
 	beforeEach(() => {
 		cy.intercept("POST", "/api/update-comment", {
 			fixture: "updated-comment.json",
@@ -219,7 +219,7 @@ describe("<CommentItem>: Deletes", () => {
 		cy.get(domElements.deleteDialog).should("not.exist");
 	});
 
-	it.only("doesn't allow deletes if already deleted", () => {
+	it("doesn't allow deletes if already deleted", () => {
 		cy.intercept("GET", "/api/get-user-profile", { fixture: "profile.json" });
 		const props = getCommentItemProps();
 		props.data.isDeleted = true;
@@ -233,5 +233,17 @@ describe("<CommentItem>: Deletes", () => {
 		cy.get(domElements.deleteDialog).should("not.exist");
 	});
 
-	it("doesn't allow deletes if user is not signed-in");
+	it("doesn't allow deletes if user is not signed-in", () => {
+		cy.intercept("GET", "/api/get-user-profile", { user: null });
+		const props = getCommentItemProps();
+		cy.mount(
+			<ResetSWRCache>
+				<CommentItem {...props} />
+			</ResetSWRCache>
+		);
+
+		cy.get(domElements.menuTarget).click();
+		cy.get(domElements.deleteMenuItem).should("not.exist");
+		cy.get(domElements.deleteDialog).should("not.exist");
+	});
 });
