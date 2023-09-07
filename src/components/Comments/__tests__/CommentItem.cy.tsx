@@ -12,6 +12,8 @@ const domElements = {
 	updateInput: "[data-cy='update-editor'] [contenteditable='true']",
 	submitReplyBtn: "button[data-cy='submit-reply']",
 	submitUpdateBtn: "button[data-cy='submit-update']",
+	deleteDialog: "[data-cy='confirm-delete-dialog']",
+	confirmDeleteBtn: "[data-cy='delete-comment']",
 };
 
 describe.skip("<CommentItem />: Replies", () => {
@@ -171,8 +173,38 @@ describe.skip("<CommentItem>: Updates", () => {
 	});
 });
 
-describe.skip("<CommentItem>: Deletes", () => {
-	it("allows deletes if user is author");
+describe("<CommentItem>: Deletes", () => {
+	beforeEach(() => {
+		cy.intercept("POST", "/api/delete-comment", {
+			message: "Comment deleted",
+		}).as("deleteComment");
+	});
+
+	it.only("allows deletes if user is author", () => {
+		/**
+		 * 'Delete' menu item should exist in dropdown menu
+		 * 'Confirm delete' dialog should exist after menu item is clicked
+		 * Comment ID should be passed to the API endpoint
+		 */
+		cy.intercept("GET", "/api/get-user-profile", { fixture: "profile.json" });
+		const props = getCommentItemProps();
+		cy.mount(
+			<ResetSWRCache>
+				<CommentItem {...props} />
+			</ResetSWRCache>
+		);
+		const { deleteMenuItem, deleteDialog, confirmDeleteBtn, menuTarget } =
+			domElements;
+
+		cy.get(menuTarget).click();
+		cy.get(deleteMenuItem).click();
+		cy.get(deleteDialog).should("exist");
+		cy.get(confirmDeleteBtn).click();
+		cy.get("@deleteComment")
+			.its("request.body")
+			.should("deep.equal", JSON.stringify({ id: props.data.id }));
+	});
+
 	it("doesn't allow deletes if user is not author");
 	it("doesn't allow deletes if already deleted");
 	it("doesn't allow deletes if user is not signed-in");
