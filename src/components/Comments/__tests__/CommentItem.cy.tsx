@@ -205,7 +205,7 @@ describe("<CommentItem>: Deletes", () => {
 			.should("deep.equal", JSON.stringify({ id: props.data.id }));
 	});
 
-	it.only("doesn't allow deletes if user is not author", () => {
+	it("doesn't allow deletes if user is not author", () => {
 		cy.intercept("GET", "/api/get-user-profile", { fixture: "profile-2.json" });
 		const props = getCommentItemProps();
 		cy.mount(
@@ -219,6 +219,19 @@ describe("<CommentItem>: Deletes", () => {
 		cy.get(domElements.deleteDialog).should("not.exist");
 	});
 
-	it("doesn't allow deletes if already deleted");
+	it.only("doesn't allow deletes if already deleted", () => {
+		cy.intercept("GET", "/api/get-user-profile", { fixture: "profile.json" });
+		const props = getCommentItemProps();
+		props.data.isDeleted = true;
+		cy.mount(
+			<ResetSWRCache>
+				<CommentItem {...props} />
+			</ResetSWRCache>
+		);
+		cy.get(domElements.menuTarget).click();
+		cy.get(domElements.deleteMenuItem).should("not.exist");
+		cy.get(domElements.deleteDialog).should("not.exist");
+	});
+
 	it("doesn't allow deletes if user is not signed-in");
 });
