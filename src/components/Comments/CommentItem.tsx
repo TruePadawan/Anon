@@ -179,31 +179,33 @@ const CommentItem = forwardRef(function CommentItem(
 									)}
 								</Menu.Dropdown>
 							</Menu>
-							<Modal
-								opened={confirmDeleteModalOpened}
-								onClose={closeConfirmDeleteModal}
-								title="Confirm Action"
-								centered
-								data-cy="confirm-delete-dialog">
-								<div className="flex flex-col gap-1.5">
-									<p>Are you sure you want to delete this comment?</p>
-									<div className="flex flex-col gap-1">
-										<Button
-											radius="xs"
-											color="green"
-											onClick={deleteComment}
-											data-cy="delete-comment">
-											Yes
-										</Button>
-										<Button
-											radius="xs"
-											color="red"
-											onClick={closeConfirmDeleteModal}>
-											No
-										</Button>
+							{commentIsEditable && (
+								<Modal
+									opened={confirmDeleteModalOpened}
+									onClose={closeConfirmDeleteModal}
+									title="Confirm Action"
+									centered
+									data-cy="confirm-delete-dialog">
+									<div className="flex flex-col gap-1.5">
+										<p>Are you sure you want to delete this comment?</p>
+										<div className="flex flex-col gap-1">
+											<Button
+												radius="xs"
+												color="green"
+												onClick={deleteComment}
+												data-cy="delete-comment">
+												Yes
+											</Button>
+											<Button
+												radius="xs"
+												color="red"
+												onClick={closeConfirmDeleteModal}>
+												No
+											</Button>
+										</div>
 									</div>
-								</div>
-							</Modal>
+								</Modal>
+							)}
 						</PostItem.Header>
 						<PostItem.Content>
 							{commentIsEditable && inEditMode && (

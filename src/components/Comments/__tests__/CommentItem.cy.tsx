@@ -180,7 +180,7 @@ describe("<CommentItem>: Deletes", () => {
 		}).as("deleteComment");
 	});
 
-	it.only("allows deletes if user is author", () => {
+	it("allows deletes if user is author", () => {
 		/**
 		 * 'Delete' menu item should exist in dropdown menu
 		 * 'Confirm delete' dialog should exist after menu item is clicked
@@ -205,7 +205,20 @@ describe("<CommentItem>: Deletes", () => {
 			.should("deep.equal", JSON.stringify({ id: props.data.id }));
 	});
 
-	it("doesn't allow deletes if user is not author");
+	it.only("doesn't allow deletes if user is not author", () => {
+		cy.intercept("GET", "/api/get-user-profile", { fixture: "profile-2.json" });
+		const props = getCommentItemProps();
+		cy.mount(
+			<ResetSWRCache>
+				<CommentItem {...props} />
+			</ResetSWRCache>
+		);
+
+		cy.get(domElements.menuTarget).click();
+		cy.get(domElements.deleteMenuItem).should("not.exist");
+		cy.get(domElements.deleteDialog).should("not.exist");
+	});
+
 	it("doesn't allow deletes if already deleted");
 	it("doesn't allow deletes if user is not signed-in");
 });
