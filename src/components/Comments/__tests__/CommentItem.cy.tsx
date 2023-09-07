@@ -78,7 +78,7 @@ describe.skip("<CommentItem />: Replies", () => {
 	});
 });
 
-describe("<CommentItem>: Updates", () => {
+describe.skip("<CommentItem>: Updates", () => {
 	beforeEach(() => {
 		cy.intercept("POST", "/api/update-comment", {
 			fixture: "updated-comment.json",
@@ -171,4 +171,9 @@ describe("<CommentItem>: Updates", () => {
 	});
 });
 
-describe.skip("<CommentItem>: Deletes", () => {});
+describe.skip("<CommentItem>: Deletes", () => {
+	it("allows deletes if user is author");
+	it("doesn't allow deletes if user is not author");
+	it("doesn't allow deletes if already deleted");
+	it("doesn't allow deletes if user is not signed-in");
+});
