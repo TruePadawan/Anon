@@ -115,7 +115,25 @@ describe("<CommentItem>: Updates", () => {
 		cy.get("@updateInput").should("not.exist");
 	});
 
-	it("doesn't allow updates if user is not author");
+	it("doesn't allow updates if user is not author", () => {
+		/**
+		 * 'Edit' menu item shouldn't exist
+		 */
+		cy.intercept("GET", "/api/get-user-profile", { fixture: "profile-2.json" });
+		const props = getCommentItemProps();
+		cy.mount(
+			<ResetSWRCache>
+				<CommentItem {...props} />
+			</ResetSWRCache>
+		);
+
+		const { menuTarget, editMenuItem, replyMenuItem, updateInput } =
+			domElements;
+		cy.get(menuTarget).click();
+		cy.get(editMenuItem).should("not.exist");
+		cy.get(updateInput).should("not.exist");
+		cy.get(replyMenuItem).should("exist");
+	});
 	it.skip("doesn't allow updates if no user");
 	it.skip("doesn't allow updates if comment is deleted");
 });
