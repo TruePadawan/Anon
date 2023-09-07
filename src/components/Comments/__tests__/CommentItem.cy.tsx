@@ -127,14 +127,29 @@ describe("<CommentItem>: Updates", () => {
 			</ResetSWRCache>
 		);
 
-		const { menuTarget, editMenuItem, replyMenuItem, updateInput } =
-			domElements;
+		const { menuTarget, editMenuItem, updateInput } = domElements;
 		cy.get(menuTarget).click();
 		cy.get(editMenuItem).should("not.exist");
 		cy.get(updateInput).should("not.exist");
-		cy.get(replyMenuItem).should("exist");
 	});
-	it.skip("doesn't allow updates if no user");
+
+	it("doesn't allow updates if no signed-in user", () => {
+		/**
+		 * 'Edit' menu item shouldn't exist
+		 */
+		cy.intercept("GET", "/api/get-user-profile", { user: null });
+		const props = getCommentItemProps();
+		cy.mount(
+			<ResetSWRCache>
+				<CommentItem {...props} />
+			</ResetSWRCache>
+		);
+
+		const { menuTarget, editMenuItem, updateInput } = domElements;
+		cy.get(menuTarget).click();
+		cy.get(editMenuItem).should("not.exist");
+		cy.get(updateInput).should("not.exist");
+	});
 	it.skip("doesn't allow updates if comment is deleted");
 });
 
