@@ -1,4 +1,5 @@
 import { CommentItemProps } from "../CommentItem";
+import { CommentsCountProps, ReplyCountProps } from "../CommentsCount";
 
 export function getCommentItemProps(): CommentItemProps {
 	return {
@@ -38,5 +39,18 @@ export function getCommentItemProps(): CommentItemProps {
 			editedAt: null,
 			isDeleted: false,
 		},
+	};
+}
+
+export function getCommentsCountProps(): CommentsCountProps {
+	return {
+		postType: "public",
+		postId: "64f3991b9817afec59137cea",
+	};
+}
+
+export function getReplyCountProps(): ReplyCountProps {
+	return {
+		commentId: "64f3991b9817afec59137cea",
 	};
 }

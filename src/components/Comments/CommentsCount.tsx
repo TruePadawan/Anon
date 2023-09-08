@@ -39,11 +39,11 @@ async function fetchReplyCount(commentId: string) {
 	return count;
 }
 
-interface CommentsCountProps {
+export interface CommentsCountProps {
 	postId: string;
 	postType: PostType;
 }
 
-interface ReplyCountProps {
+export interface ReplyCountProps {
 	commentId: string;
 }
