@@ -4,24 +4,24 @@ import * as NextRouter from "next/router";
 
 describe("<Navbar />", () => {
 	beforeEach(() => {
+		cy.intercept("GET", "/api/get-user-profile", { user: null });
 		const push = cy.stub();
-		cy.stub(NextRouter, "useRouter").returns({ push });
+		cy.stub(NextRouter, "useRouter").returns({ push, pathname: "/" });
+		cy.mount(<Navbar />);
 	});
 
 	it("renders application title", () => {
-		cy.mount(<Navbar />);
 		cy.contains("ANON");
 	});
 
-	it("shouldn't render the full navbar when no user object is passed", () => {
-		cy.mount(<Navbar />);
-		cy.get("a[data-cy='home-page-link']").should("not.exist");
+	it("the link to the homepage should be the only active NavLink for unsigned users", () => {
+		cy.get("a[data-cy='home-page-link']").should("exist");
 		cy.get("a[data-cy='groups-page-link']").should("not.exist");
 		cy.get("a[data-cy='join-group-page-link']").should("not.exist");
 	});
 
 	it("renders a sign in link if no user is passed", () => {
-		cy.mount(<Navbar />);
+		cy.intercept("GET", "/api/get-user-profile", { fixture: "profile.json" });
 		cy.get("a[href='/sign-in']");
 	});
 });
