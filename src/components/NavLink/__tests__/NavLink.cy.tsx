@@ -1,41 +1,28 @@
 import NavLink from "../NavLink";
+import { getNavLinkProps } from "./test-helpers";
 
 describe("<NavLink />", () => {
-	const activeLinkProps = {
-		href: "/somewhere",
-		disabled: false,
-		active(href: string) {
-			return true;
-		},
-		"data-cy": "active-nav",
-	};
-	const inActiveLinkProps = {
-		href: "/",
-		disabled: false,
-		active(href: string) {
-			return false;
-		},
-		"data-cy": "inactive-nav",
-	};
+	const activeProps = getNavLinkProps(true);
+	const inActiveProps = getNavLinkProps(false);
 
 	it("renders anchor tag which links to href prop", () => {
 		cy.mount(
-			<NavLink {...activeLinkProps}>
+			<NavLink {...activeProps}>
 				<span>Hello</span>
 			</NavLink>
 		);
-		cy.get(`a[href='${activeLinkProps.href}']`);
+		cy.get(`a[href='${activeProps.href}']`);
 	});
 
 	it("renders children passed as prop and can be clicked", () => {
 		const childTestID = "nav-link-child";
 		cy.mount(
-			<NavLink {...activeLinkProps}>
+			<NavLink {...activeProps}>
 				<span data-cy={childTestID}>Hello</span>
 			</NavLink>
 		);
 		cy.get(`span[data-cy=${childTestID}]`);
-		cy.get(`a[href='${activeLinkProps.href}']`).should(
+		cy.get(`a[href='${activeProps.href}']`).should(
 			"have.css",
 			"pointer-events",
 			"auto"
@@ -44,29 +31,26 @@ describe("<NavLink />", () => {
 
 	it("should not render a link when disabled", () => {
 		cy.mount(
-			<NavLink {...activeLinkProps} disabled={true}>
+			<NavLink {...activeProps} data-cy="nav-link" disabled>
 				<span>Hello</span>
 			</NavLink>
 		);
-		cy.get(`div[data-cy='${activeLinkProps["data-cy"]}']`);
+		cy.get(`div[data-cy='nav-link']`);
 	});
 
 	it("has white text only when active", () => {
 		cy.mount(
 			<>
-				<NavLink {...activeLinkProps}>
+				<NavLink {...activeProps} data-cy="active-nav-link">
 					<span>Hello</span>
 				</NavLink>
-				<NavLink {...inActiveLinkProps}>
+				<NavLink {...inActiveProps} data-cy="inactive-nav-link">
 					<span>Hello</span>
 				</NavLink>
 			</>
 		);
-		cy.get(`a[data-cy='${activeLinkProps["data-cy"]}']`).should(
-			"have.class",
-			"text-white"
-		);
-		cy.get(`a[data-cy='${inActiveLinkProps["data-cy"]}']`).should(
+		cy.get(`a[data-cy='active-nav-link']`).should("have.class", "text-white");
+		cy.get(`a[data-cy='inactive-nav-link']`).should(
 			"not.have.class",
 			"text-white"
 		);
