@@ -30,6 +30,6 @@
 	"parentComment": null,
 	"parentId": null,
 	"groupPostId": null,
-	"editedAt": null,
+	"editedAt": true,
 	"isDeleted": false
 }
