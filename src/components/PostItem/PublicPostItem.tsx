@@ -177,27 +177,29 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 									)}
 								</Menu.Dropdown>
 							</Menu>
-							<Modal
-								opened={confirmDeleteModalOpened}
-								onClose={closeConfirmDeleteModal}
-								title="Confirm Action"
-								data-cy="confirm-delete-dialog"
-								centered>
-								<div className="flex flex-col gap-1.5">
-									<p>Are you sure you want to delete this post?</p>
-									<div className="flex flex-col gap-1">
-										<Button
-											color="green"
-											onClick={deletePost}
-											data-cy="delete-post">
-											Yes
-										</Button>
-										<Button color="red" onClick={closeConfirmDeleteModal}>
-											No
-										</Button>
+							{postIsEditable && (
+								<Modal
+									opened={confirmDeleteModalOpened}
+									onClose={closeConfirmDeleteModal}
+									title="Confirm Action"
+									data-cy="confirm-delete-dialog"
+									centered>
+									<div className="flex flex-col gap-1.5">
+										<p>Are you sure you want to delete this post?</p>
+										<div className="flex flex-col gap-1">
+											<Button
+												color="green"
+												onClick={deletePost}
+												data-cy="delete-post">
+												Yes
+											</Button>
+											<Button color="red" onClick={closeConfirmDeleteModal}>
+												No
+											</Button>
+										</div>
 									</div>
-								</div>
-							</Modal>
+								</Modal>
+							)}
 						</PostItem.Header>
 						<PostItem.Content>
 							{postIsEditable && inEditMode && (

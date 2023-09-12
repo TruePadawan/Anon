@@ -6,10 +6,13 @@
 			"content": [
 				{
 					"type": "paragraph",
+					"attrs": {
+						"textAlign": "left"
+					},
 					"content": [
 						{
 							"type": "text",
-							"text": "Updated"
+							"text": "Updated this is a public post"
 						}
 					]
 				}

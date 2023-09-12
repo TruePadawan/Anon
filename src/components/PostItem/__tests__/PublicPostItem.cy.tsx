@@ -39,7 +39,7 @@ describe("<PublicPostItem>: Updates", () => {
 			domElements;
 		cy.get(menuTarget).click();
 		cy.get(editMenuItem).click();
-		cy.get(updateInput).as("updateInput").focus().type("Updated");
+		cy.get(updateInput).as("updateInput").focus().type("Updated ");
 		cy.get(submitUpdateBtn).click();
 
 		cy.fixture("update-post-payload.json").then((payload) => {
