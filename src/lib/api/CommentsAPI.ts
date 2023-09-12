@@ -164,7 +164,7 @@ export interface UpdateCommentPayload {
 	content?: JSONContent;
 }
 
-const commentFull = Prisma.validator<Prisma.CommentArgs>()({
+const commentFull = Prisma.validator<Prisma.CommentDefaultArgs>()({
 	include: { author: true, parentComment: true },
 });
 

@@ -3,10 +3,10 @@ import { IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 import Link from "next/link";
 import { useState } from "react";
 
-interface GroupItemProps {
+export interface GroupItemProps {
 	id: string;
 	name: string;
-	desc: string | null;
+	desc?: string;
 	anonymous: boolean;
 }
 
@@ -17,7 +17,7 @@ export default function GroupItem(props: GroupItemProps) {
 	const [descIsShowing, setDescIsShowing] = useState(false);
 
 	function toggleDesc() {
-		setDescIsShowing((val: boolean) => !val);
+		setDescIsShowing((val) => !val);
 	}
 
 	const groupType = props.anonymous ? "ANON" : "PUBLIC";

@@ -36,10 +36,7 @@ const Post = (props: PageProps) => {
 			<Navbar />
 			<main className="grow flex justify-center">
 				<div className="max-w-4xl w-full flex flex-col gap-4">
-					<PublicPostItem
-						postData={post}
-						currentUser={currentUser || undefined}
-					/>
+					<PublicPostItem postData={post} />
 					<Divider label="Comments" labelPosition="center" />
 					<Comments
 						postType="public"

@@ -9,8 +9,9 @@ interface CommentEditorProps {
  * Rich Text Editor component for comments
  */
 export default function CommentEditor(props: CommentEditorProps) {
+	const { editor, ...otherProps } = props;
 	return (
-		<RichTextEditor editor={props.editor} spellCheck={false}>
+		<RichTextEditor editor={editor} {...otherProps}>
 			<RichTextEditor.Toolbar>
 				<RichTextEditor.ControlsGroup>
 					<RichTextEditor.Bold />

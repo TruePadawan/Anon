@@ -112,7 +112,6 @@ const PublicPostsPage = () => {
 									ref={secondToLast ? infiniteScrollTriggerElRef : null}
 									key={post.id}
 									postData={post}
-									currentUser={user}
 									showCommentsCount
 								/>
 							);

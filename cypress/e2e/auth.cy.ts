@@ -12,15 +12,12 @@ describe("Signin page", () => {
 describe("Protected pages", () => {
 	it("unauthenticated users should only be able to visit signin and public posts page", () => {
 		cy.visit("/groups");
-		cy.url().should("contain", "/signin");
+		cy.url().should("contain", "/no-access");
 
-		cy.visit("/join_group");
-		cy.url().should("contain", "/signin");
-
-		cy.visit("/user/123");
-		cy.url().should("contain", "/signin");
+		cy.visit("/join-group");
+		cy.url().should("contain", "/no-access");
 
 		cy.visit("/groups/123");
-		cy.url().should("contain", "/signin");
+		cy.url().should("contain", "/no-access");
 	});
 });

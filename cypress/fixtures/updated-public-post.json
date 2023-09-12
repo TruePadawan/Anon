@@ -1,0 +1,35 @@
+{
+	"_id": "65007589437d0ad0c86593f8",
+	"content": {
+		"type": "doc",
+		"content": [
+			{
+				"type": "paragraph",
+				"attrs": {
+					"textAlign": "left"
+				},
+				"content": [
+					{
+						"type": "text",
+						"text": "this is an updated public post"
+					}
+				]
+			}
+		]
+	},
+	"authorId": "64f391529817afec59137ce9",
+	"author": {
+		"id": "64f391529817afec59137ce9",
+		"accountName": "hermeschi",
+		"displayName": "Hermes",
+		"createdAt": 1694007422997,
+		"userId": "64f391529817afec59137ce4",
+		"avatarUrl": null,
+		"color": "fff",
+		"bio": "New to ANON"
+	},
+	"commentsAllowed": true,
+	"createdAt": 1694528905849,
+	"isDeleted": false,
+	"isEdited": true
+}

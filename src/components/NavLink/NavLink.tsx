@@ -4,7 +4,7 @@ import Link from "next/link";
 export interface NavLinkProps {
 	href: string;
 	disabled: boolean;
-	active: (href: string) => boolean;
+	active: boolean;
 	children: React.ReactNode;
 }
 
@@ -14,7 +14,6 @@ export interface NavLinkProps {
 export default function NavLink(props: NavLinkProps) {
 	const { href, disabled, active, children, ...otherProps } = props;
 
-	const linkIsActive = active(href);
 	return (
 		<>
 			{disabled && (
@@ -29,7 +28,7 @@ export default function NavLink(props: NavLinkProps) {
 			{!disabled && (
 				<Link
 					className={`flex flex-col flex-1 items-center gap-1 p-3 bg-primary-color-2 text-accent-color-2-l rounded-md hover:text-white ${
-						linkIsActive ? "text-white" : ""
+						active ? "text-white" : ""
 					}`}
 					{...otherProps}
 					href={href}>
