@@ -57,14 +57,14 @@ export default function UpdateComment(props: UpdateCommentProps) {
 	}
 	return (
 		<div className="flex flex-col gap-1">
-			<CommentEditor editor={props.editor} data-cy="update-editor" />
+			<CommentEditor editor={props.editor} data-cy="update-comment-editor" />
 			<div className="flex flex-col gap-0.5">
 				<Button
 					type="button"
 					className="bg-dark-green disabled:hover:bg-dark-green hover:bg-dark-green-l"
 					onClick={updateComment}
 					disabled={props.isUpdating}
-					data-cy="submit-update">
+					data-cy="submit-comment-update">
 					Save
 				</Button>
 				<Button

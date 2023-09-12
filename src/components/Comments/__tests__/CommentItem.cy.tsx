@@ -9,9 +9,9 @@ const domElements = {
 	replyMenuItem: "[data-cy='reply-menu-item']",
 	deleteMenuItem: "[data-cy='delete-menu-item']",
 	replyInput: "[data-cy='reply-editor'] [contenteditable='true']",
-	updateInput: "[data-cy='update-editor'] [contenteditable='true']",
+	updateInput: "[data-cy='update-comment-editor'] [contenteditable='true']",
 	submitReplyBtn: "button[data-cy='submit-reply']",
-	submitUpdateBtn: "button[data-cy='submit-update']",
+	submitUpdateBtn: "button[data-cy='submit-comment-update']",
 	deleteDialog: "[data-cy='confirm-delete-dialog']",
 	confirmDeleteBtn: "[data-cy='delete-comment']",
 };
