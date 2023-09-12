@@ -1,13 +1,18 @@
 import React from "react";
 import Navbar from "../Navbar";
 import * as NextRouter from "next/router";
+import ResetSWRCache from "@/components/ResetSWRCache";
 
 describe("<Navbar />", () => {
 	beforeEach(() => {
 		cy.intercept("GET", "/api/get-user-profile", { user: null });
 		const push = cy.stub();
 		cy.stub(NextRouter, "useRouter").returns({ push, pathname: "/" });
-		cy.mount(<Navbar />);
+		cy.mount(
+			<ResetSWRCache>
+				<Navbar />
+			</ResetSWRCache>
+		);
 	});
 
 	it("renders application title", () => {
