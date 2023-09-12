@@ -110,14 +110,14 @@ describe("<PublicPostItem>: Deletes", () => {
 	beforeEach(() => {
 		cy.intercept("POST", "/api/delete-public-post", {
 			message: "Post deleted",
-		}).as("deleteComment");
+		}).as("deletePost");
 	});
 
 	it("allows deletes if user is author", () => {
 		/**
 		 * 'Delete' menu item should exist in dropdown menu
 		 * 'Confirm delete' dialog should exist after menu item is clicked
-		 * Comment ID should be passed to the API endpoint
+		 * Post ID should be passed to the API endpoint
 		 */
 		cy.intercept("GET", "/api/get-user-profile", { fixture: "profile.json" });
 		const props = getPublicPostItemProps();
@@ -133,7 +133,7 @@ describe("<PublicPostItem>: Deletes", () => {
 		cy.get(deleteMenuItem).click();
 		cy.get(deleteDialog).should("exist");
 		cy.get(confirmDeleteBtn).click();
-		cy.get("@deleteComment")
+		cy.get("@deletePost")
 			.its("request.body")
 			.should("deep.equal", JSON.stringify({ id: props.postData.id }));
 	});
