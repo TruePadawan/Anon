@@ -25,7 +25,7 @@ import { getErrorMessage } from "@/lib/error-message";
 import PostItem from "./PostItem";
 import { UserProfile } from "@prisma/client";
 
-interface PublicPostItemProps {
+export interface PublicPostItemProps {
 	className?: string;
 	postData: PublicPostWithAuthor;
 	currentUser?: UserProfile;
