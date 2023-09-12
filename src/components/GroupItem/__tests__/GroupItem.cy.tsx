@@ -1,13 +1,9 @@
 import React from "react";
-import GroupItem from "./GroupItem";
+import GroupItem from "../GroupItem";
+import { getGroupItemProps } from "./test-helpers";
 
 describe("<GroupItem />", () => {
-	const props = {
-		id: "1234",
-		name: "Earth_1",
-		desc: "This group is for humans living in Earth_1",
-		anonymous: true,
-	};
+	const props = getGroupItemProps();
 
 	beforeEach(() => {
 		cy.mount(<GroupItem {...props} />);

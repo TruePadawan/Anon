@@ -41,7 +41,7 @@ export default function UpdatePost(props: UpdatePostProps) {
 		editor.setEditable(false);
 		try {
 			if (postData.type === "public") {
-				await PublicPostAPI.update(postData.Id, postData.authorId, {
+				await PublicPostAPI.update(postData.Id, {
 					content: editor.getJSON(),
 				});
 				if (props.onUpdate) {
@@ -61,13 +61,14 @@ export default function UpdatePost(props: UpdatePostProps) {
 	}
 	return (
 		<div className="flex flex-col gap-1">
-			<PostEditor editor={props.editor} />
+			<PostEditor editor={props.editor} data-cy="update-post-editor" />
 			<div className="flex flex-col gap-0.5">
 				<Button
 					type="button"
 					className="bg-dark-green disabled:hover:bg-dark-green hover:bg-dark-green-l"
 					onClick={updatePost}
-					disabled={props.isUpdating}>
+					disabled={props.isUpdating}
+					data-cy="submit-post-update">
 					Save
 				</Button>
 				<Button

@@ -24,11 +24,11 @@ import PublicPostAPI from "@/lib/api/PublicPostAPI";
 import { getErrorMessage } from "@/lib/error-message";
 import PostItem from "./PostItem";
 import { UserProfile } from "@prisma/client";
+import useUser from "@/hooks/useUser";
 
-interface PublicPostItemProps {
+export interface PublicPostItemProps {
 	className?: string;
 	postData: PublicPostWithAuthor;
-	currentUser?: UserProfile;
 	showCommentsCount?: boolean;
 }
 
@@ -39,7 +39,8 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 	props: PublicPostItemProps,
 	ref: Ref<HTMLLIElement>
 ) {
-	const { postData, className, currentUser, showCommentsCount } = props;
+	const { user: currentUser } = useUser();
+	const { postData, className, showCommentsCount } = props;
 	const { author } = postData;
 	const [
 		confirmDeleteModalOpened,
@@ -133,7 +134,7 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 						<PostItem.Header>
 							<PublicPostHeading postData={postData} />
 							<Menu>
-								<Menu.Target>
+								<Menu.Target data-cy="menu-target">
 									<ActionIcon>
 										<IconDots />
 									</ActionIcon>
@@ -160,37 +161,45 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 											<Menu.Item
 												icon={<IconEdit size={16} />}
 												onClick={startEditMode}
-												disabled={inEditMode || isUpdatingPost}>
+												disabled={inEditMode || isUpdatingPost}
+												data-cy="edit-menu-item">
 												Edit
 											</Menu.Item>
 											<Menu.Item
 												color="red"
 												icon={<IconTrash size={16} />}
 												onClick={openConfirmDeleteModal}
-												disabled={inEditMode || isUpdatingPost}>
+												disabled={inEditMode || isUpdatingPost}
+												data-cy="delete-menu-item">
 												Delete
 											</Menu.Item>
 										</>
 									)}
 								</Menu.Dropdown>
 							</Menu>
-							<Modal
-								opened={confirmDeleteModalOpened}
-								onClose={closeConfirmDeleteModal}
-								title="Confirm Action"
-								centered>
-								<div className="flex flex-col gap-1.5">
-									<p>Are you sure you want to delete this post?</p>
-									<div className="flex flex-col gap-1">
-										<Button color="green" onClick={deletePost}>
-											Yes
-										</Button>
-										<Button color="red" onClick={closeConfirmDeleteModal}>
-											No
-										</Button>
+							{postIsEditable && (
+								<Modal
+									opened={confirmDeleteModalOpened}
+									onClose={closeConfirmDeleteModal}
+									title="Confirm Action"
+									data-cy="confirm-delete-dialog"
+									centered>
+									<div className="flex flex-col gap-1.5">
+										<p>Are you sure you want to delete this post?</p>
+										<div className="flex flex-col gap-1">
+											<Button
+												color="green"
+												onClick={deletePost}
+												data-cy="delete-post">
+												Yes
+											</Button>
+											<Button color="red" onClick={closeConfirmDeleteModal}>
+												No
+											</Button>
+										</div>
 									</div>
-								</div>
-							</Modal>
+								</Modal>
+							)}
 						</PostItem.Header>
 						<PostItem.Content>
 							{postIsEditable && inEditMode && (

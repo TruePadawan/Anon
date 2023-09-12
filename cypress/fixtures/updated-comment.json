@@ -1,0 +1,35 @@
+{
+	"id": "64f3991b9817afec59137cea",
+	"publicPostId": "64f391529817afec59137ce9",
+	"content": {
+		"type": "doc",
+		"content": [
+			{
+				"type": "paragraph",
+				"content": [
+					{
+						"type": "text",
+						"text": "Updated"
+					}
+				]
+			}
+		]
+	},
+	"authorId": "64f391529817afec59137ce9",
+	"author": {
+		"id": "64f391529817afec59137ce9",
+		"accountName": "hermeschi",
+		"displayName": "Hermes",
+		"createdAt": 1694007422997,
+		"userId": "64f391529817afec59137ce4",
+		"avatarUrl": null,
+		"color": "fff",
+		"bio": "New to ANON"
+	},
+	"createdAt": 1694007422997,
+	"parentComment": null,
+	"parentId": null,
+	"groupPostId": null,
+	"editedAt": true,
+	"isDeleted": false
+}

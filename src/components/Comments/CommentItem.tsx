@@ -31,7 +31,7 @@ import PostItem from "../PostItem/PostItem";
 import { ReplyCount } from "./CommentsCount";
 import ReplyToComment from "./ReplyToComment";
 
-interface CommentItemProps {
+export interface CommentItemProps {
 	data: CommentFull;
 	postType: "public" | "group";
 	showReplyCount?: boolean;
@@ -99,7 +99,6 @@ const CommentItem = forwardRef(function CommentItem(
 		try {
 			await CommentsAPI.remove(props.data.id);
 			setCommentIsDeleted(true);
-			editor?.commands.setContent(DELETED_COMMENT_CONTENT);
 		} catch (error) {
 			notifications.show({
 				color: "red",
@@ -108,6 +107,10 @@ const CommentItem = forwardRef(function CommentItem(
 			});
 		}
 		closeConfirmDeleteModal();
+	}
+
+	if (commentIsDeleted) {
+		editor?.commands.setContent(DELETED_COMMENT_CONTENT);
 	}
 
 	const isAuthor = currentUser && author && currentUser.id === author.id;
@@ -131,7 +134,7 @@ const CommentItem = forwardRef(function CommentItem(
 						<PostItem.Header>
 							<CommentItemHeading commentData={props.data} />
 							<Menu>
-								<Menu.Target>
+								<Menu.Target data-cy="menu-target">
 									<ActionIcon>
 										<IconDots />
 									</ActionIcon>
@@ -148,7 +151,8 @@ const CommentItem = forwardRef(function CommentItem(
 										<>
 											<Menu.Item
 												icon={<IconMessage size={16} />}
-												onClick={enterReplyMode}>
+												onClick={enterReplyMode}
+												data-cy="reply-menu-item">
 												Reply
 											</Menu.Item>
 										</>
@@ -159,40 +163,49 @@ const CommentItem = forwardRef(function CommentItem(
 											<Menu.Item
 												icon={<IconEdit size={16} />}
 												onClick={startEditMode}
-												disabled={inEditMode || isUpdatingComment}>
+												disabled={inEditMode || isUpdatingComment}
+												data-cy="edit-menu-item">
 												Edit
 											</Menu.Item>
 											<Menu.Item
 												color="red"
 												icon={<IconTrash size={16} />}
 												onClick={openConfirmDeleteModal}
-												disabled={inEditMode || isUpdatingComment}>
+												disabled={inEditMode || isUpdatingComment}
+												data-cy="delete-menu-item">
 												Delete
 											</Menu.Item>
 										</>
 									)}
 								</Menu.Dropdown>
 							</Menu>
-							<Modal
-								opened={confirmDeleteModalOpened}
-								onClose={closeConfirmDeleteModal}
-								title="Confirm Action"
-								centered>
-								<div className="flex flex-col gap-1.5">
-									<p>Are you sure you want to delete this comment?</p>
-									<div className="flex flex-col gap-1">
-										<Button radius="xs" color="green" onClick={deleteComment}>
-											Yes
-										</Button>
-										<Button
-											radius="xs"
-											color="red"
-											onClick={closeConfirmDeleteModal}>
-											No
-										</Button>
+							{commentIsEditable && (
+								<Modal
+									opened={confirmDeleteModalOpened}
+									onClose={closeConfirmDeleteModal}
+									title="Confirm Action"
+									centered
+									data-cy="confirm-delete-dialog">
+									<div className="flex flex-col gap-1.5">
+										<p>Are you sure you want to delete this comment?</p>
+										<div className="flex flex-col gap-1">
+											<Button
+												radius="xs"
+												color="green"
+												onClick={deleteComment}
+												data-cy="delete-comment">
+												Yes
+											</Button>
+											<Button
+												radius="xs"
+												color="red"
+												onClick={closeConfirmDeleteModal}>
+												No
+											</Button>
+										</div>
 									</div>
-								</div>
-							</Modal>
+								</Modal>
+							)}
 						</PostItem.Header>
 						<PostItem.Content>
 							{commentIsEditable && inEditMode && (
