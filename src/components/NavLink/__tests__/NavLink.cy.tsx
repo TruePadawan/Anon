@@ -1,4 +1,4 @@
-import NavLink, { NavLinkProps } from "./NavLink";
+import NavLink from "../NavLink";
 
 describe("<NavLink />", () => {
 	const activeLinkProps = {
