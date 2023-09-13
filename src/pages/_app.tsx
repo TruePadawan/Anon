@@ -6,9 +6,27 @@ import Head from "next/head";
 import { Session } from "next-auth";
 import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
+import posthog from "posthog-js";
+import { PostHogProvider } from "posthog-js/react";
+
+// Check that PostHog is client-side (used to handle Next.js SSR)
+if (typeof window !== "undefined") {
+	if (process.env.NEXT_PUBLIC_POSTHOG_KEY === undefined) {
+		throw new Error(
+			"PostHog failed to initialize, API KEY NOT FOUND IN ENV VARIABLES"
+		);
+	}
+	posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
+		api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://app.posthog.com",
+		// Enable debug mode in development
+		loaded: (posthog) => {
+			if (process.env.NODE_ENV === "development") posthog.debug();
+		},
+		capture_pageview: false, // Disable automatic pageview capture
+	});
+}
 
 type AppPropsWithSession = AppProps<{ session: Session }>;
-
 export default function App({
 	Component,
 	pageProps: { session, ...pageProps },
@@ -28,11 +46,13 @@ export default function App({
 			</style>
 			<MantineProvider theme={{ colorScheme: "dark" }}>
 				<SessionProvider session={session}>
-					<Head>
-						<title key="title">ANON</title>
-					</Head>
-					<Component {...pageProps} />
-					<Notifications />
+					<PostHogProvider client={posthog}>
+						<Head>
+							<title key="title">ANON</title>
+						</Head>
+						<Component {...pageProps} />
+						<Notifications />
+					</PostHogProvider>
 				</SessionProvider>
 			</MantineProvider>
 			<Script
