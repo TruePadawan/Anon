@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma-client";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 import { v2 as cloudinary } from "cloudinary";
+import { PostHog } from "posthog-node";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const session = await getServerSession(req, res, authOptions);
@@ -16,12 +17,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 		 * cascading deletes will handle deleting posts, groups e.t.c
 		 */
 		try {
-			const { id: profileId } = await prisma.userProfile.findUniqueOrThrow({
+			const profile = await prisma.userProfile.findUniqueOrThrow({
 				where: {
 					id: session.user.id,
 				},
 				select: {
 					id: true,
+					accountName: true,
+					displayName: true,
 				},
 			});
 			await prisma.$transaction(async (client) => {
@@ -31,7 +34,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				 */
 				await client.publicPost.deleteMany({
 					where: {
-						authorId: profileId,
+						authorId: profile.id,
 						comments: {
 							none: {},
 						},
@@ -40,7 +43,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
 				await client.groupPost.deleteMany({
 					where: {
-						authorId: profileId,
+						authorId: profile.id,
 						comments: {
 							none: {},
 						},
@@ -50,7 +53,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				// delete comments with no replies
 				await client.comment.deleteMany({
 					where: {
-						authorId: profileId,
+						authorId: profile.id,
 						replies: {
 							none: {},
 						},
@@ -59,7 +62,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
 				await client.userProfile.delete({
 					where: {
-						id: profileId,
+						id: profile.id,
 					},
 				});
 				/**
@@ -69,7 +72,29 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 				 */
 			});
 			// delete profile picture
-			await cloudinary.uploader.destroy(profileId);
+			await cloudinary.uploader.destroy(profile.id);
+
+			// let posthog know that a profile has been deleted
+			if (
+				process.env.NEXT_PUBLIC_POSTHOG_KEY &&
+				process.env.NEXT_PUBLIC_POSTHOG_HOST
+			) {
+				const postHogClient = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
+					host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+				});
+
+				postHogClient.capture({
+					event: "Profile deleted",
+					distinctId: session.user.id,
+					properties: {
+						accountName: profile.accountName,
+						displayName: profile.displayName,
+					},
+				});
+
+				await postHogClient.shutdownAsync();
+			}
+
 			res.status(200).json({ message: "Profile deleted successfully" });
 		} catch (error) {
 			res.status(403).json({
