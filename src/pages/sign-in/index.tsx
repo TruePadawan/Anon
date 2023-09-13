@@ -8,18 +8,25 @@ import { authOptions } from "@/lib/auth";
 import { Alert } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
 import { IconBrandGoogle, IconBrandGithub } from "@tabler/icons-react";
+import { usePostHog } from "posthog-js/react";
 
 interface SignInPageProps {
 	errorMessage: string | null;
 }
 
 const SignIn = ({ errorMessage }: SignInPageProps) => {
+	const posthog = usePostHog();
+
 	function handleGitHubSignIn() {
-		signIn("github");
+		signIn("github").then(() =>
+			posthog.capture("GitHub authentication flow trigged")
+		);
 	}
 
 	function handleGoogleSignIn() {
-		signIn("google");
+		signIn("google").then(() =>
+			posthog.capture("Google authentication flow trigged")
+		);
 	}
 
 	return (
