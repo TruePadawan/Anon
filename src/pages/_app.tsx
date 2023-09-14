@@ -22,6 +22,7 @@ if (typeof window !== "undefined") {
 		loaded: (posthog) => {
 			if (process.env.NODE_ENV === "development") posthog.debug();
 		},
+		autocapture: false, // Stop capturing irrelevant things like what the user clicks
 		capture_pageview: false, // Disable automatic pageview capture
 	});
 }
