@@ -124,10 +124,8 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 				<div className="flex gap-1.5 py-1 px-1">
 					<PostItem.Side>
 						<PostItem.Avatar
-							variant="filled"
-							radius="xl"
-							color={author?.color || "dark"}
-							src={author?.avatarUrl}
+							color={author?.color}
+							avatarUrl={author?.avatarUrl}
 						/>
 					</PostItem.Side>
 					<PostItem.Main>

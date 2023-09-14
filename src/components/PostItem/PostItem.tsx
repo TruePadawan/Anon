@@ -1,4 +1,5 @@
-import { Avatar, useMantineTheme } from "@mantine/core";
+import { Box, Avatar as MantineAvatar, useMantineTheme } from "@mantine/core";
+import { UserProfile } from "@prisma/client";
 import { CSSProperties } from "react";
 
 interface PostItemProps {
@@ -24,6 +25,10 @@ interface PostItemProps {
 	heading: {
 		className?: string;
 		children: React.ReactNode;
+	};
+	avatar: {
+		color?: string;
+		avatarUrl?: UserProfile["avatarUrl"];
 	};
 }
 
@@ -73,6 +78,35 @@ function Header(props: PostItemProps["heading"]) {
 
 function Footer(props: PostItemProps["footer"]) {
 	return props.children;
+}
+
+function Avatar(props: PostItemProps["avatar"]) {
+	const { color, avatarUrl } = props;
+	const noUser = !color && !avatarUrl;
+	const noAvatar = !avatarUrl && color;
+	const hasAvatar = !!avatarUrl;
+	return (
+		<>
+			{hasAvatar && (
+				<MantineAvatar
+					variant="filled"
+					radius="xl"
+					color={color || "dark"}
+					src={avatarUrl}
+				/>
+			)}
+			{noAvatar && (
+				<Box
+					sx={{
+						width: "38px",
+						height: "38px",
+						borderRadius: "2rem",
+						backgroundColor: color,
+					}}></Box>
+			)}
+			{noUser && <MantineAvatar variant="filled" radius="xl" color="dark" />}
+		</>
+	);
 }
 
 PostItem.Side = Side;
