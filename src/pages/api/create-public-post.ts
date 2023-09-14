@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma-client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { CreatePublicPostData } from "@/lib/api/PublicPostAPI";
+import { PostHog } from "posthog-node";
 
 export default async function handler(
 	req: NextApiRequest,
@@ -25,6 +26,31 @@ export default async function handler(
 						author: true,
 					},
 				});
+
+				// Monitor creation of public posts
+				if (
+					process.env.NEXT_PUBLIC_POSTHOG_KEY &&
+					process.env.NEXT_PUBLIC_POSTHOG_HOST
+				) {
+					const postHogClient = new PostHog(
+						process.env.NEXT_PUBLIC_POSTHOG_KEY,
+						{
+							host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+						}
+					);
+
+					postHogClient.capture({
+						event: "Public post created",
+						distinctId: session.user.id,
+						properties: {
+							authorId: createdPost.authorId,
+							authorUserId: createdPost.author?.userId,
+						},
+					});
+
+					await postHogClient.shutdownAsync();
+				}
+
 				res.status(200).json(createdPost);
 			} catch (error: any) {
 				res.status(500).json({

@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/lib/prisma-client";
+import { PostHog } from "posthog-node";
 
 export interface CreateGroupApiReqBody {
 	groupData: {
@@ -47,7 +48,33 @@ export default async function handler(
 					autoMemberApproval: settingsData.autoMemberApproval,
 					autoPostApproval: settingsData.autoPostApproval,
 				},
+				include: {
+					admin: true,
+				},
 			});
+
+			// Monitor creation of groups
+			if (
+				process.env.NEXT_PUBLIC_POSTHOG_KEY &&
+				process.env.NEXT_PUBLIC_POSTHOG_HOST
+			) {
+				const postHogClient = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
+					host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+				});
+
+				postHogClient.capture({
+					event: "Group created",
+					distinctId: group.admin.userId,
+					properties: {
+						adminId: group.adminId,
+						adminUserId: group.admin.userId,
+						isAnonymous: group.isAnonymous,
+					},
+				});
+
+				await postHogClient.shutdownAsync();
+			}
+
 			res.status(200).json({ message: "Group created successfully", group });
 		} catch (error: any) {
 			console.error(error);
