@@ -1,4 +1,5 @@
 import { ActionIcon, Badge, Collapse, Text } from "@mantine/core";
+import { Group } from "@prisma/client";
 import { IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -6,7 +7,7 @@ import { useState } from "react";
 export interface GroupItemProps {
 	id: string;
 	name: string;
-	desc?: string;
+	desc?: Group["desc"];
 	anonymous: boolean;
 }
 

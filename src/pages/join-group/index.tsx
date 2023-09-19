@@ -5,9 +5,7 @@ import useInput from "@/hooks/useInput";
 import React, { useEffect, useState } from "react";
 import { validateGroupJoinId } from "@/helpers/join-group";
 
-interface PageProps {}
-
-const JoinGroupPage = (props: PageProps) => {
+const JoinGroupPage = () => {
 	const {
 		isValidating,
 		isValid,
@@ -61,9 +59,7 @@ const JoinGroupPage = (props: PageProps) => {
 	);
 };
 
-export const getServerSideProps: GetServerSideProps<PageProps> = async (
-	context
-) => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
 	return {
 		props: {},
 	};

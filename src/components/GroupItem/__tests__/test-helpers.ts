@@ -1,6 +1,4 @@
-import { GroupItemProps } from "../GroupItem";
-
-export function getGroupItemProps(): GroupItemProps {
+export function getGroupItemProps() {
 	return {
 		id: "64f3991b9817afec59137cea",
 		name: "Earth_1",
