@@ -7,7 +7,7 @@ import { useState } from "react";
 export interface GroupItemProps {
 	id: string;
 	name: string;
-	desc?: Group["desc"];
+	desc: Group["desc"];
 	anonymous: boolean;
 }
 
