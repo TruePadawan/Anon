@@ -1,13 +1,13 @@
 import Navbar from "@/components/Navbar/Navbar";
 import useInput from "@/hooks/useInput";
 import useUser from "@/hooks/useUser";
-import { CreateGroupApiReqBody } from "@/pages/api/create-group";
 import { Button, Group, Radio, TextInput, Textarea } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { Group as GroupModel } from "@prisma/client";
 import { useRouter } from "next/router";
 import { useRef, useState } from "react";
 import { validateGroupName } from "@/helpers/groups";
+import GroupsAPI from "@/lib/api/GroupsAPI";
+import { getErrorMessage } from "@/lib/error-message";
 
 type RadioValue = "true" | "false" | string;
 export default function CreateGroupPage() {
@@ -23,39 +23,29 @@ export default function CreateGroupPage() {
 
 	async function submitHandler(event: React.FormEvent) {
 		event.preventDefault();
-		if (!user) return;
 
-		const payload: CreateGroupApiReqBody = {
-			groupData: {
+		if (!user) return;
+		setCreatingGroup(true);
+		try {
+			const group = await GroupsAPI.create({
 				adminId: user.id,
 				name: groupNameInput.value,
-				desc: descRef.current?.value,
-			},
-			settingsData: {
+				desc: descRef.current?.value ?? null,
 				isAnonymous: groupIsAnonymous === "true",
 				autoMemberApproval: autoApproveMembers === "true",
 				autoPostApproval: autoApprovePosts === "true",
-			},
-		};
-		setCreatingGroup(true);
-		const res = await fetch("/api/create-group", {
-			method: "POST",
-			body: JSON.stringify(payload),
-		});
-		if (!res.ok) {
-			const { message } = await res.json();
-			notifications.show({
-				color: "red",
-				title: "Failed to complete action",
-				message,
 			});
-		} else {
-			const { group }: { group: GroupModel } = await res.json();
 			notifications.show({
 				color: "green",
 				message: `Group '${group.name} created successfully`,
 			});
 			router.push("/groups");
+		} catch (error) {
+			notifications.show({
+				color: "red",
+				title: "Failed to complete action",
+				message: getErrorMessage(error),
+			});
 		}
 		setCreatingGroup(false);
 	}
