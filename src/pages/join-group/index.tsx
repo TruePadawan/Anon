@@ -1,9 +1,12 @@
 import Navbar from "@/components/Navbar/Navbar";
 import { GetServerSideProps } from "next";
-import { Button, TextInput } from "@mantine/core";
+import { Button, Text, TextInput } from "@mantine/core";
 import useInput from "@/hooks/useInput";
 import React, { useEffect, useState } from "react";
 import { validateGroupJoinId } from "@/helpers/join-group";
+import GroupsAPI from "@/lib/api/GroupsAPI";
+import { notifications } from "@mantine/notifications";
+import { getErrorMessage } from "@/lib/error-message";
 
 const JoinGroupPage = () => {
 	const {
@@ -16,19 +19,32 @@ const JoinGroupPage = () => {
 		errorMessage,
 	} = useInput([validateGroupJoinId]);
 	const [formIsValid, setFormIsValid] = useState(!isValidating && isValid);
+	const [membershipStatus, setMembershipStatus] = useState("");
 
 	useEffect(() => {
 		setFormIsValid(!isValidating && isValid);
 	}, [isValidating, isValid]);
 
-	function formSubmitHandler(event: React.FormEvent) {
+	async function formSubmitHandler(event: React.FormEvent) {
 		event.preventDefault();
+		try {
+			const status = await GroupsAPI.joinGroup(joinId);
+			setMembershipStatus(status);
+		} catch (error) {
+			notifications.show({
+				color: "red",
+				title: "Failed to send join request",
+				message: getErrorMessage(error),
+			});
+		}
 	}
 
+	const showMembershipStatus = Boolean(membershipStatus);
+	const color = getStatusColor(membershipStatus);
 	return (
 		<>
 			<Navbar />
-			<main className="grow flex items-center justify-center">
+			<main className="grow flex flex-col gap-2 items-center justify-center">
 				<form
 					className="flex flex-col gap-3 max-w-md w-full"
 					onSubmit={formSubmitHandler}>
@@ -54,10 +70,34 @@ const JoinGroupPage = () => {
 						Request access
 					</Button>
 				</form>
+				{showMembershipStatus && (
+					<p>
+						Request result -{" "}
+						<Text className="inline font-bold" c={color}>
+							{membershipStatus}
+						</Text>
+					</p>
+				)}
 			</main>
 		</>
 	);
 };
+
+function getStatusColor(status: string) {
+	let color = "";
+	switch (status) {
+		case "BANNED":
+			color = "red";
+			break;
+		case "JOINED":
+			color = "green";
+			break;
+		case "PENDING":
+			color = "yellow";
+			break;
+	}
+	return color;
+}
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
 	return {
