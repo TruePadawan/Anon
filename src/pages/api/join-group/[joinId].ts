@@ -68,7 +68,7 @@ export default async function handler(
 			},
 		})) === 1;
 	if (userIsBanned) {
-		return res.status(403).json({ message: "User is banned" });
+		return res.status(200).json({ membershipStatus: MembershipStatus.BANNED });
 	}
 
 	const { membershipStatus } = await prisma.groupMember.create({
