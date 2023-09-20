@@ -39,6 +39,7 @@ export default function CreateGroupPage() {
 				color: "green",
 				message: `Group '${group.name} created successfully`,
 			});
+			// should route to group main page
 			router.push("/groups");
 		} catch (error) {
 			notifications.show({
