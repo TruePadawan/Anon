@@ -1,5 +1,5 @@
 import { handleFailedAPIRequest } from "@/helpers/global_helpers";
-import { Group } from "@prisma/client";
+import { Group, MembershipStatus } from "@prisma/client";
 
 /**
  * Statuc class which provides an interface for performing CRUD operations on groups
@@ -20,14 +20,16 @@ class GroupsAPI {
 		return group;
 	}
 
-	static async joinGroup(joinId: string): Promise<JoinRequestResult> {
-		return JoinRequestResult.PENDING;
+	/**
+	 * Requests access to a group, it returns a status - PENDING or ACCEPTED
+	 * @param joinId the group's join id
+	 */
+	static async joinGroup(joinId: string): Promise<MembershipStatus> {
+		const response = await fetch(`/api/join-group/${joinId}`);
+		await handleFailedAPIRequest(response);
+		const status: MembershipStatus = await response.json();
+		return status;
 	}
-}
-
-export enum JoinRequestResult {
-	PENDING = "PENDING",
-	ACCEPTED = "ACCEPTED",
 }
 
 export type CreateGroupPayload = Omit<
