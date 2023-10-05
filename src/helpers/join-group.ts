@@ -11,7 +11,7 @@ export const validateGroupJoinId: Validator = {
 		});
 		return {
 			valid: response.ok,
-			message: `Group with join id '${id}' not found`,
+			message: `No group with join-id "${id}"`,
 		};
 	},
 };
