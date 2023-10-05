@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar/Navbar";
 import { GetServerSideProps } from "next";
-import { Button, Text, TextInput } from "@mantine/core";
+import { Button, TextInput } from "@mantine/core";
 import useInput from "@/hooks/useInput";
 import React, { useEffect, useState } from "react";
 import { validateGroupJoinId } from "@/helpers/join-group";
