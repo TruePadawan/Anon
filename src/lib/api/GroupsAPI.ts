@@ -24,11 +24,11 @@ class GroupsAPI {
 	 * Requests access to a group, it returns a status - PENDING or ACCEPTED
 	 * @param joinId the group's join id
 	 */
-	static async joinGroup(joinId: string): Promise<MembershipStatus> {
+	static async joinGroup(joinId: string): Promise<JoinGroupResult> {
 		const response = await fetch(`/api/join-group/${joinId}`);
 		await handleFailedAPIRequest(response);
-		const status: MembershipStatus = await response.json();
-		return status;
+		const parsedResponse: JoinGroupResult = await response.json();
+		return parsedResponse;
 	}
 }
 
@@ -37,4 +37,8 @@ export type CreateGroupPayload = Omit<
 	"id" | "banner_url" | "createdAt" | "groupJoinId"
 >;
 
+export interface JoinGroupResult {
+	name: string;
+	status: MembershipStatus;
+}
 export default GroupsAPI;

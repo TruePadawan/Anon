@@ -28,8 +28,8 @@ const JoinGroupPage = () => {
 	async function formSubmitHandler(event: React.FormEvent) {
 		event.preventDefault();
 		try {
-			const status = await GroupsAPI.joinGroup(joinId);
-			setMembershipStatus(status);
+			const result = await GroupsAPI.joinGroup(joinId);
+			setMembershipStatus(result.status);
 		} catch (error) {
 			notifications.show({
 				color: "red",

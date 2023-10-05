@@ -22,8 +22,6 @@ export default async function handler(
 		});
 	}
 	/**
-	 * Verify that user is not banned
-	 *
 	 * If the group has auto member approval set to true
 	 * - Create a GroupMember document with status set to JOINED else PENDING
 	 */
@@ -43,46 +41,47 @@ export default async function handler(
 			autoMemberApproval: true,
 		},
 	});
-
 	if (groupData === null) {
 		return res.status(403).json({ message: "Group does not exist" });
 	}
 
-	// verify that user is not banned from the group
+	// verify that user is not already a member or banned
 	const profile = await getUserProfile(session);
-
 	if (profile === null) {
 		return res.status(403).json({ message: "Could not find client's profile" });
 	}
 
-	const userIsBanned =
-		(await prisma.groupMember.count({
-			where: {
-				user: {
-					id: profile.id,
-				},
-				group: {
-					groupJoinId: joinId,
-				},
-				membershipStatus: MembershipStatus.BANNED,
+	const memberData = await prisma.groupMember.findFirst({
+		where: {
+			user: {
+				id: profile.id,
 			},
-		})) === 1;
-	if (userIsBanned) {
-		return res.status(200).json({ membershipStatus: MembershipStatus.BANNED });
-	}
-
-	const { membershipStatus } = await prisma.groupMember.create({
-		data: {
-			membershipStatus: groupData.autoMemberApproval
-				? MembershipStatus.JOINED
-				: MembershipStatus.PENDING,
-			userProfileId: profile.id,
-			groupId: groupData.id,
-		},
-		select: {
-			membershipStatus: true,
+			group: {
+				id: groupData.id,
+			},
 		},
 	});
 
-	return res.status(200).json({ membershipStatus });
+	if (memberData !== null) {
+		// This handles multiple join requests, a sort of idempotency
+		return res.status(200).json({
+			name: groupData.name,
+			membershipStatus: memberData.membershipStatus,
+		});
+	} else {
+		const { membershipStatus } = await prisma.groupMember.create({
+			data: {
+				membershipStatus: groupData.autoMemberApproval
+					? MembershipStatus.JOINED
+					: MembershipStatus.PENDING,
+				userProfileId: profile.id,
+				groupId: groupData.id,
+			},
+			select: {
+				membershipStatus: true,
+			},
+		});
+
+		return res.status(200).json({ name: groupData.name, membershipStatus });
+	}
 }
