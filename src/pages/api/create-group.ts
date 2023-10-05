@@ -1,19 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/lib/prisma-client";
 import { PostHog } from "posthog-node";
+import { CreateGroupPayload } from "@/lib/api/GroupsAPI";
 
-export interface CreateGroupApiReqBody {
-	groupData: {
-		adminId: string;
-		name: string;
-		desc?: string;
-	};
-	settingsData: {
-		isAnonymous: boolean;
-		autoMemberApproval: boolean;
-		autoPostApproval: boolean;
-	};
-}
 export default async function handler(
 	req: NextApiRequest,
 	res: NextApiResponse
@@ -25,28 +14,26 @@ export default async function handler(
 				"Invalid request, should be a POST request with group+group settings data in the request body",
 		});
 	} else {
-		const { groupData, settingsData }: CreateGroupApiReqBody = JSON.parse(
-			req.body
-		);
+		const { adminId, ...data }: CreateGroupPayload = JSON.parse(req.body);
 		try {
 			// run a transaction that creates a group and also creates a single GroupMember document for the admin
 			const group = await prisma.group.create({
 				data: {
-					adminId: groupData.adminId,
-					name: groupData.name,
-					desc: groupData.desc,
-					createdAt: Date.now(),
+					...data,
+					admin: {
+						connect: {
+							id: adminId,
+						},
+					},
 					groupMembers: {
 						create: [
 							{
-								userProfileId: groupData.adminId,
+								userProfileId: adminId,
 								membershipStatus: "JOINED",
 							},
 						],
 					},
-					isAnonymous: settingsData.isAnonymous,
-					autoMemberApproval: settingsData.autoMemberApproval,
-					autoPostApproval: settingsData.autoPostApproval,
+					createdAt: Date.now(),
 				},
 				include: {
 					admin: true,
@@ -75,7 +62,7 @@ export default async function handler(
 				await postHogClient.shutdownAsync();
 			}
 
-			res.status(200).json({ message: "Group created successfully", group });
+			res.status(200).json(group);
 		} catch (error: any) {
 			console.error(error);
 			res

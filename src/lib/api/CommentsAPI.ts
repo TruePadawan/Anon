@@ -13,7 +13,7 @@ class CommentsAPI {
 	 * @param data the comment's data
 	 * @returns the document of the created comment
 	 */
-	static async create(data: CreateCommentData) {
+	static async create(data: CreateCommentPayload) {
 		const response = await fetch("/api/create-comment", {
 			method: "POST",
 			body: JSON.stringify(data),
@@ -152,7 +152,7 @@ export type CommentAPIGetManyParams = Omit<
 	"distinct" | "select" | "include"
 >;
 
-export interface CreateCommentData {
+export interface CreateCommentPayload {
 	content: JSONContent;
 	postId: string;
 	authorId: string;
