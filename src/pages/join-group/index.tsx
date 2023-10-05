@@ -4,7 +4,7 @@ import { Button, Text, TextInput } from "@mantine/core";
 import useInput from "@/hooks/useInput";
 import React, { useEffect, useState } from "react";
 import { validateGroupJoinId } from "@/helpers/join-group";
-import GroupsAPI from "@/lib/api/GroupsAPI";
+import GroupsAPI, { JoinGroupResult } from "@/lib/api/GroupsAPI";
 import { notifications } from "@mantine/notifications";
 import { getErrorMessage } from "@/lib/error-message";
 
@@ -19,17 +19,18 @@ const JoinGroupPage = () => {
 		errorMessage,
 	} = useInput([validateGroupJoinId]);
 	const [formIsValid, setFormIsValid] = useState(!isValidating && isValid);
-	const [membershipStatus, setMembershipStatus] = useState("");
+	const [joinRequestResult, setJoinRequestResult] = useState<JoinGroupResult>();
 
 	useEffect(() => {
 		setFormIsValid(!isValidating && isValid);
+		setJoinRequestResult(undefined);
 	}, [isValidating, isValid]);
 
 	async function formSubmitHandler(event: React.FormEvent) {
 		event.preventDefault();
 		try {
 			const result = await GroupsAPI.joinGroup(joinId);
-			setMembershipStatus(result.status);
+			setJoinRequestResult(result);
 		} catch (error) {
 			notifications.show({
 				color: "red",
@@ -39,8 +40,7 @@ const JoinGroupPage = () => {
 		}
 	}
 
-	const showMembershipStatus = Boolean(membershipStatus);
-	const color = getStatusColor(membershipStatus);
+	const showResult = joinRequestResult !== undefined;
 	return (
 		<>
 			<Navbar />
@@ -70,13 +70,18 @@ const JoinGroupPage = () => {
 						Request access
 					</Button>
 				</form>
-				{showMembershipStatus && (
-					<p>
-						Request result -{" "}
-						<Text className="inline font-bold" c={color}>
-							{membershipStatus}
-						</Text>
-					</p>
+				{showResult && (
+					<div className="text-center">
+						<span className="font-bold">{joinRequestResult.name}</span>
+						<p>
+							Request result -{" "}
+							<span
+								className="inline font-semibold"
+								style={{ color: getStatusColor(joinRequestResult.status) }}>
+								{joinRequestResult.status}
+							</span>
+						</p>
+					</div>
 				)}
 			</main>
 		</>
