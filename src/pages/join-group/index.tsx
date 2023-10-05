@@ -20,6 +20,7 @@ const JoinGroupPage = () => {
 	} = useInput([validateGroupJoinId]);
 	const [formIsValid, setFormIsValid] = useState(!isValidating && isValid);
 	const [joinRequestResult, setJoinRequestResult] = useState<JoinGroupResult>();
+	const [requestingAccess, setRequestingAccess] = useState(false);
 
 	useEffect(() => {
 		setFormIsValid(!isValidating && isValid);
@@ -29,6 +30,7 @@ const JoinGroupPage = () => {
 	async function formSubmitHandler(event: React.FormEvent) {
 		event.preventDefault();
 		try {
+			setRequestingAccess(true);
 			const result = await GroupsAPI.joinGroup(joinId);
 			setJoinRequestResult(result);
 		} catch (error) {
@@ -38,6 +40,7 @@ const JoinGroupPage = () => {
 				message: getErrorMessage(error),
 			});
 		}
+		setRequestingAccess(false);
 	}
 
 	const showResult = joinRequestResult !== undefined;
@@ -65,8 +68,8 @@ const JoinGroupPage = () => {
 						color="gray"
 						size="md"
 						loaderPosition="center"
-						loading={isValidating}
-						disabled={!formIsValid}>
+						loading={requestingAccess}
+						disabled={!formIsValid || isValidating}>
 						Request access
 					</Button>
 				</form>
