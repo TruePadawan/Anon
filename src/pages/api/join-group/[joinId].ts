@@ -66,7 +66,7 @@ export default async function handler(
 		// This handles multiple join requests, a sort of idempotency
 		return res.status(200).json({
 			name: groupData.name,
-			membershipStatus: memberData.membershipStatus,
+			status: memberData.membershipStatus,
 		});
 	} else {
 		const { membershipStatus } = await prisma.groupMember.create({
@@ -82,6 +82,8 @@ export default async function handler(
 			},
 		});
 
-		return res.status(200).json({ name: groupData.name, membershipStatus });
+		return res
+			.status(200)
+			.json({ name: groupData.name, status: membershipStatus });
 	}
 }
