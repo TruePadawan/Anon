@@ -1,8 +1,8 @@
 import { handleFailedAPIRequest } from "@/helpers/global_helpers";
-import { Group, MembershipStatus } from "@prisma/client";
+import { Group, MembershipStatus, Prisma } from "@prisma/client";
 
 /**
- * Statuc class which provides an interface for performing CRUD operations on groups
+ * Static class which provides an interface for performing CRUD operations on groups
  */
 class GroupsAPI {
 	/**
@@ -30,6 +30,16 @@ class GroupsAPI {
 		const parsedResponse: JoinGroupResult = await response.json();
 		return parsedResponse;
 	}
+
+	static async getMany(filters?: GroupAPIGetManyFilters) {
+		const response = await fetch("/api/get-groups", {
+			method: "POST",
+			body: JSON.stringify(filters),
+		});
+		await handleFailedAPIRequest(response);
+		const groups: Group[] = await response.json();
+		return groups;
+	}
 }
 
 export type CreateGroupPayload = Omit<
@@ -41,4 +51,9 @@ export interface JoinGroupResult {
 	name: string;
 	status: MembershipStatus;
 }
+
+export type GroupAPIGetManyFilters = Omit<
+	Prisma.GroupFindManyArgs,
+	"distinct" | "include"
+>;
 export default GroupsAPI;
