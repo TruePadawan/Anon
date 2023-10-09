@@ -1,5 +1,5 @@
 import { ActionIcon, Badge, Collapse, Text } from "@mantine/core";
-import { Group } from "@prisma/client";
+import { Group, MembershipStatus } from "@prisma/client";
 import { IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -9,10 +9,11 @@ export interface GroupItemProps {
 	name: string;
 	desc: Group["desc"];
 	anonymous: boolean;
+	status: MembershipStatus;
 }
 
 /**
- * React component for rendering a single group
+ * React component for rendering a single group item
  */
 export default function GroupItem(props: GroupItemProps) {
 	const [descIsShowing, setDescIsShowing] = useState(false);
@@ -21,6 +22,7 @@ export default function GroupItem(props: GroupItemProps) {
 		setDescIsShowing((val) => !val);
 	}
 
+	const badgeColor = getBadgeColor(props.status);
 	const groupType = props.anonymous ? "ANON" : "PUBLIC";
 	return (
 		<div className="flex flex-col rounded bg-secondary-color hover:bg-secondary-color-l p-2 min-w-max">
@@ -29,7 +31,7 @@ export default function GroupItem(props: GroupItemProps) {
 					className="text-lg font-bold grow flex justify-between"
 					href={`/groups/${props.id}`}>
 					<p>{props.name}</p>
-					<Badge size="lg" color="dark" className="bg-primary-color-2">
+					<Badge size="lg" color={badgeColor} variant="dot">
 						{groupType}
 					</Badge>
 				</Link>
@@ -52,4 +54,17 @@ export default function GroupItem(props: GroupItemProps) {
 			)}
 		</div>
 	);
+}
+
+function getBadgeColor(status: MembershipStatus) {
+	switch (status) {
+		case "JOINED":
+			return "green";
+		case "BANNED":
+			return "red";
+		case "PENDING":
+			return "yellow";
+		default:
+			throw new Error("Invalid membership status");
+	}
 }
