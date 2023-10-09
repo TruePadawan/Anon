@@ -1,6 +1,13 @@
 import Navbar from "@/components/Navbar/Navbar";
 import { GetServerSideProps } from "next";
-import { Button, Grid, Radio, TextInput, useMantineTheme } from "@mantine/core";
+import {
+	Button,
+	Grid,
+	Loader,
+	Radio,
+	TextInput,
+	useMantineTheme,
+} from "@mantine/core";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma-client";
 import { getServerSession } from "next-auth";
@@ -50,6 +57,9 @@ const GroupsPage = (props: PageProps) => {
 		);
 	});
 	const noGroup = groupItems.length === 0;
+	const inputRightSection = isFiltering ? (
+		<Loader size="xs" variant="bars" color="cyan" />
+	) : undefined;
 	return (
 		<>
 			<Head>
@@ -59,6 +69,7 @@ const GroupsPage = (props: PageProps) => {
 			<main className="grow flex gap-2">
 				<aside className="flex flex-col gap-2 h-max bg-primary-color-2 p-2 min-w-[20rem] rounded-md">
 					<TextInput
+						rightSection={inputRightSection}
 						placeholder="Filter groups"
 						aria-label="Filter groups"
 						required
