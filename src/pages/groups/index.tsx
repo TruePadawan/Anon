@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar/Navbar";
 import { GetServerSideProps } from "next";
-import { Button, Grid, TextInput, useMantineTheme } from "@mantine/core";
+import { Button, Grid, Radio, TextInput, useMantineTheme } from "@mantine/core";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma-client";
 import { getServerSession } from "next-auth";
@@ -36,36 +36,39 @@ const GroupsPage = (props: PageProps) => {
 	return (
 		<>
 			<Navbar />
-			<main className="grow flex flex-col gap-2 items-stretch">
-				<div className="flex justify-between">
+			<main className="grow flex gap-2">
+				<aside className="flex flex-col gap-2 h-max bg-primary-color-2 p-2 min-w-[20rem] rounded-md">
 					<form
 						onSubmit={formSubmitHandler}
-						className="flex gap-1 max-w-md w-full">
+						className="flex flex-col items-stretch gap-1">
 						<TextInput
-							className="grow"
 							placeholder="Group name"
 							aria-label="group name"
+							required
 						/>
 						<Button
 							type="submit"
 							color="gray"
 							sx={{ background: theme.colors.gray[8], color: "white" }}>
-							Search
+							Filter
 						</Button>
 					</form>
-					<Button
-						color="gray"
-						sx={{ background: theme.colors.gray[8], color: "white" }}
-						variant="light"
-						component={Link}
-						href="/groups/create">
-						Create a group
-					</Button>
-				</div>
+					<Radio.Group
+						name="membership_status"
+						label="Membership status"
+						defaultValue="JOINED"
+						size="md">
+						<div className="p-1 flex flex-col gap-1.5">
+							<Radio value="JOINED" label="Joined" color="green" />
+							<Radio value="PENDING" label="Pending" color="yellow" />
+						</div>
+					</Radio.Group>
+				</aside>
 				<div
 					className={classNames(
-						"grow",
-						noGroup && "flex justify-center items-center"
+						"grow flex",
+						!noGroup && "flex-col",
+						noGroup && "justify-center items-center"
 					)}>
 					{noGroup && (
 						<div className="flex flex-col items-center">
@@ -74,9 +77,20 @@ const GroupsPage = (props: PageProps) => {
 						</div>
 					)}
 					{!noGroup && (
-						<Grid gutter={4} sx={{ width: "100%" }}>
-							{groupItems}
-						</Grid>
+						<>
+							<Button
+								className="self-end"
+								color="gray"
+								sx={{ background: theme.colors.gray[8], color: "white" }}
+								variant="light"
+								component={Link}
+								href="/groups/create">
+								Create a group
+							</Button>
+							<Grid gutter={4} sx={{ width: "100%" }}>
+								{groupItems}
+							</Grid>
+						</>
 					)}
 				</div>
 			</main>
