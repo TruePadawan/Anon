@@ -91,7 +91,9 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 	const session = await getServerSession(req, res, authOptions);
 	const memberships = await prisma.groupMember.findMany({
 		where: {
-			userProfileId: session?.user.id,
+			user: {
+				userId: session?.user.id,
+			},
 		},
 		select: {
 			group: true,
