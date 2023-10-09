@@ -57,7 +57,8 @@ const GroupsPage = (props: PageProps) => {
 		);
 	});
 
-	const noGroupItem = groupItems.length === 0;
+	const noGroupItems = !isFiltering && groupItems.length === 0;
+	const hasGroupItems = !isFiltering && groupItems.length !== 0;
 	const inputRightSection = isFiltering ? (
 		<Loader size="xs" variant="bars" color="cyan" />
 	) : undefined;
@@ -69,6 +70,7 @@ const GroupsPage = (props: PageProps) => {
 			</Head>
 			<Navbar />
 			<main className="grow flex gap-2">
+				{/* SIDEBAR */}
 				<aside className="flex flex-col gap-2 h-max bg-primary-color-2 p-2 min-w-[20rem] rounded-md">
 					<TextInput
 						rightSection={inputRightSection}
@@ -91,16 +93,17 @@ const GroupsPage = (props: PageProps) => {
 				<div
 					className={classNames(
 						"grow flex",
-						!noGroupItem && "flex-col gap-2",
-						noGroupItem && "justify-center items-center"
+						hasGroupItems && "flex-col gap-2",
+						(noGroupItems || isFiltering) && "justify-center items-center"
 					)}>
-					{noGroupItem && (
+					{isFiltering && <Loader size="md" variant="bars" color="cyan" />}
+					{noGroupItems && (
 						<div className="flex flex-col items-center">
 							<IconSearchOff size={64} />
 							<p className="text-xl">Such empty</p>
 						</div>
 					)}
-					{!noGroupItem && (
+					{hasGroupItems && (
 						<>
 							<Button
 								className="self-end"
