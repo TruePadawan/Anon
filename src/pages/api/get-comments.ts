@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/lib/prisma-client";
+import { getErrorMessage } from "@/lib/error-message";
 
 export default async function handler(
 	req: NextApiRequest,
@@ -19,10 +20,10 @@ export default async function handler(
 				...JSON.parse(req.body),
 			});
 			res.status(200).json(posts);
-		} catch (error: any) {
+		} catch (error) {
 			console.error(error);
 			res.status(500).json({
-				message: error.message,
+				message: getErrorMessage(error),
 			});
 		}
 	}
