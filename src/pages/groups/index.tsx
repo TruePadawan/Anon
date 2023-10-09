@@ -19,31 +19,53 @@ import { Group } from "@prisma/client";
 import Head from "next/head";
 import { useState } from "react";
 import { notifications } from "@mantine/notifications";
+import { filterGroups } from "@/helpers/groups";
 
 interface PageProps {
 	groups: Group[];
+	userId: string;
 }
 
-type Status = "JOINED" | "PENDING";
+export type StatusRadioValue = "JOINED" | "PENDING";
 
 const GroupsPage = (props: PageProps) => {
-	const [statusRadioValue, setStatusRadioValue] = useState<Status>("JOINED");
+	const [groups, setGroups] = useState<Group[]>(props.groups);
+	const [statusRadioValue, setStatusRadioValue] =
+		useState<StatusRadioValue>("JOINED");
 	const [isFiltering, setIsFiltering] = useState(false);
+	const [groupNameFilter, setGroupNameFilter] = useState("");
 	const theme = useMantineTheme();
 
+	/**
+	 * Returns group items that conform with currently applied filters
+	 * If a group name is provided, filter against the name and the selected membership status,
+	 * else filter against the selected membership status
+	 */
+
 	// handle changes in the membership status filter
-	function handleStatusChange(value: string) {
-		if (!(value as Status)) {
+	async function handleStatusChange(value: string) {
+		if (!(value as StatusRadioValue)) {
 			notifications.show({
 				color: "orange",
 				title: "Invalid filter",
 				message: `Invalid status: ${value}`,
 			});
 		} else {
-			setStatusRadioValue(value as Status);
+			const castedValue = value as StatusRadioValue;
+			setStatusRadioValue(castedValue);
+
+			setIsFiltering(true);
+			const filteredGroups = await filterGroups(
+				props.userId,
+				castedValue,
+				groupNameFilter
+			);
+			setGroups(filteredGroups);
+			setIsFiltering(false);
 		}
 	}
-	const groupItems = props.groups.map((group: Group) => {
+
+	const groupItems = groups.map((group: Group) => {
 		return (
 			<Grid.Col key={group.id} sm={6} md={4} lg={3}>
 				<GroupItem
@@ -76,6 +98,8 @@ const GroupsPage = (props: PageProps) => {
 						rightSection={inputRightSection}
 						placeholder="Filter groups"
 						aria-label="Filter groups"
+						value={groupNameFilter}
+						onChange={(event) => setGroupNameFilter(event.currentTarget.value)}
 						required
 					/>
 					<Radio.Group
@@ -85,8 +109,18 @@ const GroupsPage = (props: PageProps) => {
 						onChange={handleStatusChange}
 						size="md">
 						<div className="p-1 flex flex-col gap-1.5">
-							<Radio value="JOINED" label="Joined" color="green" />
-							<Radio value="PENDING" label="Pending" color="yellow" />
+							<Radio
+								value="JOINED"
+								label="Joined"
+								color="green"
+								disabled={isFiltering}
+							/>
+							<Radio
+								value="PENDING"
+								label="Pending"
+								color="yellow"
+								disabled={isFiltering}
+							/>
 						</div>
 					</Radio.Group>
 				</aside>
@@ -94,16 +128,11 @@ const GroupsPage = (props: PageProps) => {
 					className={classNames(
 						"grow flex",
 						hasGroupItems && "flex-col gap-2",
-						(noGroupItems || isFiltering) && "justify-center items-center"
+						isFiltering && "justify-center items-center",
+						noGroupItems && "flex-col gap-2"
 					)}>
 					{isFiltering && <Loader size="md" variant="bars" color="cyan" />}
-					{noGroupItems && (
-						<div className="flex flex-col items-center">
-							<IconSearchOff size={64} />
-							<p className="text-xl">Such empty</p>
-						</div>
-					)}
-					{hasGroupItems && (
+					{!isFiltering && (
 						<>
 							<Button
 								className="self-end"
@@ -114,7 +143,17 @@ const GroupsPage = (props: PageProps) => {
 								href="/groups/create">
 								Create a group
 							</Button>
-							<Grid gutter={4}>{groupItems}</Grid>
+							{noGroupItems && (
+								<div className="grow flex flex-col justify-center items-center">
+									<IconSearchOff size={64} />
+									<p className="text-xl">Such empty</p>
+								</div>
+							)}
+							{hasGroupItems && (
+								<>
+									<Grid gutter={4}>{groupItems}</Grid>
+								</>
+							)}
 						</>
 					)}
 				</div>
@@ -123,15 +162,21 @@ const GroupsPage = (props: PageProps) => {
 	);
 };
 
-export const getServerSideProps: GetServerSideProps<PageProps> = async ({
-	req,
-	res,
-}) => {
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
 	const session = await getServerSession(req, res, authOptions);
+	if (!session) {
+		return {
+			redirect: {
+				destination: "/sign-in",
+				permanent: false,
+			},
+		};
+	}
+
 	const memberships = await prisma.groupMember.findMany({
 		where: {
 			user: {
-				userId: session?.user.id,
+				userId: session.user.id,
 			},
 		},
 		select: {
@@ -141,6 +186,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 	return {
 		props: {
 			groups: memberships.map(({ group }) => group),
+			userId: session.user.id,
 		},
 	};
 };

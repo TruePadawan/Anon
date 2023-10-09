@@ -1,4 +1,6 @@
 import { Validator } from "@/hooks/useInput";
+import GroupsAPI from "@/lib/api/GroupsAPI";
+import { StatusRadioValue } from "@/pages/groups";
 import { Group } from "@prisma/client";
 
 export const validateGroupName: Validator = {
@@ -22,3 +24,29 @@ export const validateGroupName: Validator = {
 		};
 	},
 };
+
+export async function filterGroups(
+	userId: string,
+	status: StatusRadioValue,
+	groupName?: string
+) {
+	let groupItems: Group[] = [];
+
+	if (!groupName) {
+		groupItems = await GroupsAPI.getMany({
+			where: {
+				groupMembers: {
+					some: {
+						user: {
+							userId: userId,
+						},
+						membershipStatus: status,
+					},
+				},
+			},
+		});
+	} else {
+		// filter by name and status
+	}
+	return groupItems;
+}
