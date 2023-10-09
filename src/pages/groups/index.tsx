@@ -5,7 +5,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma-client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { IconSearchOff, IconFilterSearch } from "@tabler/icons-react";
+import { IconSearchOff } from "@tabler/icons-react";
 import { classNames } from "@/helpers/global_helpers";
 import GroupItem from "@/components/GroupItem/GroupItem";
 import { Group } from "@prisma/client";
@@ -21,12 +21,10 @@ type Status = "JOINED" | "PENDING";
 
 const GroupsPage = (props: PageProps) => {
 	const [statusRadioValue, setStatusRadioValue] = useState<Status>("JOINED");
+	const [isFiltering, setIsFiltering] = useState(false);
 	const theme = useMantineTheme();
 
-	function formSubmitHandler(event: React.FormEvent) {
-		event.preventDefault();
-	}
-
+	// handle changes in the membership status filter
 	function handleStatusChange(value: string) {
 		if (!(value as Status)) {
 			notifications.show({
@@ -60,22 +58,11 @@ const GroupsPage = (props: PageProps) => {
 			<Navbar />
 			<main className="grow flex gap-2">
 				<aside className="flex flex-col gap-2 h-max bg-primary-color-2 p-2 min-w-[20rem] rounded-md">
-					<form
-						onSubmit={formSubmitHandler}
-						className="flex flex-col items-stretch gap-1">
-						<TextInput
-							placeholder="Group name"
-							aria-label="group name"
-							required
-						/>
-						<Button
-							type="submit"
-							color="gray"
-							leftIcon={<IconFilterSearch size={18} />}
-							sx={{ background: theme.colors.gray[8], color: "white" }}>
-							Filter
-						</Button>
-					</form>
+					<TextInput
+						placeholder="Filter groups"
+						aria-label="Filter groups"
+						required
+					/>
 					<Radio.Group
 						name="membership_status"
 						label="Membership status"
