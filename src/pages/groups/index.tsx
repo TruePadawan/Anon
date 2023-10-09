@@ -56,10 +56,12 @@ const GroupsPage = (props: PageProps) => {
 			</Grid.Col>
 		);
 	});
-	const noGroup = groupItems.length === 0;
+
+	const noGroupItem = groupItems.length === 0;
 	const inputRightSection = isFiltering ? (
 		<Loader size="xs" variant="bars" color="cyan" />
 	) : undefined;
+
 	return (
 		<>
 			<Head>
@@ -89,16 +91,16 @@ const GroupsPage = (props: PageProps) => {
 				<div
 					className={classNames(
 						"grow flex",
-						!noGroup && "flex-col gap-2",
-						noGroup && "justify-center items-center"
+						!noGroupItem && "flex-col gap-2",
+						noGroupItem && "justify-center items-center"
 					)}>
-					{noGroup && (
+					{noGroupItem && (
 						<div className="flex flex-col items-center">
 							<IconSearchOff size={64} />
 							<p className="text-xl">Such empty</p>
 						</div>
 					)}
-					{!noGroup && (
+					{!noGroupItem && (
 						<>
 							<Button
 								className="self-end"
