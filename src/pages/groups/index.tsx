@@ -5,21 +5,39 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma-client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { IconSearchOff } from "@tabler/icons-react";
+import { IconSearchOff, IconFilterSearch } from "@tabler/icons-react";
 import { classNames } from "@/helpers/global_helpers";
 import GroupItem from "@/components/GroupItem/GroupItem";
 import { Group } from "@prisma/client";
+import Head from "next/head";
+import { useState } from "react";
+import { notifications } from "@mantine/notifications";
 
 interface PageProps {
 	groups: Group[];
 }
 
+type Status = "JOINED" | "PENDING";
+
 const GroupsPage = (props: PageProps) => {
+	const [statusRadioValue, setStatusRadioValue] = useState<Status>("JOINED");
 	const theme = useMantineTheme();
+
 	function formSubmitHandler(event: React.FormEvent) {
 		event.preventDefault();
 	}
 
+	function handleStatusChange(value: string) {
+		if (!(value as Status)) {
+			notifications.show({
+				color: "orange",
+				title: "Invalid filter",
+				message: `Invalid status: ${value}`,
+			});
+		} else {
+			setStatusRadioValue(value as Status);
+		}
+	}
 	const groupItems = props.groups.map((group: Group) => {
 		return (
 			<Grid.Col key={group.id} sm={6} md={4} lg={3}>
@@ -28,6 +46,7 @@ const GroupsPage = (props: PageProps) => {
 					name={group.name}
 					desc={group.desc}
 					anonymous={group.isAnonymous}
+					status={statusRadioValue}
 				/>
 			</Grid.Col>
 		);
@@ -35,6 +54,9 @@ const GroupsPage = (props: PageProps) => {
 	const noGroup = groupItems.length === 0;
 	return (
 		<>
+			<Head>
+				<title key="title">ANON | Groups</title>
+			</Head>
 			<Navbar />
 			<main className="grow flex gap-2">
 				<aside className="flex flex-col gap-2 h-max bg-primary-color-2 p-2 min-w-[20rem] rounded-md">
@@ -49,6 +71,7 @@ const GroupsPage = (props: PageProps) => {
 						<Button
 							type="submit"
 							color="gray"
+							leftIcon={<IconFilterSearch size={18} />}
 							sx={{ background: theme.colors.gray[8], color: "white" }}>
 							Filter
 						</Button>
@@ -56,7 +79,8 @@ const GroupsPage = (props: PageProps) => {
 					<Radio.Group
 						name="membership_status"
 						label="Membership status"
-						defaultValue="JOINED"
+						value={statusRadioValue}
+						onChange={handleStatusChange}
 						size="md">
 						<div className="p-1 flex flex-col gap-1.5">
 							<Radio value="JOINED" label="Joined" color="green" />
@@ -67,7 +91,7 @@ const GroupsPage = (props: PageProps) => {
 				<div
 					className={classNames(
 						"grow flex",
-						!noGroup && "flex-col",
+						!noGroup && "flex-col gap-2",
 						noGroup && "justify-center items-center"
 					)}>
 					{noGroup && (
@@ -87,9 +111,7 @@ const GroupsPage = (props: PageProps) => {
 								href="/groups/create">
 								Create a group
 							</Button>
-							<Grid gutter={4} sx={{ width: "100%" }}>
-								{groupItems}
-							</Grid>
+							<Grid gutter={4}>{groupItems}</Grid>
 						</>
 					)}
 				</div>
