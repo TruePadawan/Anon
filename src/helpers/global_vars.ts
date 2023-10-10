@@ -2,7 +2,6 @@ import TextAlign from "@tiptap/extension-text-align";
 import Underline from "@tiptap/extension-underline";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
-import { Color } from "@tiptap/extension-color";
 import TextStyle from "@tiptap/extension-text-style";
 
 /**
@@ -19,7 +18,6 @@ export const PostEditorExtensions = [
 	Link,
 	TextAlign.configure({ types: ["heading", "paragraph"] }),
 	TextStyle,
-	Color,
 ];
 
 /**
@@ -36,7 +34,6 @@ export const CommentEditorExtensions = [
 	Underline,
 	Link,
 	TextStyle,
-	Color,
 ];
 
 /**
