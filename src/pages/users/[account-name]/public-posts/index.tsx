@@ -69,7 +69,7 @@ const PublicPostsSection = (props: PublicPostsSectionProps) => {
 						<Loader variant="bars" color="gray" className="my-auto" />
 					)}
 					{!isLoading && (
-						<ul className="max-w-4xl list-none flex flex-col gap-2">
+						<ul className="max-w-4xl w-full list-none flex flex-col gap-2">
 							{posts?.map((post, index) => {
 								const secondToLast = index == posts.length - 2;
 								return (
@@ -77,7 +77,7 @@ const PublicPostsSection = (props: PublicPostsSectionProps) => {
 										key={post.id}
 										ref={secondToLast ? infiniteScrollTriggerElRef : null}
 										postData={post}
-										currentUser={user}
+										showCommentsCount
 									/>
 								);
 							})}
