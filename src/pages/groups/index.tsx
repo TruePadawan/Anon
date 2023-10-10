@@ -17,7 +17,7 @@ import { classNames } from "@/helpers/global_helpers";
 import GroupItem from "@/components/GroupItem/GroupItem";
 import { Group } from "@prisma/client";
 import Head from "next/head";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { notifications } from "@mantine/notifications";
 import { filterGroups } from "@/helpers/groups";
 
@@ -30,17 +30,28 @@ export type StatusRadioValue = "JOINED" | "PENDING";
 
 const GroupsPage = (props: PageProps) => {
 	const [groups, setGroups] = useState<Group[]>(props.groups);
-	const [statusRadioValue, setStatusRadioValue] =
-		useState<StatusRadioValue>("JOINED");
+	const membershipStatusRef = useRef<StatusRadioValue>("JOINED");
 	const [isFiltering, setIsFiltering] = useState(false);
 	const [groupNameFilter, setGroupNameFilter] = useState("");
 	const theme = useMantineTheme();
 
 	/**
-	 * Returns group items that conform with currently applied filters
-	 * If a group name is provided, filter against the name and the selected membership status,
-	 * else filter against the selected membership status
+	 * Apply debouncing to filter groups my name and the currently selected status
 	 */
+	useEffect(() => {
+		const timeoutID = setTimeout(async () => {
+			setIsFiltering(true);
+			const filteredGroups = await filterGroups(
+				props.userId,
+				membershipStatusRef.current,
+				groupNameFilter.trim()
+			);
+			setGroups(filteredGroups);
+			setIsFiltering(false);
+		}, 600);
+
+		return () => clearTimeout(timeoutID);
+	}, [groupNameFilter, props.userId]);
 
 	// handle changes in the membership status filter
 	async function handleStatusChange(value: string) {
@@ -52,7 +63,7 @@ const GroupsPage = (props: PageProps) => {
 			});
 		} else {
 			const castedValue = value as StatusRadioValue;
-			setStatusRadioValue(castedValue);
+			membershipStatusRef.current = castedValue;
 
 			setIsFiltering(true);
 			const filteredGroups = await filterGroups(
@@ -73,7 +84,7 @@ const GroupsPage = (props: PageProps) => {
 					name={group.name}
 					desc={group.desc}
 					anonymous={group.isAnonymous}
-					status={statusRadioValue}
+					status={membershipStatusRef.current}
 				/>
 			</Grid.Col>
 		);
@@ -105,7 +116,7 @@ const GroupsPage = (props: PageProps) => {
 					<Radio.Group
 						name="membership_status"
 						label="Membership status"
-						value={statusRadioValue}
+						value={membershipStatusRef.current}
 						onChange={handleStatusChange}
 						size="md">
 						<div className="p-1 flex flex-col gap-1.5">

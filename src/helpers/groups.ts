@@ -46,7 +46,22 @@ export async function filterGroups(
 			},
 		});
 	} else {
-		// filter by name and status
+		groupItems = await GroupsAPI.getMany({
+			where: {
+				groupMembers: {
+					some: {
+						user: {
+							userId: userId,
+						},
+						membershipStatus: status,
+					},
+				},
+				name: {
+					contains: groupName,
+					mode: "insensitive"
+				},
+			},
+		});
 	}
 	return groupItems;
 }
