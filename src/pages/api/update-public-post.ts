@@ -26,7 +26,9 @@ export default async function handler(
 					const updatedPost = await prisma.publicPost.update({
 						where: {
 							id,
-							authorId: session.user.id,
+							author: {
+								userId: session.user.id,
+							},
 						},
 						data: { ...data, editedAt: Date.now() },
 						include: {
