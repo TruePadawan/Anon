@@ -7,6 +7,7 @@ import { validateGroupJoinId } from "@/helpers/join-group";
 import GroupsAPI, { JoinGroupResult } from "@/lib/api/GroupsAPI";
 import { notifications } from "@mantine/notifications";
 import { getErrorMessage } from "@/lib/error-message";
+import Head from "next/head";
 
 const JoinGroupPage = () => {
 	const {
@@ -46,6 +47,9 @@ const JoinGroupPage = () => {
 	const showResult = joinRequestResult !== undefined;
 	return (
 		<>
+			<Head>
+				<title key="title">ANON | Join Group</title>
+			</Head>
 			<Navbar />
 			<main className="grow flex flex-col gap-2 items-center justify-center">
 				<form
