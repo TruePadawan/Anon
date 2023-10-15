@@ -46,6 +46,21 @@ class GroupsAPI {
 	}
 
 	/**
+	 * Get the number of groups that conform to a filter
+	 * @param filters Prisma query params for filtering the groups
+	 * @returns the number of groups that conform to the filter
+	 */
+	static async count(filters: Prisma.GroupCountArgs): Promise<number> {
+		const response = await fetch("/api/count-groups", {
+			method: "POST",
+			body: JSON.stringify(filters),
+		});
+		await handleFailedAPIRequest(response);
+		const { count } = await response.json();
+		return count;
+	}
+
+	/**
 	 * Get a list of group documents
 	 * An error is thrown if the request fails
 	 * @param filters Prisma query filters for controlling the returned documents
