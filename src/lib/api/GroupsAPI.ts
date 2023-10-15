@@ -31,6 +31,26 @@ class GroupsAPI {
 		return parsedResponse;
 	}
 
+	/**
+	 * Get a group document by its Id
+	 * @param transform Prisma query params for transforming the returned document
+	 */
+	static async getOne(transform: Prisma.GroupFindUniqueArgs) {
+		const response = await fetch("/api/get-group", {
+			method: "POST",
+			body: JSON.stringify(transform),
+		});
+		await handleFailedAPIRequest(response);
+		const group = await response.json();
+		return group;
+	}
+
+	/**
+	 * Get a list of group documents
+	 * An error is thrown if the request fails
+	 * @param filters Prisma query filters for controlling the returned documents
+	 * @returns list of group documents
+	 */
 	static async getMany(filters?: GroupAPIGetManyFilters) {
 		const response = await fetch("/api/get-groups", {
 			method: "POST",
@@ -56,4 +76,5 @@ export type GroupAPIGetManyFilters = Omit<
 	Prisma.GroupFindManyArgs,
 	"distinct" | "include"
 >;
+
 export default GroupsAPI;
