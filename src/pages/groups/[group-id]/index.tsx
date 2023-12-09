@@ -1,11 +1,11 @@
 import Navbar from "@/components/Navbar/Navbar";
 import GroupLayout from "@/layout/GroupLayout";
 import { prisma } from "@/lib/prisma-client";
-import { Group } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { GetServerSideProps } from "next";
 
 interface GroupPageProps {
-	data: Pick<Group, "name" | "id"> | null;
+	data: GroupData | null;
 }
 
 export default function GroupPage(props: GroupPageProps) {
@@ -34,6 +34,20 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 		where: {
 			id: groupId,
 		},
+		include: {
+			admin: true,
+			groupMembers: {
+				include: {
+					user: true,
+				},
+				take: 20,
+			},
+			_count: {
+				select: {
+					groupMembers: true,
+				},
+			},
+		},
 	});
 	return {
 		props: {
@@ -41,3 +55,22 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 		},
 	};
 };
+
+// Generated type representing the group data used in this route
+const groupData = Prisma.validator<Prisma.GroupDefaultArgs>()({
+	include: {
+		admin: true,
+		groupMembers: {
+			include: {
+				user: true,
+			},
+			take: 20,
+		},
+		_count: {
+			select: {
+				groupMembers: true,
+			},
+		},
+	},
+});
+export type GroupData = Prisma.GroupGetPayload<typeof groupData>;

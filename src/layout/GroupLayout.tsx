@@ -1,6 +1,6 @@
 import GroupsAPI from "@/lib/api/GroupsAPI";
+import { GroupData } from "@/pages/groups/[group-id]";
 import { ActionIcon, Loader, Menu, Tabs } from "@mantine/core";
-import { Group } from "@prisma/client";
 import {
 	IconSettings,
 	IconLogout,
@@ -15,7 +15,7 @@ import useSWR from "swr";
 
 interface GroupLayoutProps {
 	children: React.ReactNode;
-	groupData: Pick<Group, "name" | "id"> | null;
+	groupData: GroupData | null;
 	tabValue: string;
 }
 
