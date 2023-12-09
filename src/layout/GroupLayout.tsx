@@ -24,6 +24,24 @@ const montserrat = Montserrat({
 	variable: "--font-montserrat",
 });
 
+async function getSidebarData(groupId: string) {
+	const group = await GroupsAPI.getOne({
+		where: {
+			id: groupId,
+		},
+		select: {
+			desc: true,
+			admin: {
+				select: {
+					accountName: true,
+				},
+			},
+			_count: { select: { groupMembers: true } },
+		},
+	});
+	return group;
+}
+
 export default function GroupLayout(props: GroupLayoutProps) {
 	const router = useRouter();
 	const { groupData } = props;
@@ -31,23 +49,7 @@ export default function GroupLayout(props: GroupLayoutProps) {
 		data: asideData,
 		error,
 		isLoading,
-	} = useSWR(groupData ? groupData.id : null, async (groupId) => {
-		const group = await GroupsAPI.getOne({
-			where: {
-				id: groupId,
-			},
-			select: {
-				desc: true,
-				admin: {
-					select: {
-						accountName: true,
-					},
-				},
-				_count: { select: { groupMembers: true } },
-			},
-		});
-		return group;
-	});
+	} = useSWR(groupData ? groupData.id : null, getSidebarData);
 
 	if (!groupData) {
 		return (
