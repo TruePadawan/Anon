@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar/Navbar";
+import useUser from "@/hooks/useUser";
 import GroupLayout from "@/layout/GroupLayout";
 import { prisma } from "@/lib/prisma-client";
 import { Prisma } from "@prisma/client";
@@ -9,10 +10,16 @@ interface GroupPageProps {
 }
 
 export default function GroupPage(props: GroupPageProps) {
+	const { user } = useUser();
+
+	const currentUserIsAdmin = user?.id === props.data?.admin.id;
 	return (
 		<>
 			<Navbar />
-			<GroupLayout tabValue="/" groupData={props.data}>
+			<GroupLayout
+				tabValue="/"
+				groupData={props.data}
+				currentUserIsAdmin={currentUserIsAdmin}>
 				<p className="text-center">POSTS</p>
 			</GroupLayout>
 		</>
