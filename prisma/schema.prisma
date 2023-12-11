@@ -135,6 +135,7 @@ model GroupMember {
   groupId          String           @db.ObjectId
   user             UserProfile      @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
   userProfileId    String           @db.ObjectId
+  joinedAt         Int
   membershipStatus MembershipStatus
 }
 

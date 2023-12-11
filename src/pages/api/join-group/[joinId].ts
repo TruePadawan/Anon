@@ -76,6 +76,7 @@ export default async function handler(
 					: MembershipStatus.PENDING,
 				userProfileId: profile.id,
 				groupId: groupData.id,
+				joinedAt: Date.now(),
 			},
 			select: {
 				membershipStatus: true,
