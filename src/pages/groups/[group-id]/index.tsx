@@ -48,6 +48,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 					user: true,
 				},
 				take: 20,
+				orderBy: {
+					joinedAt: "desc",
+				},
 			},
 			_count: {
 				select: {
@@ -71,7 +74,6 @@ const groupData = Prisma.validator<Prisma.GroupDefaultArgs>()({
 			include: {
 				user: true,
 			},
-			take: 20,
 		},
 		_count: {
 			select: {
