@@ -1,5 +1,6 @@
+import useSearchGroupMembers from "@/hooks/useSearchGroupMembers";
 import { GroupData } from "@/pages/groups/[group-id]";
-import { ActionIcon, Menu, Tabs } from "@mantine/core";
+import { ActionIcon, Menu, Tabs, TextInput } from "@mantine/core";
 import {
 	IconSettings,
 	IconLogout,
@@ -10,6 +11,7 @@ import {
 } from "@tabler/icons-react";
 import { Montserrat } from "next/font/google";
 import { useRouter } from "next/router";
+import { useState } from "react";
 
 interface GroupLayoutProps {
 	children: React.ReactNode;
@@ -24,8 +26,10 @@ const montserrat = Montserrat({
 });
 
 export default function GroupLayout(props: GroupLayoutProps) {
-	const router = useRouter();
 	const { groupData } = props;
+	const router = useRouter();
+	const [searchValue, setSearchValue] = useState("");
+	const { members, search } = useSearchGroupMembers(groupData?.id);
 
 	if (!groupData) {
 		return (
@@ -41,7 +45,11 @@ export default function GroupLayout(props: GroupLayoutProps) {
 		router.push(`/groups/${groupId}/${tabValue}`);
 	}
 
+	const { groupMembers: latestMembers } = groupData;
 	const { isAnonymous: groupIsAnonymous } = groupData;
+	const searchInputIsEmpty = searchValue.trim().length === 0;
+	// search result is empty if the search text input isn't empty and the search result is empty
+	const searchResultIsEmpty = !searchInputIsEmpty && members.length === 0;
 	return (
 		<main className="grow flex flex-col">
 			<div className="flex justify-between items-center px-4 py-2 bg-primary-color-2">
@@ -116,6 +124,37 @@ export default function GroupLayout(props: GroupLayoutProps) {
 									</span>
 								</li>
 							</ul>
+							<div className="bg-secondary-color p-1.5 flex flex-col gap-y-2 rounded-md">
+								<TextInput
+									variant="filled"
+									placeholder="Search members"
+									classNames={{ input: "bg-accent-color-2" }}
+									value={searchValue}
+									onChange={(e) => setSearchValue(e.currentTarget.value)}
+									styles={{ input: { color: "black" } }}
+								/>
+								{searchInputIsEmpty && (
+									<>
+										<p className="font-semibold text-base text-white">
+											Latest members
+										</p>
+										<ul className="flex gap-1 list-none">
+											{latestMembers.map((member, index) => {
+												return (
+													<li
+														key={member.id}
+														className="font-semibold text-sm hover:underline hover:text-white">
+														<a href={`/users/${member.user.accountName}`}>
+															{member.user.displayName}
+														</a>
+														{index < latestMembers.length - 1 && <span>,</span>}
+													</li>
+												);
+											})}
+										</ul>
+									</>
+								)}
+							</div>
 						</aside>
 					</div>
 				</Tabs.Panel>
