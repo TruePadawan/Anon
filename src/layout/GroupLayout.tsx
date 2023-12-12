@@ -1,6 +1,6 @@
 import useSearchGroupMembers from "@/hooks/useSearchGroupMembers";
 import { GroupData } from "@/pages/groups/[group-id]";
-import { ActionIcon, Menu, Tabs, TextInput } from "@mantine/core";
+import { ActionIcon, Loader, Menu, Tabs, TextInput } from "@mantine/core";
 import {
 	IconSettings,
 	IconLogout,
@@ -11,7 +11,7 @@ import {
 } from "@tabler/icons-react";
 import { Montserrat } from "next/font/google";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface GroupLayoutProps {
 	children: React.ReactNode;
@@ -29,7 +29,16 @@ export default function GroupLayout(props: GroupLayoutProps) {
 	const { groupData } = props;
 	const router = useRouter();
 	const [searchValue, setSearchValue] = useState("");
-	const { members, search } = useSearchGroupMembers(groupData?.id);
+	const { members, search, isSearching } = useSearchGroupMembers(groupData?.id);
+
+	useEffect(() => {
+		const timeoutId = setTimeout(() => {
+			if (searchValue.trim().length > 0) {
+				search(searchValue);
+			}
+		}, 600);
+		return () => clearTimeout(timeoutId);
+	}, [search, searchValue]);
 
 	if (!groupData) {
 		return (
@@ -48,8 +57,10 @@ export default function GroupLayout(props: GroupLayoutProps) {
 	const { groupMembers: latestMembers } = groupData;
 	const { isAnonymous: groupIsAnonymous } = groupData;
 	const searchInputIsEmpty = searchValue.trim().length === 0;
-	// search result is empty if the search text input isn't empty and the search result is empty
-	const searchResultIsEmpty = !searchInputIsEmpty && members.length === 0;
+	const searchResultIsEmpty =
+		!searchInputIsEmpty && !isSearching && members.length === 0;
+	const searchWasSuccessful =
+		!searchInputIsEmpty && !isSearching && members.length > 0;
 	return (
 		<main className="grow flex flex-col">
 			<div className="flex justify-between items-center px-4 py-2 bg-primary-color-2">
@@ -147,12 +158,46 @@ export default function GroupLayout(props: GroupLayoutProps) {
 														<a href={`/users/${member.user.accountName}`}>
 															{member.user.displayName}
 														</a>
-														{index < latestMembers.length - 1 && <span>,</span>}
+														{index + 1 < latestMembers.length && <span>,</span>}
 													</li>
 												);
 											})}
 										</ul>
 									</>
+								)}
+								{searchWasSuccessful && (
+									<>
+										<p className="font-semibold text-base text-white">
+											Search results
+										</p>
+										<ul className="flex gap-1 list-none">
+											{members.map((member, index) => {
+												return (
+													<li
+														key={member.id}
+														className="font-semibold text-sm hover:underline hover:text-white">
+														<a href={`/users/${member.user.accountName}`}>
+															{member.user.displayName}
+														</a>
+														{index + 1 < members.length && <span>,</span>}
+													</li>
+												);
+											})}
+										</ul>
+									</>
+								)}
+								{isSearching && (
+									<Loader
+										className="self-center"
+										size="sm"
+										color="grey"
+										variant="bars"
+									/>
+								)}
+								{searchResultIsEmpty && (
+									<p className="text-center font-semibold text-sm">
+										No matching member found
+									</p>
 								)}
 							</div>
 						</aside>
