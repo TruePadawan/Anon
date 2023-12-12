@@ -1,4 +1,5 @@
 import { handleFailedAPIRequest } from "@/helpers/global_helpers";
+import { Member } from "@/hooks/useSearchGroupMembers";
 import { Group, MembershipStatus, Prisma } from "@prisma/client";
 
 /**
@@ -75,6 +76,21 @@ class GroupsAPI {
 		const groups: Group[] = await response.json();
 		return groups;
 	}
+
+	/**
+	 * Get a list of group member documents
+	 * @param filters Prisma query filters
+	 * @returns list of group members
+	 */
+	static async getMembers(filters?: GroupAPIGetMembersFilters) {
+		const response = await fetch("/api/get-group-members", {
+			method: "POST",
+			body: JSON.stringify(filters),
+		});
+		await handleFailedAPIRequest(response);
+		const members: Member[] = await response.json();
+		return members;
+	}
 }
 
 export type CreateGroupPayload = Omit<
@@ -90,6 +106,11 @@ export interface JoinGroupResult {
 export type GroupAPIGetManyFilters = Omit<
 	Prisma.GroupFindManyArgs,
 	"distinct" | "include"
+>;
+
+export type GroupAPIGetMembersFilters = Omit<
+	Prisma.GroupMemberFindManyArgs,
+	"distinct"
 >;
 
 export default GroupsAPI;
