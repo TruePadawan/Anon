@@ -33,9 +33,7 @@ export default function GroupLayout(props: GroupLayoutProps) {
 
 	useEffect(() => {
 		const timeoutId = setTimeout(() => {
-			if (searchValue.trim().length > 0) {
-				search(searchValue);
-			}
+			search(searchValue);
 		}, 600);
 		return () => clearTimeout(timeoutId);
 	}, [search, searchValue]);
@@ -144,27 +142,6 @@ export default function GroupLayout(props: GroupLayoutProps) {
 									onChange={(e) => setSearchValue(e.currentTarget.value)}
 									styles={{ input: { color: "black" } }}
 								/>
-								{searchInputIsEmpty && (
-									<>
-										<p className="font-semibold text-base text-white">
-											Latest members
-										</p>
-										<ul className="flex gap-1 list-none">
-											{latestMembers.map((member, index) => {
-												return (
-													<li
-														key={member.id}
-														className="font-semibold text-sm hover:underline hover:text-white">
-														<a href={`/users/${member.user.accountName}`}>
-															{member.user.displayName}
-														</a>
-														{index + 1 < latestMembers.length && <span>,</span>}
-													</li>
-												);
-											})}
-										</ul>
-									</>
-								)}
 								{searchWasSuccessful && (
 									<>
 										<p className="font-semibold text-base text-white">
@@ -199,6 +176,25 @@ export default function GroupLayout(props: GroupLayoutProps) {
 										No matching member found
 									</p>
 								)}
+								<>
+									<p className="font-semibold text-base text-white">
+										Latest members
+									</p>
+									<ul className="flex gap-1 list-none">
+										{latestMembers.map((member, index) => {
+											return (
+												<li
+													key={member.id}
+													className="font-semibold text-sm hover:underline hover:text-white">
+													<a href={`/users/${member.user.accountName}`}>
+														{member.user.displayName}
+													</a>
+													{index + 1 < latestMembers.length && <span>,</span>}
+												</li>
+											);
+										})}
+									</ul>
+								</>
 							</div>
 						</aside>
 					</div>
