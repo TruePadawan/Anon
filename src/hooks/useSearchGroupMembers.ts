@@ -9,43 +9,56 @@ export default function useSearchGroupMembers(
 	groupId?: string
 ): useSearchGroupMembersReturnType {
 	const [members, setMembers] = useState<Member[]>([]);
+	const [errorText, setErrorText] = useState(() =>
+		!groupId ? "GroupId not defined" : ""
+	);
 	const [isSearching, setIsSearching] = useState(false);
 
 	const search = useCallback(
 		async (accountNameOrDisplayName: string) => {
-			if (!groupId) {
+			setErrorText("");
+
+			if (accountNameOrDisplayName.trim().length === 0) {
+				setErrorText("search value is not defined");
 				setMembers([]);
-			} else {
-				setIsSearching(true);
-				// main logic
-				const result = await GroupsAPI.getMembers({
-					where: {
-						OR: [
-							{
-								user: {
-									accountName: {
-										contains: accountNameOrDisplayName,
-										mode: "insensitive",
-									},
-								},
-							},
-							{
-								user: {
-									displayName: {
-										contains: accountNameOrDisplayName,
-										mode: "insensitive",
-									},
-								},
-							},
-						],
-					},
-					include: {
-						user: true,
-					},
-				});
-				setMembers(result);
-				setIsSearching(false);
+				return;
 			}
+
+			if (!groupId) {
+				setErrorText("GroupId is not defined");
+				setMembers([]);
+				return;
+			}
+
+			setIsSearching(true);
+			// main logic
+			const result = await GroupsAPI.getMembers({
+				where: {
+					OR: [
+						{
+							user: {
+								accountName: {
+									contains: accountNameOrDisplayName,
+									mode: "insensitive",
+								},
+							},
+						},
+						{
+							user: {
+								displayName: {
+									contains: accountNameOrDisplayName,
+									mode: "insensitive",
+								},
+							},
+						},
+					],
+				},
+				include: {
+					user: true,
+				},
+			});
+			setMembers(result);
+			setIsSearching(false);
 		},
 		[groupId]
 	);
@@ -55,6 +68,7 @@ export default function useSearchGroupMembers(
 		members,
 		search,
 		isSearching,
+		errorText,
 	};
 }
 
@@ -72,4 +86,5 @@ interface useSearchGroupMembersReturnType {
 	members: Member[];
 	search: (accountNameOrDisplayName: string) => void;
 	isSearching: boolean;
+	errorText: string;
 }
