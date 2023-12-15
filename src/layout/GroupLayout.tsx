@@ -52,7 +52,7 @@ export default function GroupLayout(props: GroupLayoutProps) {
 		router.push(`/groups/${groupId}/${tabValue}`);
 	}
 
-	const { groupMembers: latestMembers } = groupData;
+	const { groupMembers: latestMembers, admin } = groupData;
 	const { isAnonymous: groupIsAnonymous } = groupData;
 	const searchInputIsEmpty = searchValue.trim().length === 0;
 	const searchResultIsEmpty =
@@ -111,9 +111,11 @@ export default function GroupLayout(props: GroupLayoutProps) {
 										<span className="font-semibold text-base text-white">
 											Admin
 										</span>
-										<span className="text-sm">
-											{groupData.admin.accountName}
-										</span>
+										<a
+											href={`/users/${admin.accountName}`}
+											className="font-semibold text-sm hover:underline hover:text-white w-max">
+											{admin.accountName}
+										</a>
 									</li>
 								)}
 								<li className="flex flex-col">
