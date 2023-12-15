@@ -59,6 +59,7 @@ export default function GroupLayout(props: GroupLayoutProps) {
 		!searchInputIsEmpty && !isSearching && members.length === 0;
 	const searchWasSuccessful =
 		!searchInputIsEmpty && !isSearching && members.length > 0;
+	const showAnonymousSection = !groupIsAnonymous || props.currentUserIsAdmin;
 	return (
 		<main className="grow flex flex-col">
 			<div className="flex justify-between items-center px-4 py-2 bg-primary-color-2">
@@ -106,7 +107,7 @@ export default function GroupLayout(props: GroupLayoutProps) {
 						<div className="grow">{props.children}</div>
 						<aside className="flex flex-col gap-y-1 items-stretch max-w-xl w-full">
 							<ul className="bg-secondary-color p-1.5 flex flex-col gap-y-1.5 rounded-md">
-								{groupIsAnonymous && (
+								{showAnonymousSection && (
 									<li className="flex flex-col">
 										<span className="font-semibold text-base text-white">
 											Admin
@@ -135,22 +136,56 @@ export default function GroupLayout(props: GroupLayoutProps) {
 									</span>
 								</li>
 							</ul>
-							<div className="bg-secondary-color p-1.5 flex flex-col gap-y-2 rounded-md">
-								<TextInput
-									variant="filled"
-									placeholder="Search members"
-									classNames={{ input: "bg-accent-color-2" }}
-									value={searchValue}
-									onChange={(e) => setSearchValue(e.currentTarget.value)}
-									styles={{ input: { color: "black" } }}
-								/>
-								{searchWasSuccessful && (
+							{showAnonymousSection && (
+								<div className="bg-secondary-color p-1.5 flex flex-col gap-y-2 rounded-md">
+									<TextInput
+										variant="filled"
+										placeholder="Search members"
+										classNames={{ input: "bg-accent-color-2" }}
+										value={searchValue}
+										onChange={(e) => setSearchValue(e.currentTarget.value)}
+										styles={{ input: { color: "black" } }}
+									/>
+									{searchWasSuccessful && (
+										<>
+											<p className="font-semibold text-base text-white">
+												Search results
+											</p>
+											<ul className="flex gap-1 list-none">
+												{members.map((member, index) => {
+													return (
+														<li
+															key={member.id}
+															className="font-semibold text-sm hover:underline hover:text-white">
+															<a href={`/users/${member.user.accountName}`}>
+																{member.user.displayName}
+															</a>
+															{index + 1 < members.length && <span>,</span>}
+														</li>
+													);
+												})}
+											</ul>
+										</>
+									)}
+									{isSearching && (
+										<Loader
+											className="self-center"
+											size="sm"
+											color="grey"
+											variant="bars"
+										/>
+									)}
+									{searchResultIsEmpty && (
+										<p className="text-center font-semibold text-sm">
+											No matching member found
+										</p>
+									)}
 									<>
 										<p className="font-semibold text-base text-white">
-											Search results
+											Latest members
 										</p>
 										<ul className="flex gap-1 list-none">
-											{members.map((member, index) => {
+											{latestMembers.map((member, index) => {
 												return (
 													<li
 														key={member.id}
@@ -158,46 +193,14 @@ export default function GroupLayout(props: GroupLayoutProps) {
 														<a href={`/users/${member.user.accountName}`}>
 															{member.user.displayName}
 														</a>
-														{index + 1 < members.length && <span>,</span>}
+														{index + 1 < latestMembers.length && <span>,</span>}
 													</li>
 												);
 											})}
 										</ul>
 									</>
-								)}
-								{isSearching && (
-									<Loader
-										className="self-center"
-										size="sm"
-										color="grey"
-										variant="bars"
-									/>
-								)}
-								{searchResultIsEmpty && (
-									<p className="text-center font-semibold text-sm">
-										No matching member found
-									</p>
-								)}
-								<>
-									<p className="font-semibold text-base text-white">
-										Latest members
-									</p>
-									<ul className="flex gap-1 list-none">
-										{latestMembers.map((member, index) => {
-											return (
-												<li
-													key={member.id}
-													className="font-semibold text-sm hover:underline hover:text-white">
-													<a href={`/users/${member.user.accountName}`}>
-														{member.user.displayName}
-													</a>
-													{index + 1 < latestMembers.length && <span>,</span>}
-												</li>
-											);
-										})}
-									</ul>
-								</>
-							</div>
+								</div>
+							)}
 						</aside>
 					</div>
 				</Tabs.Panel>
