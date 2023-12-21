@@ -103,7 +103,7 @@ export default function GroupLayout(props: GroupLayoutProps) {
 					</Tabs.Tab>
 				</Tabs.List>
 				<Tabs.Panel value={props.tabValue}>
-					<div className="mt-1.5 flex">
+					<div className="mt-1.5 flex justify-between gap-x-1">
 						<div className="grow">{props.children}</div>
 						<aside className="flex flex-col gap-y-1 items-stretch max-w-xl w-full">
 							<ul className="bg-secondary-color p-1.5 flex flex-col gap-y-1.5 rounded-md">
