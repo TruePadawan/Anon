@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma-client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { UpdatePublicPostPayload } from "@/lib/api/PublicPostAPI";
-import { getUserProfile } from "./get-user-profile";
 
 export default async function handler(
 	req: NextApiRequest,
@@ -19,8 +18,18 @@ export default async function handler(
 			res.status(401).json({ message: "Client not authenticated!" });
 		} else {
 			const { id, data }: Payload = JSON.parse(req.body);
-			const profileData = await getUserProfile(session);
-			const isAuthorized = session.user.id === profileData?.userId;
+			const count = await prisma.publicPost.count({
+				where: {
+					id,
+					author: {
+						user: {
+							id: session.user.id,
+						},
+					},
+				},
+			});
+			// the action is authorized if the user is the author of the post
+			const isAuthorized = count === 1;
 			if (isAuthorized) {
 				try {
 					const updatedPost = await prisma.publicPost.update({
