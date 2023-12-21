@@ -18,4 +18,12 @@ export type CommentWithAuthor = Prisma.CommentGetPayload<
 	typeof commentWithAuthor
 >;
 
+const groupPostWithAuthor = Prisma.validator<Prisma.GroupPostDefaultArgs>()({
+	include: { author: true },
+});
+
+export type GroupPostWithAuthor = Prisma.GroupPostGetPayload<
+	typeof groupPostWithAuthor
+>;
+
 export type PostType = "public" | "group";
