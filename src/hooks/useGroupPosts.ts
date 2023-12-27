@@ -2,7 +2,7 @@ import GroupPostAPI, {
 	GroupPostAPIGetManyParams,
 } from "@/lib/api/GroupPostAPI";
 import { GroupPostWithAuthor } from "@/types/types";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import useSWRInfinite from "swr/infinite";
 import useUser from "./useUser";
 import { JSONContent } from "@tiptap/react";
@@ -14,10 +14,9 @@ import { GetManyQueryModifiers } from "@/types/hook-types";
  */
 export default function useGroupPosts(
 	groupId: string,
-	queryModifiers?: GetManyQueryModifiers<GroupPostAPIGetManyParams>
+	queryModifiers: GetManyQueryModifiers<GroupPostAPIGetManyParams>
 ) {
 	const [posts, setPosts] = useState<GroupPostWithAuthor[]>([]);
-	const queryModifiersRef = useRef(queryModifiers);
 	const {
 		data: rawPosts,
 		isLoading,
@@ -26,10 +25,10 @@ export default function useGroupPosts(
 		(index, prevData?: SWRInfiniteData) => {
 			const atEnd = prevData?.posts.length === 0;
 			if (atEnd) return null;
-			if (index === 0) return queryModifiersRef.current;
+			if (index === 0) return parseQueryModifier(groupId, queryModifiers);
 
 			return {
-				...queryModifiersRef.current,
+				...parseQueryModifier(groupId, queryModifiers),
 				skip: 1,
 				cursor: prevData?.nextCursor,
 			};
@@ -69,7 +68,6 @@ export default function useGroupPosts(
 			groupId,
 		});
 		setPosts((posts) => [newPost, ...posts]);
-		return newPost;
 	}
 
 	return {
@@ -78,6 +76,19 @@ export default function useGroupPosts(
 		loadMorePosts,
 		createGroupPosts,
 	};
+}
+
+function parseQueryModifier(
+	groupId: string,
+	queryModifiers: GetManyQueryModifiers<GroupPostAPIGetManyParams>
+) {
+	const parsedObject = { ...queryModifiers };
+	if (parsedObject.where) {
+		parsedObject.where.group = { id: groupId };
+	} else {
+		parsedObject.where = { group: { id: groupId } };
+	}
+	return parsedObject;
 }
 
 interface SWRInfiniteData {
