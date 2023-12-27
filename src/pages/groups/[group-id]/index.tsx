@@ -1,19 +1,21 @@
 import PostEditor from "@/components/Editor/PostEditor";
 import Navbar from "@/components/Navbar/Navbar";
+import GroupPostItem from "@/components/PostItem/GroupPostItem";
 import { PostEditorExtensions } from "@/helpers/global_vars";
 import useGroupPosts from "@/hooks/useGroupPosts";
 import GroupLayout from "@/layout/GroupLayout";
 import { authOptions } from "@/lib/auth";
 import { getErrorMessage } from "@/lib/error-message";
 import { prisma } from "@/lib/prisma-client";
-import { Button } from "@mantine/core";
+import { Button, Loader } from "@mantine/core";
+import { useIntersection } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { Prisma } from "@prisma/client";
 import Placeholder from "@tiptap/extension-placeholder";
 import { useEditor } from "@tiptap/react";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface GroupPageProps {
 	data: GroupData;
@@ -27,16 +29,34 @@ export default function GroupPage(props: GroupPageProps) {
 			Placeholder.configure({ placeholder: "Share your thoughts" }),
 		],
 	});
-	const { createGroupPosts } = useGroupPosts(props.data.id, {
-		where: {
-			isDeleted: false,
-		},
-		orderBy: {
-			createdAt: "desc",
-		},
-		take: 10,
-	});
+	const { createGroupPosts, posts, isLoading, loadMorePosts } = useGroupPosts(
+		props.data.id,
+		{
+			where: {
+				isDeleted: false,
+			},
+			orderBy: {
+				createdAt: "desc",
+			},
+			take: 10,
+		}
+	);
 	const [isSubmittingPost, setIsSubmittingPost] = useState(false);
+	const intersectionRootElRef = useRef(null);
+	const { entry, ref: infiniteScrollTriggerElRef } = useIntersection({
+		threshold: 0.25,
+	});
+	const loadMorePostsRef = useRef(loadMorePosts);
+
+	// load more posts when the second to last post is in view
+	useEffect(() => {
+		const timeoutID = setTimeout(() => {
+			if (entry?.isIntersecting) {
+				loadMorePostsRef.current();
+			}
+		}, 800);
+		return () => clearTimeout(timeoutID);
+	}, [entry?.isIntersecting]);
 
 	async function handlePostSubmit() {
 		if (editor === null) {
@@ -99,6 +119,23 @@ export default function GroupPage(props: GroupPageProps) {
 							Create post
 						</Button>
 					</div>
+					<ul className="flex flex-col gap-2 mt-3">
+						{isLoading && (
+							<Loader className="mt-2 self-center" size="lg" color="gray" />
+						)}
+						{!isLoading &&
+							posts.map((post, index) => {
+								const secondToLast = index == posts.length - 2;
+								return (
+									<GroupPostItem
+										ref={secondToLast ? infiniteScrollTriggerElRef : null}
+										key={post.id}
+										postData={post}
+										showCommentsCount
+									/>
+								);
+							})}
+					</ul>
 				</div>
 			</GroupLayout>
 		</>
