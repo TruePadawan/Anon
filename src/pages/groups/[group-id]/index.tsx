@@ -58,6 +58,10 @@ export default function GroupPage(props: GroupPageProps) {
 			try {
 				await createGroupPosts(editor.getJSON());
 				editor.commands.clearContent();
+				notifications.show({
+					color: "green",
+					message: "Post created successfully",
+				});
 			} catch (error) {
 				notifications.show({
 					color: "red",
