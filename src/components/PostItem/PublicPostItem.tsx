@@ -23,7 +23,6 @@ import CommentsCount from "@/components/Comments/CommentsCount";
 import PublicPostAPI from "@/lib/api/PublicPostAPI";
 import { getErrorMessage } from "@/lib/error-message";
 import PostItem from "./PostItem";
-import { UserProfile } from "@prisma/client";
 import useUser from "@/hooks/useUser";
 
 export interface PublicPostItemProps {
