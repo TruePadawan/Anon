@@ -131,6 +131,8 @@ export default function GroupPage(props: GroupPageProps) {
 										ref={secondToLast ? infiniteScrollTriggerElRef : null}
 										key={post.id}
 										postData={post}
+										groupIsAnonymous={props.data.isAnonymous}
+										currentUserIsAdmin={props.currentUserIsAdmin}
 										showCommentsCount
 									/>
 								);

@@ -4,7 +4,14 @@ import {
 	DELETED_POST_CONTENT,
 	PostEditorExtensions,
 } from "@/helpers/global_vars";
-import { ActionIcon, Button, Menu, Modal, Spoiler } from "@mantine/core";
+import {
+	ActionIcon,
+	Avatar,
+	Button,
+	Menu,
+	Modal,
+	Spoiler,
+} from "@mantine/core";
 import { GroupPostWithAuthor } from "@/types/types";
 import moment from "moment";
 import Link from "next/link";
@@ -28,6 +35,8 @@ import useUser from "@/hooks/useUser";
 export interface GroupPostItemProps {
 	className?: string;
 	postData: GroupPostWithAuthor;
+	groupIsAnonymous: boolean;
+	currentUserIsAdmin: boolean;
 	showCommentsCount?: boolean;
 }
 
@@ -123,14 +132,21 @@ const GroupPostItem = forwardRef(function GroupPostItem(
 			<PostItem className={className}>
 				<div className="flex gap-1.5 py-1 px-1">
 					<PostItem.Side>
-						<PostItem.Avatar
-							color={author?.color}
-							avatarUrl={author?.avatarUrl}
-						/>
+						{!props.groupIsAnonymous && (
+							<PostItem.Avatar
+								color={author?.color}
+								avatarUrl={author?.avatarUrl}
+							/>
+						)}
+						{props.groupIsAnonymous && <Avatar variant="filled" radius="xl" />}
 					</PostItem.Side>
 					<PostItem.Main>
 						<PostItem.Header>
-							<GroupPostHeading postData={postData} />
+							<GroupPostHeading
+								postData={postData}
+								groupIsAnonymous={props.groupIsAnonymous}
+								currentUserIsAdmin={props.currentUserIsAdmin}
+							/>
 							<Menu>
 								<Menu.Target data-cy="menu-target">
 									<ActionIcon>
@@ -244,6 +260,8 @@ const GroupPostItem = forwardRef(function GroupPostItem(
 
 interface GroupPostHeadingProps {
 	postData: GroupPostWithAuthor;
+	groupIsAnonymous: boolean;
+	currentUserIsAdmin: boolean;
 }
 
 function GroupPostHeading(props: GroupPostHeadingProps) {
@@ -255,12 +273,21 @@ function GroupPostHeading(props: GroupPostHeadingProps) {
 		<div className="flex items-center gap-0.5">
 			{author && (
 				<>
-					<Link href={`/users/${author.accountName}`}>
-						<span className="font-semibold">{author.displayName}</span>
-					</Link>
-					<Link href={`/users/${author.accountName}`}>
-						<span className="text-gray-500 text-sm">{`@${author.accountName}`}</span>
-					</Link>
+					{props.groupIsAnonymous && (
+						<span className="font-semibold">
+							{props.currentUserIsAdmin ? "Anonymous admin" : "Anonymous user"}
+						</span>
+					)}
+					{!props.groupIsAnonymous && (
+						<>
+							<Link href={`/users/${author.accountName}`}>
+								<span className="font-semibold">{author.displayName}</span>
+							</Link>
+							<Link href={`/users/${author.accountName}`}>
+								<span className="text-gray-500 text-sm">{`@${author.accountName}`}</span>
+							</Link>
+						</>
+					)}
 				</>
 			)}
 			{!author && <span className="font-semibold">{`[deleted]`}</span>}
