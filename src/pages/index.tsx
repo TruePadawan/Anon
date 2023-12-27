@@ -56,7 +56,7 @@ const PublicPostsPage = () => {
 			return;
 		}
 
-		const notEmpty = !editor.isEmpty || editor.getText().trim().length !== 0;
+		const notEmpty = !editor.isEmpty && editor.getText().trim().length !== 0;
 		if (notEmpty) {
 			setIsSubmittingPost(true);
 			// editor should be read-only while submitting post
