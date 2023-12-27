@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 
 interface GroupLayoutProps {
 	children: React.ReactNode;
-	groupData: GroupData | null;
+	groupData: GroupData;
 	currentUserIsAdmin: boolean;
 	tabValue: string;
 }

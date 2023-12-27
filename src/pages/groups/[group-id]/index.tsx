@@ -1,9 +1,9 @@
 import PostEditor from "@/components/Editor/PostEditor";
 import Navbar from "@/components/Navbar/Navbar";
 import { PostEditorExtensions } from "@/helpers/global_vars";
-import useUser from "@/hooks/useUser";
 import useGroupPosts from "@/hooks/useGroupPosts";
 import GroupLayout from "@/layout/GroupLayout";
+import { authOptions } from "@/lib/auth";
 import { getErrorMessage } from "@/lib/error-message";
 import { prisma } from "@/lib/prisma-client";
 import { Button } from "@mantine/core";
@@ -12,14 +12,15 @@ import { Prisma } from "@prisma/client";
 import Placeholder from "@tiptap/extension-placeholder";
 import { useEditor } from "@tiptap/react";
 import { GetServerSideProps } from "next";
+import { getServerSession } from "next-auth";
 import { useState } from "react";
 
 interface GroupPageProps {
-	data: GroupData | null;
+	data: GroupData;
+	currentUserIsAdmin: boolean;
 }
 
 export default function GroupPage(props: GroupPageProps) {
-	const { user } = useUser();
 	const editor = useEditor({
 		extensions: [
 			...PostEditorExtensions,
@@ -75,14 +76,13 @@ export default function GroupPage(props: GroupPageProps) {
 		}
 	}
 
-	const currentUserIsAdmin = user?.id === props.data?.admin.id;
 	return (
 		<>
 			<Navbar />
 			<GroupLayout
 				tabValue="/"
 				groupData={props.data}
-				currentUserIsAdmin={currentUserIsAdmin}>
+				currentUserIsAdmin={props.currentUserIsAdmin}>
 				<div className="mx-auto w-full max-w-4xl">
 					<div className="flex flex-col gap-2">
 						<PostEditor editor={editor} />
@@ -134,9 +134,63 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 			},
 		},
 	});
+
+	if (!groupData) {
+		return {
+			redirect: {
+				destination: "/groups/not-found",
+				permanent: false,
+			},
+		};
+	}
+
+	// confirm that user is authorized to visit the group
+	const session = await getServerSession(context.req, context.res, authOptions);
+	// there is guaranteed to be a signedin user since middleware redirects all unsigned users
+	if (session) {
+		const userId = session.user.id;
+		const memberDoc = await prisma.groupMember.findFirst({
+			where: {
+				group: {
+					id: groupId,
+				},
+				user: {
+					userId: userId,
+				},
+			},
+		});
+		if (!memberDoc) {
+			// redirect client if user is not a member of the group
+			return {
+				redirect: {
+					destination: "/groups/not-a-member",
+					permanent: false,
+				},
+			};
+		}
+
+		switch (memberDoc.membershipStatus) {
+			case "PENDING":
+				return {
+					redirect: {
+						destination: "/groups/user-pending",
+						permanent: false,
+					},
+				};
+			case "BANNED":
+				return {
+					redirect: {
+						destination: "/groups/user-banned",
+						permanent: false,
+					},
+				};
+		}
+	}
+
 	return {
 		props: {
 			data: groupData,
+			currentUserIsAdmin: groupData.admin.userId === session?.user.id,
 		},
 	};
 };
