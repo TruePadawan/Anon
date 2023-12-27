@@ -60,7 +60,6 @@ export default function usePublicPosts(
 
 		const newPost = await PublicPostAPI.create({ content, authorId: user.id });
 		setPosts((posts) => [newPost, ...posts]);
-		return newPost;
 	}
 
 	function loadMorePosts() {
