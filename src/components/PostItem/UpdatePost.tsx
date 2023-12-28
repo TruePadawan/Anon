@@ -5,6 +5,7 @@ import { notifications } from "@mantine/notifications";
 import { Dispatch, SetStateAction } from "react";
 import PublicPostAPI from "@/lib/api/PublicPostAPI";
 import { getErrorMessage } from "@/lib/error-message";
+import GroupPostAPI from "@/lib/api/GroupPostAPI";
 
 interface UpdatePostProps {
 	editor: Editor;
@@ -44,9 +45,11 @@ export default function UpdatePost(props: UpdatePostProps) {
 				await PublicPostAPI.update(postData.Id, {
 					content: editor.getJSON(),
 				});
-				if (props.onUpdate) {
-					props.onUpdate();
-				}
+			} else {
+				await GroupPostAPI.update(postData.Id, { content: editor.getJSON() });
+			}
+			if (props.onUpdate) {
+				props.onUpdate();
 			}
 		} catch (error) {
 			// run the cancel update callback if the update failed

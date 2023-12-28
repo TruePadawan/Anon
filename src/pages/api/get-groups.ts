@@ -1,25 +1,21 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/lib/prisma-client";
+import { GroupAPIGetManyFilters } from "@/lib/api/GroupsAPI";
 import { getErrorMessage } from "@/lib/error-message";
 
 export default async function handler(
 	req: NextApiRequest,
 	res: NextApiResponse
 ) {
-	if (req.method !== "POST" || !req.body) {
+	if (req.method !== "POST") {
 		res.status(400).json({
-			message: "Invalid request",
+			message: "This endpoint accepts only POST requests",
 		});
 	} else {
 		try {
-			const posts = await prisma.comment.findMany({
-				include: {
-					author: true,
-					parentComment: true,
-				},
-				...JSON.parse(req.body),
-			});
-			res.status(200).json(posts);
+			const queryFilters: GroupAPIGetManyFilters = JSON.parse(req.body);
+			const groups = await prisma.group.findMany(queryFilters);
+			res.status(200).json(groups);
 		} catch (error) {
 			console.error(error);
 			res.status(500).json({

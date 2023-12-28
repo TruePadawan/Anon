@@ -4,8 +4,15 @@ import {
 	DELETED_POST_CONTENT,
 	PostEditorExtensions,
 } from "@/helpers/global_vars";
-import { ActionIcon, Button, Menu, Modal, Spoiler } from "@mantine/core";
-import { PublicPostWithAuthor } from "@/types/types";
+import {
+	ActionIcon,
+	Avatar,
+	Button,
+	Menu,
+	Modal,
+	Spoiler,
+} from "@mantine/core";
+import { GroupPostWithAuthor } from "@/types/types";
 import moment from "moment";
 import Link from "next/link";
 import {
@@ -20,22 +27,24 @@ import { Ref, forwardRef, useRef, useState } from "react";
 import { notifications } from "@mantine/notifications";
 import UpdatePost from "./UpdatePost";
 import CommentsCount from "@/components/Comments/CommentsCount";
-import PublicPostAPI from "@/lib/api/PublicPostAPI";
+import GroupPostAPI from "@/lib/api/GroupPostAPI";
 import { getErrorMessage } from "@/lib/error-message";
 import PostItem from "./PostItem";
 import useUser from "@/hooks/useUser";
 
-export interface PublicPostItemProps {
+export interface GroupPostItemProps {
 	className?: string;
-	postData: PublicPostWithAuthor;
+	postData: GroupPostWithAuthor;
+	groupIsAnonymous: boolean;
+	currentUserIsAdmin: boolean;
 	showCommentsCount?: boolean;
 }
 
 /**
  * React component which renders a single public post
  */
-const PublicPostItem = forwardRef(function PublicPostItem(
-	props: PublicPostItemProps,
+const GroupPostItem = forwardRef(function GroupPostItem(
+	props: GroupPostItemProps,
 	ref: Ref<HTMLLIElement>
 ) {
 	const { user: currentUser } = useUser();
@@ -81,7 +90,7 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 		if (!author) return;
 
 		try {
-			await PublicPostAPI.remove(postData.id);
+			await GroupPostAPI.remove(postData.id);
 			setPostIsDeleted(true);
 			editor?.commands.setContent(DELETED_POST_CONTENT);
 		} catch (error) {
@@ -100,8 +109,8 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 		setIsUpdatingPost(true);
 		const { id } = postData;
 		try {
-			const { commentsAllowed } = await PublicPostAPI.getById(id);
-			const updatedPost = await PublicPostAPI.update(id, {
+			const { commentsAllowed } = await GroupPostAPI.getById(id);
+			const updatedPost = await GroupPostAPI.update(id, {
 				commentsAllowed: !commentsAllowed,
 			});
 			setCommentsAllowed(updatedPost.commentsAllowed);
@@ -115,6 +124,7 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 		setIsUpdatingPost(false);
 	}
 
+	const postUrl = `/groups/${postData.groupId}/posts/${postData.id}`;
 	const isAuthor = currentUser && author && currentUser.id === author.id;
 	const postIsEditable = !postIsDeleted && isAuthor;
 	return (
@@ -122,14 +132,21 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 			<PostItem className={className}>
 				<div className="flex gap-1.5 py-1 px-1">
 					<PostItem.Side>
-						<PostItem.Avatar
-							color={author?.color}
-							avatarUrl={author?.avatarUrl}
-						/>
+						{!props.groupIsAnonymous && (
+							<PostItem.Avatar
+								color={author?.color}
+								avatarUrl={author?.avatarUrl}
+							/>
+						)}
+						{props.groupIsAnonymous && <Avatar variant="filled" radius="xl" />}
 					</PostItem.Side>
 					<PostItem.Main>
 						<PostItem.Header>
-							<PublicPostHeading postData={postData} />
+							<GroupPostHeading
+								postData={postData}
+								groupIsAnonymous={props.groupIsAnonymous}
+								currentUserIsAdmin={props.currentUserIsAdmin}
+							/>
 							<Menu>
 								<Menu.Target data-cy="menu-target">
 									<ActionIcon>
@@ -141,7 +158,7 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 									<Menu.Item
 										component={Link}
 										icon={<IconArrowsMaximize size={16} />}
-										href={`/posts/${postData.id}`}>
+										href={postUrl}>
 										View full post
 									</Menu.Item>
 									{postIsEditable && (
@@ -205,7 +222,7 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 									postData={{
 										Id: postData.id,
 										authorId: author.id,
-										type: "public",
+										type: "group",
 									}}
 									isUpdating={isUpdatingPost}
 									setIsUpdatingState={setIsUpdatingPost}
@@ -241,11 +258,13 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 	);
 });
 
-interface PublicPostHeadingProps {
-	postData: PublicPostWithAuthor;
+interface GroupPostHeadingProps {
+	postData: GroupPostWithAuthor;
+	groupIsAnonymous: boolean;
+	currentUserIsAdmin: boolean;
 }
 
-function PublicPostHeading(props: PublicPostHeadingProps) {
+function GroupPostHeading(props: GroupPostHeadingProps) {
 	const { author, createdAt, editedAt } = props.postData;
 	const creationDate = moment(createdAt).fromNow(true);
 	const editedAtDate = editedAt ? moment(editedAt).fromNow(true) : null;
@@ -254,12 +273,21 @@ function PublicPostHeading(props: PublicPostHeadingProps) {
 		<div className="flex items-center gap-0.5">
 			{author && (
 				<>
-					<Link href={`/users/${author.accountName}`}>
-						<span className="font-semibold">{author.displayName}</span>
-					</Link>
-					<Link href={`/users/${author.accountName}`}>
-						<span className="text-gray-500 text-sm">{`@${author.accountName}`}</span>
-					</Link>
+					{props.groupIsAnonymous && (
+						<span className="font-semibold">
+							{props.currentUserIsAdmin ? "Anonymous admin" : "Anonymous user"}
+						</span>
+					)}
+					{!props.groupIsAnonymous && (
+						<>
+							<Link href={`/users/${author.accountName}`}>
+								<span className="font-semibold">{author.displayName}</span>
+							</Link>
+							<Link href={`/users/${author.accountName}`}>
+								<span className="text-gray-500 text-sm">{`@${author.accountName}`}</span>
+							</Link>
+						</>
+					)}
 				</>
 			)}
 			{!author && <span className="font-semibold">{`[deleted]`}</span>}
@@ -275,4 +303,4 @@ function PublicPostHeading(props: PublicPostHeadingProps) {
 	);
 }
 
-export default PublicPostItem;
+export default GroupPostItem;

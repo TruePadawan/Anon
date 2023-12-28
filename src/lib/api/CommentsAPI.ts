@@ -94,13 +94,13 @@ class CommentsAPI {
 	/**
 	 * Gets a list of comment documents,
 	 * an error is thrown if the process fails
-	 * @param params Prisma query objects for controlling the returned comments
+	 * @param filters Prisma query filters for controlling the returned comments
 	 * @returns a list of comment comments
 	 */
-	static async getMany(params?: CommentAPIGetManyParams) {
+	static async getMany(filters?: CommentAPIGetManyParams) {
 		const response = await fetch("/api/get-comments", {
 			method: "POST",
-			body: JSON.stringify(params),
+			body: JSON.stringify(filters),
 		});
 		await handleFailedAPIRequest(response);
 		const comments: CommentFull[] = await response.json();

@@ -6,14 +6,17 @@ import { useEffect, useRef, useState } from "react";
 import useUser from "./useUser";
 import { PublicPostWithAuthor } from "@/types/types";
 import useSWRInfinite from "swr/infinite";
+import { GetManyQueryModifiers } from "@/types/hook-types";
 
 /**
  * React hook for getting a list of public posts
  * @param params Prisma query objects for controlling the posts returned
  */
-export default function usePublicPosts(params?: UsePublicPostsParams) {
+export default function usePublicPosts(
+	queryModifiers?: GetManyQueryModifiers<PublicPostAPIGetManyParams>
+) {
 	const [posts, setPosts] = useState<PublicPostWithAuthor[]>([]);
-	const paramsRef = useRef(params);
+	const queryModifiersRef = useRef(queryModifiers);
 	const {
 		data: rawPosts,
 		isLoading,
@@ -22,10 +25,10 @@ export default function usePublicPosts(params?: UsePublicPostsParams) {
 		(index, prevData?: SWRInfiniteData) => {
 			const atEnd = prevData?.posts.length === 0;
 			if (atEnd) return null;
-			if (index === 0) return paramsRef.current;
+			if (index === 0) return queryModifiersRef.current;
 
 			return {
-				...paramsRef.current,
+				...queryModifiersRef.current,
 				skip: 1,
 				cursor: prevData?.nextCursor,
 			};
@@ -57,7 +60,6 @@ export default function usePublicPosts(params?: UsePublicPostsParams) {
 
 		const newPost = await PublicPostAPI.create({ content, authorId: user.id });
 		setPosts((posts) => [newPost, ...posts]);
-		return newPost;
 	}
 
 	function loadMorePosts() {
@@ -66,8 +68,6 @@ export default function usePublicPosts(params?: UsePublicPostsParams) {
 
 	return { posts, isLoading, createPublicPost, loadMorePosts };
 }
-
-type UsePublicPostsParams = Omit<PublicPostAPIGetManyParams, "skip" | "cursor">;
 
 interface SWRInfiniteData {
 	posts: PublicPostWithAuthor[];

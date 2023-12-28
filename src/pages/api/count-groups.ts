@@ -23,8 +23,8 @@ export default async function handler(
 		} else {
 			try {
 				const queryParams = JSON.parse(req.body);
-				const group = await prisma.group.findUnique(queryParams);
-				res.status(200).json(group);
+				const count = await prisma.group.count(queryParams);
+				res.status(200).json({ count });
 			} catch (error: any) {
 				console.error(error);
 				res.status(500).json({

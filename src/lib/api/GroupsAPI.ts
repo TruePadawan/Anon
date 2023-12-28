@@ -1,8 +1,9 @@
 import { handleFailedAPIRequest } from "@/helpers/global_helpers";
-import { Group, MembershipStatus } from "@prisma/client";
+import { Member } from "@/hooks/useSearchGroupMembers";
+import { Group, MembershipStatus, Prisma } from "@prisma/client";
 
 /**
- * Statuc class which provides an interface for performing CRUD operations on groups
+ * Static class which provides an interface for performing CRUD operations on groups
  */
 class GroupsAPI {
 	/**
@@ -30,6 +31,66 @@ class GroupsAPI {
 		const parsedResponse: JoinGroupResult = await response.json();
 		return parsedResponse;
 	}
+
+	/**
+	 * Get a group document by its Id
+	 * @param transform Prisma query params for transforming the returned document
+	 */
+	static async getOne(transform: Prisma.GroupFindUniqueArgs) {
+		const response = await fetch("/api/get-group", {
+			method: "POST",
+			body: JSON.stringify(transform),
+		});
+		await handleFailedAPIRequest(response);
+		const group = await response.json();
+		return group;
+	}
+
+	/**
+	 * Get the number of groups that conform to a filter
+	 * @param filters Prisma query params for filtering the groups
+	 * @returns the number of groups that conform to the filter
+	 */
+	static async count(filters: Prisma.GroupCountArgs): Promise<number> {
+		const response = await fetch("/api/count-groups", {
+			method: "POST",
+			body: JSON.stringify(filters),
+		});
+		await handleFailedAPIRequest(response);
+		const { count } = await response.json();
+		return count;
+	}
+
+	/**
+	 * Get a list of group documents
+	 * An error is thrown if the request fails
+	 * @param filters Prisma query filters for controlling the returned documents
+	 * @returns list of group documents
+	 */
+	static async getMany(filters?: GroupAPIGetManyFilters) {
+		const response = await fetch("/api/get-groups", {
+			method: "POST",
+			body: JSON.stringify(filters),
+		});
+		await handleFailedAPIRequest(response);
+		const groups: Group[] = await response.json();
+		return groups;
+	}
+
+	/**
+	 * Get a list of group member documents
+	 * @param filters Prisma query filters
+	 * @returns list of group members
+	 */
+	static async getMembers(filters?: GroupAPIGetMembersFilters) {
+		const response = await fetch("/api/get-group-members", {
+			method: "POST",
+			body: JSON.stringify(filters),
+		});
+		await handleFailedAPIRequest(response);
+		const members: Member[] = await response.json();
+		return members;
+	}
 }
 
 export type CreateGroupPayload = Omit<
@@ -41,4 +102,15 @@ export interface JoinGroupResult {
 	name: string;
 	status: MembershipStatus;
 }
+
+export type GroupAPIGetManyFilters = Omit<
+	Prisma.GroupFindManyArgs,
+	"distinct" | "include"
+>;
+
+export type GroupAPIGetMembersFilters = Omit<
+	Prisma.GroupMemberFindManyArgs,
+	"distinct"
+>;
+
 export default GroupsAPI;
