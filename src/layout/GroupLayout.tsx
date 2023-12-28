@@ -8,6 +8,7 @@ import {
 	IconListDetails,
 	IconMessage2,
 	IconError404,
+	IconTrash,
 } from "@tabler/icons-react";
 import { Montserrat } from "next/font/google";
 import { useRouter } from "next/router";
@@ -77,9 +78,15 @@ export default function GroupLayout(props: GroupLayoutProps) {
 						<Menu.Item icon={<IconClipboard />}>
 							Copy JoinId to clipboard
 						</Menu.Item>
-						<Menu.Item color="red" icon={<IconLogout />}>
-							Leave group
-						</Menu.Item>
+						{props.currentUserIsAdmin ? (
+							<Menu.Item color="red" icon={<IconTrash />}>
+								Delete group
+							</Menu.Item>
+						) : (
+							<Menu.Item color="red" icon={<IconLogout />}>
+								Leave group
+							</Menu.Item>
+						)}
 					</Menu.Dropdown>
 				</Menu>
 			</div>
