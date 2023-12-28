@@ -11,6 +11,7 @@ import {
 	IconMessage2,
 	IconError404,
 	IconTrash,
+	IconHourglass,
 } from "@tabler/icons-react";
 import { Montserrat } from "next/font/google";
 import { useRouter } from "next/router";
@@ -113,6 +114,14 @@ export default function GroupLayout(props: GroupLayoutProps) {
 						icon={<IconListDetails />}>
 						Posts
 					</Tabs.Tab>
+					{props.currentUserIsAdmin && (
+						<Tabs.Tab
+							className="text-lg font-semibold"
+							value="/pending-posts"
+							icon={<IconHourglass />}>
+							Pending posts
+						</Tabs.Tab>
+					)}
 				</Tabs.List>
 				<Tabs.Panel value={props.tabValue}>
 					<div className="mt-1.5 flex justify-between gap-x-1">
