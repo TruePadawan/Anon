@@ -45,7 +45,7 @@ export default async function handler(
 		return res.status(403).json({ message: "Group does not exist" });
 	}
 
-	// verify that user is not already a member or banned
+	// VERIFY THAT USER IS NOT ALREADY A MEMBER OR BANNED
 	const profile = await getUserProfile(session);
 	if (profile === null) {
 		return res.status(403).json({ message: "Could not find client's profile" });
