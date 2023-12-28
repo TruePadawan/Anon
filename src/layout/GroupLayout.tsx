@@ -95,12 +95,6 @@ export default function GroupLayout(props: GroupLayoutProps) {
 						icon={<IconListDetails />}>
 						Posts
 					</Tabs.Tab>
-					<Tabs.Tab
-						className="text-lg font-semibold"
-						value="chatroom"
-						icon={<IconMessage2 />}>
-						Chatroom
-					</Tabs.Tab>
 				</Tabs.List>
 				<Tabs.Panel value={props.tabValue}>
 					<div className="mt-1.5 flex justify-between gap-x-1">
