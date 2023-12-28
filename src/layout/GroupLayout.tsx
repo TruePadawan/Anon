@@ -8,7 +8,6 @@ import {
 	IconLogout,
 	IconClipboard,
 	IconListDetails,
-	IconMessage2,
 	IconError404,
 	IconTrash,
 	IconHourglass,
@@ -90,11 +89,19 @@ export default function GroupLayout(props: GroupLayoutProps) {
 						<Menu.Item icon={<IconClipboard />} onClick={copyJoinIdToClipboard}>
 							Copy JoinId to clipboard
 						</Menu.Item>
-						{props.currentUserIsAdmin ? (
-							<Menu.Item color="red" icon={<IconTrash />}>
-								Delete group
-							</Menu.Item>
-						) : (
+						{props.currentUserIsAdmin && (
+							<>
+								{!groupData.autoMemberApproval && (
+									<Menu.Item icon={<IconHourglass />}>
+										View pending members
+									</Menu.Item>
+								)}
+								<Menu.Item color="red" icon={<IconTrash />}>
+									Delete group
+								</Menu.Item>
+							</>
+						)}
+						{!props.currentUserIsAdmin && (
 							<Menu.Item color="red" icon={<IconLogout />}>
 								Leave group
 							</Menu.Item>
