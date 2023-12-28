@@ -1,6 +1,8 @@
 import useSearchGroupMembers from "@/hooks/useSearchGroupMembers";
 import { GroupData } from "@/pages/groups/[group-id]";
 import { ActionIcon, Loader, Menu, Tabs, TextInput } from "@mantine/core";
+import { useClipboard } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
 import {
 	IconSettings,
 	IconLogout,
@@ -31,6 +33,7 @@ export default function GroupLayout(props: GroupLayoutProps) {
 	const router = useRouter();
 	const [searchValue, setSearchValue] = useState("");
 	const { members, search, isSearching } = useSearchGroupMembers(groupData?.id);
+	const clipboard = useClipboard();
 
 	useEffect(() => {
 		const timeoutId = setTimeout(() => {
@@ -51,6 +54,14 @@ export default function GroupLayout(props: GroupLayoutProps) {
 	function handleTabChange(tabValue: string) {
 		const groupId = groupData?.id ?? "no-id";
 		router.push(`/groups/${groupId}/${tabValue}`);
+	}
+
+	function copyJoinIdToClipboard() {
+		clipboard.copy(groupData.groupJoinId);
+		notifications.show({
+			color: "green",
+			message: "JoinId copied to clipboard",
+		});
 	}
 
 	const { groupMembers: latestMembers, admin } = groupData;
@@ -75,7 +86,7 @@ export default function GroupLayout(props: GroupLayoutProps) {
 						</ActionIcon>
 					</Menu.Target>
 					<Menu.Dropdown>
-						<Menu.Item icon={<IconClipboard />}>
+						<Menu.Item icon={<IconClipboard />} onClick={copyJoinIdToClipboard}>
 							Copy JoinId to clipboard
 						</Menu.Item>
 						{props.currentUserIsAdmin ? (
