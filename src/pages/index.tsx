@@ -32,6 +32,7 @@ const PublicPostsPage = () => {
 	const [isSubmittingPost, setIsSubmittingPost] = useState(false);
 	const intersectionRootElRef = useRef(null);
 	const { entry, ref: infiniteScrollTriggerElRef } = useIntersection({
+		root: intersectionRootElRef.current,
 		threshold: 0.25,
 	});
 	const loadMorePostsRef = useRef(loadMorePosts);

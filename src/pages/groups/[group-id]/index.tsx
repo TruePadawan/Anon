@@ -42,8 +42,9 @@ export default function GroupPage(props: GroupPageProps) {
 		}
 	);
 	const [isSubmittingPost, setIsSubmittingPost] = useState(false);
-	const intersectionRootElRef = useRef(null);
+	const intersectionRootElRef = useRef<HTMLDivElement>(null);
 	const { entry, ref: infiniteScrollTriggerElRef } = useIntersection({
+		root: intersectionRootElRef.current,
 		threshold: 0.25,
 	});
 	const loadMorePostsRef = useRef(loadMorePosts);
@@ -107,7 +108,7 @@ export default function GroupPage(props: GroupPageProps) {
 				tabValue="/"
 				groupData={props.data}
 				currentUserIsAdmin={props.currentUserIsAdmin}>
-				<div className="mx-auto w-full max-w-4xl">
+				<div className="mx-auto w-full max-w-4xl" ref={intersectionRootElRef}>
 					<div className="flex flex-col gap-2">
 						<PostEditor editor={editor} />
 						<Button
