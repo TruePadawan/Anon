@@ -108,20 +108,6 @@ class CommentsAPI {
 	}
 
 	/**
-	 * Forms the reply url of a comment,
-	 * an error is thrown if the process fails
-	 * @param comment the data of the comment
-	 * @returns a string which represents a relative url
-	 */
-	static getRepliesUrl(comment: CommentFull) {
-		const { publicPostId, groupPostId, id } = comment;
-		if (!publicPostId && !groupPostId)
-			throw new Error("Comment is not linked to a post");
-		const postId = publicPostId ?? groupPostId;
-		return `/posts/${postId}/${id}`;
-	}
-
-	/**
 	 * Extracts the ID of the post a comment belongs to
 	 * @param comment the data of the comment
 	 * @param postType the type of the post (Public or Group)
@@ -133,17 +119,6 @@ class CommentsAPI {
 			throw new Error("Comment is not linked to a post");
 		const postId = postType === "public" ? publicPostId : groupPostId;
 		return postId as string;
-	}
-
-	/**
-	 * Forms the relative url of the post a comment belongs to,
-	 * an error is thrown if the process fails
-	 * @param comment the data of the comment
-	 * @returns a string which represents a relative url
-	 */
-	static getPostUrl(comment: CommentFull, postType: PostType) {
-		const postId = this.getPostId(comment, postType);
-		return `/posts/${postId}`;
 	}
 }
 

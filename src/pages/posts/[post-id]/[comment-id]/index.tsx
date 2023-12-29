@@ -6,14 +6,12 @@ import Comments from "@/components/Comments/Comments";
 import { Button, Divider } from "@mantine/core";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { UserProfile } from "@prisma/client";
 import CommentItem from "@/components/Comments/CommentItem";
 import CommentsAPI, { CommentFull } from "@/lib/api/CommentsAPI";
 import Link from "next/link";
 
 interface PageProps {
 	commentData: CommentFull | null;
-	currentUser: UserProfile | null;
 }
 
 const Post = (props: PageProps) => {
@@ -29,8 +27,8 @@ const Post = (props: PageProps) => {
 			</>
 		);
 	}
-	const postUrl = CommentsAPI.getPostUrl(commentData, "public");
 	const postId = CommentsAPI.getPostId(commentData, "public");
+	const postUrl = `/posts/${postId}`;
 	return (
 		<>
 			<Navbar />
@@ -76,16 +74,6 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
 		};
 	}
 
-	// get profile of signed in user
-	const session = await getServerSession(context.req, context.res, authOptions);
-	const user = !session
-		? null
-		: await prisma.userProfile.findUnique({
-				where: {
-					userId: session.user.id,
-				},
-		  });
-
 	// query db for comment data
 	const commentId = context.params["comment-id"] as string;
 	const commentData = await prisma.comment.findUnique({
@@ -99,7 +87,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
 	});
 
 	return {
-		props: { key: commentId, commentData, currentUser: user },
+		props: { key: commentId, commentData },
 	};
 };
 
