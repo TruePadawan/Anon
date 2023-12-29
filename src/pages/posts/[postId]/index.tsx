@@ -79,7 +79,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
 		  });
 
 	// query db for post data
-	const postId = context.params["post-id"] as string;
+	const postId = context.params.postId as string;
 	const post = await prisma.publicPost.findUnique({
 		where: {
 			id: postId,

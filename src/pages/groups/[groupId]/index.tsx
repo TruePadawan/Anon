@@ -155,7 +155,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 		};
 	}
 
-	const groupId = context.params["group-id"] as string;
+	const groupId = context.params["groupId"] as string;
 	const groupData = await prisma.group.findUnique({
 		where: {
 			id: groupId,

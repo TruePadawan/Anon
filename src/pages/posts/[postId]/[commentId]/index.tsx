@@ -75,7 +75,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
 	}
 
 	// query db for comment data
-	const commentId = context.params["comment-id"] as string;
+	const commentId = context.params.commentId as string;
 	const commentData = await prisma.comment.findUnique({
 		where: {
 			id: commentId,
