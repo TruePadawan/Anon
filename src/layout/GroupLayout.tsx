@@ -1,5 +1,5 @@
 import useSearchGroupMembers from "@/hooks/useSearchGroupMembers";
-import { GroupData } from "@/pages/groups/[group-id]";
+import { GroupData } from "@/pages/groups/[groupId]";
 import { ActionIcon, Loader, Menu, Tabs, TextInput } from "@mantine/core";
 import { useClipboard } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
