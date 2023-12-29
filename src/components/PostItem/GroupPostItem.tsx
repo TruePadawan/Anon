@@ -41,7 +41,7 @@ export interface GroupPostItemProps {
 }
 
 /**
- * React component which renders a single public post
+ * React component which renders a single group post
  */
 const GroupPostItem = forwardRef(function GroupPostItem(
 	props: GroupPostItemProps,
