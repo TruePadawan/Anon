@@ -250,7 +250,7 @@ const GroupPostItem = forwardRef(function GroupPostItem(
 				</div>
 				<PostItem.Footer>
 					{showCommentsCount && (
-						<CommentsCount postId={postData.id} postType="public" />
+						<CommentsCount postId={postData.id} postType="group" />
 					)}
 				</PostItem.Footer>
 			</PostItem>
