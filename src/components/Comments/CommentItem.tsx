@@ -30,6 +30,7 @@ import { getErrorMessage } from "@/lib/error-message";
 import PostItem from "../PostItem/PostItem";
 import { ReplyCount } from "./CommentsCount";
 import ReplyToComment from "./ReplyToComment";
+import { useRouter } from "next/router";
 
 export interface CommentItemProps {
 	data: CommentFull;
@@ -63,6 +64,7 @@ const CommentItem = forwardRef(function CommentItem(
 	const [inReplyMode, toggleReplyMode] = useState(false);
 	const [isUpdatingComment, setIsUpdatingComment] = useState(false);
 	const editorContentRef = useRef(editor?.getHTML());
+	const router = useRouter();
 	const listItemStyles = { backgroundColor: theme.colors.dark[6] };
 	const { author } = props.data;
 
@@ -114,7 +116,7 @@ const CommentItem = forwardRef(function CommentItem(
 	}
 
 	const isAuthor = currentUser && author && currentUser.id === author.id;
-	const repliesUrl = CommentsAPI.getRepliesUrl(props.data);
+	const repliesUrl = `${router.asPath}/${props.data.id}`;
 	const allowReplies = currentUser && !commentIsDeleted;
 	const commentIsEditable = !commentIsDeleted && isAuthor;
 	const showReplyEditor = inReplyMode && allowReplies;
