@@ -34,6 +34,7 @@ export default function GroupPage(props: GroupPageProps) {
 		{
 			where: {
 				isDeleted: false,
+				isApproved: true,
 			},
 			orderBy: {
 				createdAt: "desc",
