@@ -72,6 +72,8 @@ export default function GroupLayout(props: GroupLayoutProps) {
 	const searchWasSuccessful =
 		!searchInputIsEmpty && !isSearching && members.length > 0;
 	const showAnonymousSection = !groupIsAnonymous || props.currentUserIsAdmin;
+	const showPendingPostsTab =
+		props.currentUserIsAdmin && !groupData.autoPostApproval;
 	return (
 		<main className="grow flex flex-col">
 			<div className="flex justify-between items-center px-4 py-2 bg-primary-color-2">
@@ -87,7 +89,7 @@ export default function GroupLayout(props: GroupLayoutProps) {
 					</Menu.Target>
 					<Menu.Dropdown>
 						<Menu.Item icon={<IconClipboard />} onClick={copyJoinIdToClipboard}>
-							Copy JoinId to clipboard
+							Copy joinId to clipboard
 						</Menu.Item>
 						{props.currentUserIsAdmin && (
 							<>
@@ -121,7 +123,7 @@ export default function GroupLayout(props: GroupLayoutProps) {
 						icon={<IconListDetails />}>
 						Posts
 					</Tabs.Tab>
-					{props.currentUserIsAdmin && (
+					{showPendingPostsTab && (
 						<Tabs.Tab
 							className="text-lg font-semibold"
 							value="/pending-posts"
