@@ -11,6 +11,7 @@ import {
 	IconError404,
 	IconTrash,
 	IconHourglass,
+	IconEdit,
 } from "@tabler/icons-react";
 import { Montserrat } from "next/font/google";
 import { useRouter } from "next/router";
@@ -52,8 +53,11 @@ export default function GroupLayout(props: GroupLayoutProps) {
 	}
 
 	function handleTabChange(tabValue: string) {
-		const groupId = groupData?.id ?? "no-id";
-		router.push(`/groups/${groupId}/${tabValue}`);
+		router.push(`/groups/${groupData.id}/${tabValue}`);
+	}
+
+	function routeToEditPage() {
+		router.push(`/groups/${groupData.id}/edit`);
 	}
 
 	function copyJoinIdToClipboard() {
@@ -94,11 +98,22 @@ export default function GroupLayout(props: GroupLayoutProps) {
 						{props.currentUserIsAdmin && (
 							<>
 								{!groupData.autoMemberApproval && (
-									<Menu.Item icon={<IconHourglass />}>
+									<Menu.Item
+										icon={<IconHourglass />}
+										title="View pending group members. Only shows for admins">
 										View pending members
 									</Menu.Item>
 								)}
-								<Menu.Item color="red" icon={<IconTrash />}>
+								<Menu.Item
+									icon={<IconEdit />}
+									title="Edit group data. Only shows for admins"
+									onClick={routeToEditPage}>
+									Edit group
+								</Menu.Item>
+								<Menu.Item
+									color="red"
+									title="Delete group. Only shows for admins"
+									icon={<IconTrash />}>
 									Delete group
 								</Menu.Item>
 							</>
