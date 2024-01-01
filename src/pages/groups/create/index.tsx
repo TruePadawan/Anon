@@ -29,8 +29,8 @@ export default function CreateGroupPage() {
 		try {
 			const group = await GroupsAPI.create({
 				adminId: user.id,
-				name: groupNameInput.value,
-				desc: descRef.current?.value ?? null,
+				name: groupNameInput.value.trim(),
+				desc: descRef.current?.value.trim() ?? null,
 				isAnonymous: groupIsAnonymous === "true",
 				autoMemberApproval: autoApproveMembers === "true",
 				autoPostApproval: autoApprovePosts === "true",
