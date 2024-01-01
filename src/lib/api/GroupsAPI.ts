@@ -22,6 +22,25 @@ class GroupsAPI {
 	}
 
 	/**
+	 * Updates a group
+	 * @param groupId the id of the group
+	 * @param data the new data
+	 * @returns the updated group data
+	 */
+	static async update(groupId: string, data: UpdateGroupPayload) {
+		const response = await fetch("/api/update-group", {
+			method: "POST",
+			body: JSON.stringify({
+				id: groupId,
+				data,
+			}),
+		});
+		await handleFailedAPIRequest(response);
+		const updatedGroupData: Group = await response.json();
+		return updatedGroupData;
+	}
+
+	/**
 	 * Requests access to a group, it returns a status - PENDING or ACCEPTED
 	 * @param joinId the group's join id
 	 */
@@ -96,6 +115,11 @@ class GroupsAPI {
 export type CreateGroupPayload = Omit<
 	Group,
 	"id" | "banner_url" | "createdAt" | "groupJoinId"
+>;
+
+export type UpdateGroupPayload = Pick<
+	Group,
+	"desc" | "name" | "autoMemberApproval" | "autoPostApproval"
 >;
 
 export interface JoinGroupResult {
