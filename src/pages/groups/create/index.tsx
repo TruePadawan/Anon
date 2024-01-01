@@ -1,7 +1,7 @@
 import Navbar from "@/components/Navbar/Navbar";
 import useInput from "@/hooks/useInput";
 import useUser from "@/hooks/useUser";
-import { Button, Group, Radio, TextInput, Textarea } from "@mantine/core";
+import { Button, Switch, TextInput, Textarea } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useRouter } from "next/router";
 import { useRef, useState } from "react";
@@ -9,14 +9,12 @@ import { validateGroupName } from "@/helpers/groups";
 import GroupsAPI from "@/lib/api/GroupsAPI";
 import { getErrorMessage } from "@/lib/error-message";
 
-type RadioValue = "true" | "false" | string;
 export default function CreateGroupPage() {
 	const { user } = useUser();
 	const descRef = useRef<HTMLTextAreaElement>(null);
-	const [groupIsAnonymous, setGroupIsAnonymous] = useState<RadioValue>("false");
-	const [autoApprovePosts, setAutoApprovePosts] = useState<RadioValue>("true");
-	const [autoApproveMembers, setAutoApproveMembers] =
-		useState<RadioValue>("true");
+	const [groupIsAnonymous, setGroupIsAnonymous] = useState(false);
+	const [autoApprovePosts, setAutoApprovePosts] = useState(true);
+	const [autoApproveMembers, setAutoApproveMembers] = useState(true);
 	const router = useRouter();
 	const [creatingGroup, setCreatingGroup] = useState(false);
 	const groupNameInput = useInput([validateGroupName]);
@@ -31,9 +29,9 @@ export default function CreateGroupPage() {
 				adminId: user.id,
 				name: groupNameInput.value.trim(),
 				desc: descRef.current?.value.trim() ?? null,
-				isAnonymous: groupIsAnonymous === "true",
-				autoMemberApproval: autoApproveMembers === "true",
-				autoPostApproval: autoApprovePosts === "true",
+				isAnonymous: groupIsAnonymous,
+				autoMemberApproval: autoApproveMembers,
+				autoPostApproval: autoApprovePosts,
 			});
 			notifications.show({
 				color: "green",
@@ -85,45 +83,39 @@ export default function CreateGroupPage() {
 							disabled={creatingGroup}
 							autosize
 						/>
-						<Radio.Group
-							name="group-type"
+						<Switch
+							onLabel="YES"
+							offLabel="NO"
 							label="Create anonymous group?"
+							labelPosition="left"
+							styles={{ label: { "font-weight": "500" } }}
 							description="The profiles of all members are hidden from each other except the admin"
-							value={groupIsAnonymous}
-							onChange={setGroupIsAnonymous}
 							size="md"
-							withAsterisk>
-							<Group mt="xs">
-								<Radio value="true" label="Yes" disabled={creatingGroup} />
-								<Radio value="false" label="No" disabled={creatingGroup} />
-							</Group>
-						</Radio.Group>
-						<Radio.Group
-							name="auto-member-approval"
-							label="Automatically approve join request?"
-							description="New members won't need admin approval to join"
-							value={autoApproveMembers}
-							onChange={setAutoApproveMembers}
+							checked={groupIsAnonymous}
+							onChange={(ev) => setGroupIsAnonymous(ev.currentTarget.checked)}
+						/>
+						<Switch
+							onLabel="YES"
+							offLabel="NO"
+							label="Automatically approve join requests?"
+							labelPosition="left"
+							styles={{ label: { "font-weight": "500" } }}
+							description="Users won't need admin approval to join"
 							size="md"
-							withAsterisk>
-							<Group mt="xs">
-								<Radio value="true" label="Yes" disabled={creatingGroup} />
-								<Radio value="false" label="No" disabled={creatingGroup} />
-							</Group>
-						</Radio.Group>
-						<Radio.Group
-							name="auto-post-approval"
+							checked={autoApproveMembers}
+							onChange={(ev) => setAutoApproveMembers(ev.currentTarget.checked)}
+						/>
+						<Switch
+							onLabel="YES"
+							offLabel="NO"
 							label="Automatically approve posts?"
+							labelPosition="left"
+							styles={{ label: { "font-weight": "500" } }}
 							description="Posts will be submitted without needing admin approval"
-							value={autoApprovePosts}
-							onChange={setAutoApprovePosts}
 							size="md"
-							withAsterisk>
-							<Group mt="xs">
-								<Radio value="true" label="Yes" disabled={creatingGroup} />
-								<Radio value="false" label="No" disabled={creatingGroup} />
-							</Group>
-						</Radio.Group>
+							checked={autoApprovePosts}
+							onChange={(ev) => setAutoApprovePosts(ev.currentTarget.checked)}
+						/>
 					</div>
 					<Button
 						type="submit"
