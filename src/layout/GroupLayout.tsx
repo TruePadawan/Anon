@@ -11,6 +11,7 @@ import {
 	IconError404,
 	IconTrash,
 	IconHourglass,
+	IconEdit,
 } from "@tabler/icons-react";
 import { Montserrat } from "next/font/google";
 import { useRouter } from "next/router";
@@ -52,8 +53,11 @@ export default function GroupLayout(props: GroupLayoutProps) {
 	}
 
 	function handleTabChange(tabValue: string) {
-		const groupId = groupData?.id ?? "no-id";
-		router.push(`/groups/${groupId}/${tabValue}`);
+		router.push(`/groups/${groupData.id}/${tabValue}`);
+	}
+
+	function routeToEditPage() {
+		router.push(`/groups/${groupData.id}/edit`);
 	}
 
 	function copyJoinIdToClipboard() {
@@ -72,6 +76,8 @@ export default function GroupLayout(props: GroupLayoutProps) {
 	const searchWasSuccessful =
 		!searchInputIsEmpty && !isSearching && members.length > 0;
 	const showAnonymousSection = !groupIsAnonymous || props.currentUserIsAdmin;
+	const showPendingPostsTab =
+		props.currentUserIsAdmin && !groupData.autoPostApproval;
 	return (
 		<main className="grow flex flex-col">
 			<div className="flex justify-between items-center px-4 py-2 bg-primary-color-2">
@@ -87,16 +93,27 @@ export default function GroupLayout(props: GroupLayoutProps) {
 					</Menu.Target>
 					<Menu.Dropdown>
 						<Menu.Item icon={<IconClipboard />} onClick={copyJoinIdToClipboard}>
-							Copy JoinId to clipboard
+							Copy joinId to clipboard
 						</Menu.Item>
 						{props.currentUserIsAdmin && (
 							<>
 								{!groupData.autoMemberApproval && (
-									<Menu.Item icon={<IconHourglass />}>
+									<Menu.Item
+										icon={<IconHourglass />}
+										title="View pending group members. Only shows for admins">
 										View pending members
 									</Menu.Item>
 								)}
-								<Menu.Item color="red" icon={<IconTrash />}>
+								<Menu.Item
+									icon={<IconEdit />}
+									title="Edit group data. Only shows for admins"
+									onClick={routeToEditPage}>
+									Edit group
+								</Menu.Item>
+								<Menu.Item
+									color="red"
+									title="Delete group. Only shows for admins"
+									icon={<IconTrash />}>
 									Delete group
 								</Menu.Item>
 							</>
@@ -121,7 +138,7 @@ export default function GroupLayout(props: GroupLayoutProps) {
 						icon={<IconListDetails />}>
 						Posts
 					</Tabs.Tab>
-					{props.currentUserIsAdmin && (
+					{showPendingPostsTab && (
 						<Tabs.Tab
 							className="text-lg font-semibold"
 							value="/pending-posts"
