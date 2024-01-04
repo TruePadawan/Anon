@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma-client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { DELETED_COMMENT_CONTENT } from "@/helpers/global_vars";
-import { getUserProfile } from "./get-user-profile";
 
 export default async function handler(
 	req: NextApiRequest,
@@ -20,8 +19,14 @@ export default async function handler(
 		} else {
 			const payload: Payload = JSON.parse(req.body);
 			const { id } = payload;
-			const profileData = await getUserProfile(session);
-			const isAuthorized = session.user.id === profileData?.userId;
+			const commentAuthorData = await prisma.comment.findUnique({
+				where: {
+					id,
+				},
+				select: { author: true },
+			});
+			const isAuthorized =
+				commentAuthorData?.author?.userId === session.user.id;
 			if (isAuthorized) {
 				const replyCount = await prisma.comment.count({
 					where: {

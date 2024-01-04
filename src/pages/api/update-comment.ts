@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma-client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { UpdateCommentPayload } from "@/lib/api/CommentsAPI";
-import { getUserProfile } from "./get-user-profile";
 
 export default async function handler(
 	req: NextApiRequest,
@@ -19,8 +18,16 @@ export default async function handler(
 			res.status(401).json({ message: "Client not authenticated!" });
 		} else {
 			const { id, data }: Payload = JSON.parse(req.body);
-			const profileData = await getUserProfile(session);
-			const isAuthorized = session.user.id === profileData?.userId;
+			const commentAuthorData = await prisma.comment.findUnique({
+				where: {
+					id,
+				},
+				select: {
+					author: true,
+				},
+			});
+			const isAuthorized =
+				session.user.id === commentAuthorData?.author?.userId;
 			if (isAuthorized) {
 				try {
 					const updatedComment = await prisma.comment.update({
