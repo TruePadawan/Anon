@@ -16,21 +16,19 @@ export default async function handler(
 	const session = await getServerSession(req, res, authOptions);
 	if (!session) {
 		return res.status(401).json({ message: "Client not authenticated!?" });
-    }
-    
+	}
+
 	const { id }: Payload = JSON.parse(req.body);
-	const count = await prisma.groupPost.count({
+	const postAuthorData = await prisma.groupPost.findUnique({
 		where: {
 			id,
-			author: {
-				user: {
-					id: session.user.id,
-				},
-			},
+		},
+		select: {
+			author: true,
 		},
 	});
 	// the action is authorized if the user is the author of the post
-	const isAuthorized = count === 1;
+	const isAuthorized = postAuthorData?.author?.userId === session.user.id;
 	if (isAuthorized) {
 		const commentCount = await prisma.comment.count({
 			where: {

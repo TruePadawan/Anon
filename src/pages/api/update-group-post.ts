@@ -19,16 +19,16 @@ export default async function handler(
 	}
 
 	const { id, data }: Payload = JSON.parse(req.body);
-	const count = await prisma.groupPost.count({
+	const postAuthorData = await prisma.groupPost.findUnique({
 		where: {
 			id,
-			author: {
-				userId: session.user.id,
-			},
+		},
+		select: {
+			author: true,
 		},
 	});
 	// the action is authorized if the user is the author of the post
-	const isAuthorized = count === 1;
+	const isAuthorized = postAuthorData?.author?.userId === session.user.id;
 	if (isAuthorized) {
 		try {
 			const updatedPost = await prisma.groupPost.update({
