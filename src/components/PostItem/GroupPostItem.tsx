@@ -138,7 +138,9 @@ const GroupPostItem = forwardRef(function GroupPostItem(
 								avatarUrl={author?.avatarUrl}
 							/>
 						)}
-						{props.groupIsAnonymous && <Avatar variant="filled" radius="xl" />}
+						{props.groupIsAnonymous && (
+							<PostItem.Avatar color={author?.color} />
+						)}
 					</PostItem.Side>
 					<PostItem.Main>
 						<PostItem.Header>
