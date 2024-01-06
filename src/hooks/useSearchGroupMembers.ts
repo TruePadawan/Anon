@@ -42,6 +42,7 @@ export default function useSearchGroupMembers(
 									mode: "insensitive",
 								},
 							},
+							membershipStatus: "JOINED",
 						},
 						{
 							user: {
@@ -50,6 +51,7 @@ export default function useSearchGroupMembers(
 									mode: "insensitive",
 								},
 							},
+							membershipStatus: "JOINED",
 						},
 					],
 				},

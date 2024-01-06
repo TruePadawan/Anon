@@ -164,6 +164,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 		include: {
 			admin: true,
 			groupMembers: {
+				where: { membershipStatus: "JOINED" },
 				include: {
 					user: true,
 				},

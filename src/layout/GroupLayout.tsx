@@ -1,3 +1,4 @@
+import GroupMember from "@/components/GroupMember/GroupMember";
 import useSearchGroupMembers from "@/hooks/useSearchGroupMembers";
 import { GroupData } from "@/pages/groups/[groupId]";
 import { ActionIcon, Loader, Menu, Tabs, TextInput } from "@mantine/core";
@@ -199,12 +200,8 @@ export default function GroupLayout(props: GroupLayoutProps) {
 											<ul className="flex gap-1 list-none">
 												{members.map((member, index) => {
 													return (
-														<li
-															key={member.id}
-															className="font-semibold text-sm hover:underline hover:text-white">
-															<a href={`/users/${member.user.accountName}`}>
-																{member.user.displayName}
-															</a>
+														<li key={member.id}>
+															<GroupMember memberData={member} />
 															{index + 1 < members.length && <span>,</span>}
 														</li>
 													);
@@ -232,12 +229,8 @@ export default function GroupLayout(props: GroupLayoutProps) {
 										<ul className="flex gap-1 list-none">
 											{latestMembers.map((member, index) => {
 												return (
-													<li
-														key={member.id}
-														className="font-semibold text-sm hover:underline hover:text-white">
-														<a href={`/users/${member.user.accountName}`}>
-															{member.user.displayName}
-														</a>
+													<li key={member.id}>
+														<GroupMember memberData={member} />
 														{index + 1 < latestMembers.length && <span>,</span>}
 													</li>
 												);

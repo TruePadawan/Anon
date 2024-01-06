@@ -110,6 +110,24 @@ class GroupsAPI {
 		const members: Member[] = await response.json();
 		return members;
 	}
+
+	/**
+	 * remove a user from a group
+	 * @param groupMemberId
+	 */
+	static async removeMember(groupMemberId: string) {
+		const response = await fetch(`/api/remove-group-member/${groupMemberId}`);
+		await handleFailedAPIRequest(response);
+	}
+
+	/**
+	 * ban a user from a group
+	 * @param groupMemberId
+	 */
+	static async banMember(groupMemberId: string) {
+		const response = await fetch(`/api/ban-group-member/${groupMemberId}`);
+		await handleFailedAPIRequest(response);
+	}
 }
 
 export type CreateGroupPayload = Omit<
