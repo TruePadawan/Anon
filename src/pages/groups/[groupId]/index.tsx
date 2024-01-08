@@ -121,7 +121,7 @@ export default function GroupPage(props: GroupPageProps) {
 							Create post
 						</Button>
 					</div>
-					<ul className="flex flex-col gap-2 mt-3">
+					<ul className="flex flex-col gap-2 mt-3 list-none">
 						{isLoading && (
 							<Loader className="mt-2 self-center" size="lg" color="gray" />
 						)}
@@ -129,14 +129,15 @@ export default function GroupPage(props: GroupPageProps) {
 							posts.map((post, index) => {
 								const secondToLast = index == posts.length - 2;
 								return (
-									<GroupPostItem
-										ref={secondToLast ? infiniteScrollTriggerElRef : null}
-										key={post.id}
-										postData={post}
-										groupIsAnonymous={props.data.isAnonymous}
-										currentUserIsAdmin={props.currentUserIsAdmin}
-										showCommentsCount
-									/>
+									<li key={post.id}>
+										<GroupPostItem
+											ref={secondToLast ? infiniteScrollTriggerElRef : null}
+											postData={post}
+											groupIsAnonymous={props.data.isAnonymous}
+											currentUserIsAdmin={props.currentUserIsAdmin}
+											showCommentsCount
+										/>
+									</li>
 								);
 							})}
 					</ul>

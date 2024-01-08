@@ -4,14 +4,7 @@ import {
 	DELETED_POST_CONTENT,
 	PostEditorExtensions,
 } from "@/helpers/global_vars";
-import {
-	ActionIcon,
-	Avatar,
-	Button,
-	Menu,
-	Modal,
-	Spoiler,
-} from "@mantine/core";
+import { ActionIcon, Button, Menu, Modal, Spoiler } from "@mantine/core";
 import { GroupPostWithAuthor } from "@/types/types";
 import moment from "moment";
 import Link from "next/link";
@@ -45,7 +38,7 @@ export interface GroupPostItemProps {
  */
 const GroupPostItem = forwardRef(function GroupPostItem(
 	props: GroupPostItemProps,
-	ref: Ref<HTMLLIElement>
+	ref: Ref<HTMLDivElement>
 ) {
 	const { user: currentUser } = useUser();
 	const { postData, className, showCommentsCount } = props;
@@ -128,7 +121,7 @@ const GroupPostItem = forwardRef(function GroupPostItem(
 	const isAuthor = currentUser && author && currentUser.id === author.id;
 	const postIsEditable = !postIsDeleted && isAuthor;
 	return (
-		<li ref={ref} className="list-none">
+		<div ref={ref}>
 			<PostItem className={className}>
 				<div className="flex gap-1.5 py-1 px-1">
 					<PostItem.Side>
@@ -256,7 +249,7 @@ const GroupPostItem = forwardRef(function GroupPostItem(
 					)}
 				</PostItem.Footer>
 			</PostItem>
-		</li>
+		</div>
 	);
 });
 
