@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma-client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { DELETED_POST_CONTENT } from "@/helpers/global_vars";
+import { getUserProfile } from "./get-user-profile";
 
 export default async function handler(
 	req: NextApiRequest,
@@ -19,16 +20,22 @@ export default async function handler(
 	}
 
 	const { id }: Payload = JSON.parse(req.body);
-	const postAuthorData = await prisma.groupPost.findUnique({
+	const postData = await prisma.groupPost.findUnique({
 		where: {
 			id,
 		},
 		select: {
 			author: true,
+			group: true,
 		},
 	});
-	// the action is authorized if the user is the author of the post
-	const isAuthorized = postAuthorData?.author?.userId === session.user.id;
+
+	const currentUserProfile = await getUserProfile(session);
+	// the action is authorized if the user is the author of the post or admin of the group
+	const isAuthor = postData?.author?.userId === session.user.id;
+	const isGroupAdmin = postData?.group.adminId === currentUserProfile?.id;
+	const isAuthorized = isAuthor || isGroupAdmin;
+
 	if (isAuthorized) {
 		const commentCount = await prisma.comment.count({
 			where: {

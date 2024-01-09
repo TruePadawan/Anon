@@ -102,6 +102,8 @@ export default function GroupPage(props: GroupPageProps) {
 		}
 	}
 
+	const hasPosts = !isLoading && posts.length > 0;
+	const noPosts = !isLoading && posts.length === 0;
 	return (
 		<>
 			<Navbar />
@@ -109,7 +111,7 @@ export default function GroupPage(props: GroupPageProps) {
 				tabValue="/"
 				groupData={props.data}
 				currentUserIsAdmin={props.currentUserIsAdmin}>
-				<div className="mx-auto w-full max-w-4xl" ref={intersectionRootElRef}>
+				<div className="flex flex-col gap-2" ref={intersectionRootElRef}>
 					<div className="flex flex-col gap-2">
 						<PostEditor editor={editor} />
 						<Button
@@ -121,25 +123,34 @@ export default function GroupPage(props: GroupPageProps) {
 							Create post
 						</Button>
 					</div>
-					<ul className="flex flex-col gap-2 mt-3">
+					<div className="grow flex">
 						{isLoading && (
 							<Loader className="mt-2 self-center" size="lg" color="gray" />
 						)}
-						{!isLoading &&
-							posts.map((post, index) => {
-								const secondToLast = index == posts.length - 2;
-								return (
-									<GroupPostItem
-										ref={secondToLast ? infiniteScrollTriggerElRef : null}
-										key={post.id}
-										postData={post}
-										groupIsAnonymous={props.data.isAnonymous}
-										currentUserIsAdmin={props.currentUserIsAdmin}
-										showCommentsCount
-									/>
-								);
-							})}
-					</ul>
+						{hasPosts && (
+							<ul className="grow flex flex-col gap-2 list-none">
+								{posts.map((post, index) => {
+									const secondToLast = index == posts.length - 2;
+									return (
+										<li key={post.id}>
+											<GroupPostItem
+												ref={secondToLast ? infiniteScrollTriggerElRef : null}
+												postData={post}
+												groupIsAnonymous={props.data.isAnonymous}
+												currentUserIsAdmin={props.currentUserIsAdmin}
+												showCommentsCount
+											/>
+										</li>
+									);
+								})}
+							</ul>
+						)}
+						{noPosts && (
+							<p className="self-center mx-auto font-semibold text-xl">
+								No posts
+							</p>
+						)}
+					</div>
 				</div>
 			</GroupLayout>
 		</>
