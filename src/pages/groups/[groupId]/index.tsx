@@ -186,7 +186,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 			},
 			_count: {
 				select: {
-					groupMembers: true,
+					groupMembers: { where: { membershipStatus: "JOINED" } },
 				},
 			},
 		},
