@@ -13,31 +13,46 @@ export default async function handler(
 			message: "Should receive a POST request with post data",
 		});
 	}
+
 	const session = await getServerSession(req, res, authOptions);
 	if (!session) {
 		return res.status(401).json({ message: "Client not authenticated!" });
 	}
-	const payload: CreateGroupPostData = JSON.parse(req.body);
-	const count = await prisma.group.count({
-		where: { id: payload.groupId, autoPostApproval: true },
+
+	const { groupId, authorId, content }: CreateGroupPostData = JSON.parse(
+		req.body
+	);
+	const groupData = await prisma.group.findUnique({
+		where: { id: groupId },
+		select: {
+			admin: true,
+			autoPostApproval: true,
+		},
 	});
 
+	if (!groupData) {
+		return res.status(500).json({ message: "Group does not exist" });
+	}
+
+	const currentUserIsAdmin = session.user.id === groupData?.admin.userId;
+	// post is auto approved if the group allows it or author is the admin
+	const postIsApproved =
+		groupData?.autoPostApproval === true || currentUserIsAdmin;
 	try {
 		const createdPost = await prisma.groupPost.create({
 			data: {
 				author: {
 					connect: {
-						id: payload.authorId,
+						id: authorId,
 					},
 				},
 				group: {
 					connect: {
-						id: payload.groupId,
+						id: groupId,
 					},
 				},
-				content: payload.content,
-				/// post is auto approved if the group allows it
-				isApproved: count === 1,
+				content: content,
+				isApproved: postIsApproved,
 				createdAt: Date.now(),
 			},
 			include: {
