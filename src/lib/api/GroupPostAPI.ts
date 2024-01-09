@@ -94,10 +94,10 @@ export interface CreateGroupPostData {
 	content: JSONContent;
 }
 
-export interface UpdateGroupPostPayload {
-	content?: JSONContent;
-	commentsAllowed?: boolean;
-}
+export type UpdateGroupPostPayload = Pick<
+	Prisma.GroupPostUpdateInput,
+	"commentsAllowed" | "content" | "isApproved"
+>;
 
 export type GroupPostAPIGetManyParams = Omit<
 	Prisma.GroupPostFindManyArgs,
