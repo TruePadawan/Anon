@@ -112,6 +112,15 @@ class GroupsAPI {
 	}
 
 	/**
+	 * accept a group member
+	 * @param groupMemberId
+	 */
+	static async acceptMember(groupMemberId: string) {
+		const response = await fetch(`/api/accept-group-member/${groupMemberId}`);
+		await handleFailedAPIRequest(response);
+	}
+
+	/**
 	 * remove a user from a group
 	 * @param groupMemberId
 	 */
