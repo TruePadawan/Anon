@@ -1,9 +1,9 @@
 import GroupsAPI from "@/lib/api/GroupsAPI";
 import { getErrorMessage } from "@/lib/error-message";
+import { GroupMemberWithProfile } from "@/types/types";
 import { Button, Modal } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { Prisma } from "@prisma/client";
 import { useState } from "react";
 
 interface GroupMemberProps {
@@ -62,6 +62,14 @@ export default function GroupMember({ memberData }: GroupMemberProps) {
 				<div className="flex flex-col gap-y-1">
 					<Button
 						variant="filled"
+						component="a"
+						target="_blank"
+						rel="noopener noreferrer"
+						href={`/users/${memberData.user.accountName}`}>
+						View profile
+					</Button>
+					<Button
+						variant="filled"
 						color="gray"
 						onClick={removeMember}
 						disabled={buttonsAreDisabled}>
@@ -84,12 +92,3 @@ export default function GroupMember({ memberData }: GroupMemberProps) {
 		</>
 	);
 }
-
-const groupMemberWithProfile =
-	Prisma.validator<Prisma.GroupMemberDefaultArgs>()({
-		include: { user: true },
-	});
-
-export type GroupMemberWithProfile = Prisma.GroupMemberGetPayload<
-	typeof groupMemberWithProfile
->;
