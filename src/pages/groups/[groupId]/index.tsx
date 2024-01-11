@@ -175,7 +175,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 		include: {
 			admin: true,
 			groupMembers: {
-				where: { membershipStatus: "JOINED" },
+				where: {
+					OR: [{ membershipStatus: "JOINED" }, { membershipStatus: "PENDING" }],
+				},
 				include: {
 					user: true,
 				},
