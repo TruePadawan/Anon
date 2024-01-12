@@ -30,6 +30,7 @@ export default async function handler(
 							{
 								userProfileId: adminId,
 								membershipStatus: "JOINED",
+								joinedAt: Date.now(),
 							},
 						],
 					},
