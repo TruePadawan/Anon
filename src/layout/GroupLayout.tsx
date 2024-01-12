@@ -1,10 +1,11 @@
+import ConfirmGroupDeleteDialog from "@/components/Dialogs/ConfirmGroupDeleteDialog";
 import GroupMember from "@/components/GroupMember/GroupMember";
 import PendingGroupMember from "@/components/GroupMember/PendingGroupMember";
 import useSearchGroupMembers from "@/hooks/useSearchGroupMembers";
 import { GroupData } from "@/pages/groups/[groupId]";
 import { GroupMemberWithProfile } from "@/types/types";
 import { ActionIcon, Loader, Menu, Tabs, TextInput } from "@mantine/core";
-import { useClipboard } from "@mantine/hooks";
+import { useClipboard, useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import {
 	IconSettings,
@@ -38,6 +39,7 @@ export default function GroupLayout(props: GroupLayoutProps) {
 	const [searchValue, setSearchValue] = useState("");
 	const { members, search, isSearching } = useSearchGroupMembers(groupData?.id);
 	const clipboard = useClipboard();
+	const [isOpen, { open, close }] = useDisclosure(false);
 
 	useEffect(() => {
 		const timeoutId = setTimeout(() => {
@@ -110,7 +112,8 @@ export default function GroupLayout(props: GroupLayoutProps) {
 								<Menu.Item
 									color="red"
 									title="Delete group. Only shows for admins"
-									icon={<IconTrash />}>
+									icon={<IconTrash />}
+									onClick={open}>
 									Delete group
 								</Menu.Item>
 							</>
@@ -266,6 +269,11 @@ export default function GroupLayout(props: GroupLayoutProps) {
 					</div>
 				</Tabs.Panel>
 			</Tabs>
+			<ConfirmGroupDeleteDialog
+				isOpen={isOpen}
+				onClose={close}
+				groupId={groupData.id}
+			/>
 		</main>
 	);
 }
