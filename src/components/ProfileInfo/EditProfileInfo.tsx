@@ -142,6 +142,7 @@ const EditProfileInfo = (props: EditProfileInfoProps) => {
 				// valid file - keep track of selected file
 				profilePictureRef.current = file;
 				setProfilePicIsValid(true);
+				setImageValidationErrorText("");
 			} else {
 				// notify user to give correct data
 				setImageValidationErrorText(result.messages.join("\n"));
