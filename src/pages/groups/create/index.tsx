@@ -92,6 +92,7 @@ export default function CreateGroupPage() {
 							size="md"
 							checked={groupIsAnonymous}
 							onChange={(ev) => setGroupIsAnonymous(ev.currentTarget.checked)}
+							disabled={creatingGroup}
 						/>
 						<Switch
 							onLabel="YES"
@@ -103,6 +104,7 @@ export default function CreateGroupPage() {
 							size="md"
 							checked={autoApproveMembers}
 							onChange={(ev) => setAutoApproveMembers(ev.currentTarget.checked)}
+							disabled={creatingGroup}
 						/>
 						<Switch
 							onLabel="YES"
@@ -114,6 +116,7 @@ export default function CreateGroupPage() {
 							size="md"
 							checked={autoApprovePosts}
 							onChange={(ev) => setAutoApprovePosts(ev.currentTarget.checked)}
+							disabled={creatingGroup}
 						/>
 					</div>
 					<Button
