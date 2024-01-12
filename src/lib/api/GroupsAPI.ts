@@ -41,6 +41,15 @@ class GroupsAPI {
 	}
 
 	/**
+	 * Delete a group
+	 * @param groupId
+	 */
+	static async delete(groupId: string) {
+		const response = await fetch(`/api/delete-group/${groupId}`);
+		await handleFailedAPIRequest(response);
+	}
+
+	/**
 	 * Requests access to a group, it returns a status - PENDING or ACCEPTED
 	 * @param joinId the group's join id
 	 */
@@ -109,6 +118,15 @@ class GroupsAPI {
 		await handleFailedAPIRequest(response);
 		const members: Member[] = await response.json();
 		return members;
+	}
+
+	/**
+	 * accept a group member
+	 * @param groupMemberId
+	 */
+	static async acceptMember(groupMemberId: string) {
+		const response = await fetch(`/api/accept-group-member/${groupMemberId}`);
+		await handleFailedAPIRequest(response);
 	}
 
 	/**

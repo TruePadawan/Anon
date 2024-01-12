@@ -146,7 +146,7 @@ export default function GroupPage(props: GroupPageProps) {
 							</ul>
 						)}
 						{noPosts && (
-							<p className="self-center mx-auto font-semibold text-xl">
+							<p className="self-center mx-auto mt-3 font-semibold text-base">
 								No posts
 							</p>
 						)}
@@ -175,7 +175,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 		include: {
 			admin: true,
 			groupMembers: {
-				where: { membershipStatus: "JOINED" },
+				where: {
+					OR: [{ membershipStatus: "JOINED" }, { membershipStatus: "PENDING" }],
+				},
 				include: {
 					user: true,
 				},

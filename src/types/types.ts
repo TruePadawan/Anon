@@ -27,3 +27,12 @@ export type GroupPostWithAuthor = Prisma.GroupPostGetPayload<
 >;
 
 export type PostType = "public" | "group";
+
+const groupMemberWithProfile =
+	Prisma.validator<Prisma.GroupMemberDefaultArgs>()({
+		include: { user: true },
+	});
+
+export type GroupMemberWithProfile = Prisma.GroupMemberGetPayload<
+	typeof groupMemberWithProfile
+>;

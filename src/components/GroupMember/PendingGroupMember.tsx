@@ -1,31 +1,31 @@
 import GroupsAPI from "@/lib/api/GroupsAPI";
 import { getErrorMessage } from "@/lib/error-message";
-import { GroupMemberWithProfile } from "@/types/types";
 import { Button, Modal } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { useState } from "react";
+import { GroupMemberWithProfile } from "@/types/types";
 
-interface GroupMemberProps {
+interface PendingGroupMember {
 	memberData: Pick<GroupMemberWithProfile, "id" | "joinedAt" | "user">;
 }
 
-export default function GroupMember({ memberData }: GroupMemberProps) {
+export default function PendingGroupMember({ memberData }: PendingGroupMember) {
 	const [opened, { open, close }] = useDisclosure(false);
 	const [buttonsAreDisabled, setButtonsAreDisabled] = useState(false);
 
-	async function removeMember() {
+	async function rejectMember() {
 		setButtonsAreDisabled(true);
 		try {
 			await GroupsAPI.removeMember(memberData.id);
 			notifications.show({
 				color: "green",
-				message: `${memberData.user.accountName} was removed successfully`,
+				message: `${memberData.user.accountName} was rejected successfully`,
 			});
 		} catch (error) {
 			notifications.show({
 				color: "red",
-				title: "Failed to remove user",
+				title: "Failed to reject user",
 				message: getErrorMessage(error),
 			});
 		}
@@ -33,18 +33,18 @@ export default function GroupMember({ memberData }: GroupMemberProps) {
 		close();
 	}
 
-	async function banMember() {
+	async function acceptMember() {
 		setButtonsAreDisabled(true);
 		try {
-			await GroupsAPI.banMember(memberData.id);
+			await GroupsAPI.acceptMember(memberData.id);
 			notifications.show({
 				color: "green",
-				message: `${memberData.user.accountName} was banned successfully`,
+				message: `${memberData.user.accountName} was accepted successfully`,
 			});
 		} catch (error) {
 			notifications.show({
 				color: "red",
-				title: "Failed to ban user",
+				title: "Failed to accept user",
 				message: getErrorMessage(error),
 			});
 		}
@@ -69,18 +69,18 @@ export default function GroupMember({ memberData }: GroupMemberProps) {
 						View profile
 					</Button>
 					<Button
-						variant="filled"
-						color="gray"
-						onClick={removeMember}
-						disabled={buttonsAreDisabled}>
-						Remove member
-					</Button>
-					<Button
 						variant="subtle"
 						color="red"
-						onClick={banMember}
+						onClick={acceptMember}
 						disabled={buttonsAreDisabled}>
-						Ban member
+						Accept member
+					</Button>
+					<Button
+						variant="filled"
+						color="gray"
+						onClick={rejectMember}
+						disabled={buttonsAreDisabled}>
+						Reject member
 					</Button>
 				</div>
 			</Modal>

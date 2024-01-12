@@ -127,6 +127,7 @@ export default function EditGroupPage({ groupData }: PageProps) {
 							size="md"
 							checked={autoApproveMembers}
 							onChange={(ev) => setAutoApproveMembers(ev.currentTarget.checked)}
+							disabled={savingChanges}
 						/>
 						<Switch
 							onLabel="YES"
@@ -138,6 +139,7 @@ export default function EditGroupPage({ groupData }: PageProps) {
 							size="md"
 							checked={autoApprovePosts}
 							onChange={(ev) => setAutoApprovePosts(ev.currentTarget.checked)}
+							disabled={savingChanges}
 						/>
 					</div>
 					<Button

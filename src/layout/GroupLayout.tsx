@@ -1,8 +1,11 @@
+import ConfirmGroupDeleteDialog from "@/components/Dialogs/ConfirmGroupDeleteDialog";
 import GroupMember from "@/components/GroupMember/GroupMember";
+import PendingGroupMember from "@/components/GroupMember/PendingGroupMember";
 import useSearchGroupMembers from "@/hooks/useSearchGroupMembers";
 import { GroupData } from "@/pages/groups/[groupId]";
+import { GroupMemberWithProfile } from "@/types/types";
 import { ActionIcon, Loader, Menu, Tabs, TextInput } from "@mantine/core";
-import { useClipboard } from "@mantine/hooks";
+import { useClipboard, useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import {
 	IconSettings,
@@ -36,6 +39,7 @@ export default function GroupLayout(props: GroupLayoutProps) {
 	const [searchValue, setSearchValue] = useState("");
 	const { members, search, isSearching } = useSearchGroupMembers(groupData?.id);
 	const clipboard = useClipboard();
+	const [isOpen, { open, close }] = useDisclosure(false);
 
 	useEffect(() => {
 		const timeoutId = setTimeout(() => {
@@ -69,7 +73,8 @@ export default function GroupLayout(props: GroupLayoutProps) {
 		});
 	}
 
-	const { groupMembers: latestMembers, admin } = groupData;
+	const { groupMembers, admin } = groupData;
+	const { latestMembers, pendingMembers } = parseGroupMembers(groupMembers);
 	const { isAnonymous: groupIsAnonymous } = groupData;
 	const searchInputIsEmpty = searchValue.trim().length === 0;
 	const searchResultIsEmpty =
@@ -98,13 +103,6 @@ export default function GroupLayout(props: GroupLayoutProps) {
 						</Menu.Item>
 						{props.currentUserIsAdmin && (
 							<>
-								{!groupData.autoMemberApproval && (
-									<Menu.Item
-										icon={<IconHourglass />}
-										title="View pending group members. Only shows for admins">
-										View pending members
-									</Menu.Item>
-								)}
 								<Menu.Item
 									icon={<IconEdit />}
 									title="Edit group data. Only shows for admins"
@@ -114,7 +112,8 @@ export default function GroupLayout(props: GroupLayoutProps) {
 								<Menu.Item
 									color="red"
 									title="Delete group. Only shows for admins"
-									icon={<IconTrash />}>
+									icon={<IconTrash />}
+									onClick={open}>
 									Delete group
 								</Menu.Item>
 							</>
@@ -222,7 +221,7 @@ export default function GroupLayout(props: GroupLayoutProps) {
 											No matching member found
 										</p>
 									)}
-									<>
+									<div>
 										<p className="font-semibold text-base text-white">
 											Latest members
 										</p>
@@ -236,13 +235,61 @@ export default function GroupLayout(props: GroupLayoutProps) {
 												);
 											})}
 										</ul>
-									</>
+									</div>
+									{!groupData.autoMemberApproval && (
+										<>
+											<hr />
+											<div>
+												<p className="font-semibold text-base text-white">
+													Pending members
+												</p>
+												{pendingMembers.length > 0 && (
+													<ul className="flex gap-1 list-none">
+														{pendingMembers.map((member, index) => {
+															return (
+																<li key={member.id}>
+																	<PendingGroupMember memberData={member} />
+																	{index + 1 < latestMembers.length && (
+																		<span>,</span>
+																	)}
+																</li>
+															);
+														})}
+													</ul>
+												)}
+												{pendingMembers.length === 0 && (
+													<p className="text-sm">No pending member</p>
+												)}
+											</div>
+										</>
+									)}
 								</div>
 							)}
 						</aside>
 					</div>
 				</Tabs.Panel>
 			</Tabs>
+			<ConfirmGroupDeleteDialog
+				isOpen={isOpen}
+				onClose={close}
+				groupId={groupData.id}
+			/>
 		</main>
 	);
+}
+
+function parseGroupMembers(groupMembers: GroupMemberWithProfile[]) {
+	const pendingMembers: GroupMemberWithProfile[] = [];
+	const latestMembers: GroupMemberWithProfile[] = [];
+	groupMembers.forEach((member) => {
+		if (member.membershipStatus === "PENDING") {
+			pendingMembers.push(member);
+		} else {
+			latestMembers.push(member);
+		}
+	});
+	return {
+		pendingMembers,
+		latestMembers,
+	};
 }
