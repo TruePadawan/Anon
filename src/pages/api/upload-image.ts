@@ -16,3 +16,11 @@ export default async function handler(
 		res.status(200).json(uploadResponse);
 	}
 }
+
+export const config = {
+	api: {
+		bodyParser: {
+			sizeLimit: "2mb",
+		},
+	},
+};

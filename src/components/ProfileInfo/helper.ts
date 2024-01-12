@@ -17,7 +17,7 @@ export function getBase64(file: File): Promise<Base64 | null> {
 
 export function validateFileAsImage(file: File) {
 	const errorMessages = [];
-	if (file.size / 1000 >= 1024) {
+	if (file.size / 1024 >= 1024) {
 		errorMessages.push("Selected file must be less than or equal to 1MB");
 	}
 	if (file.type.split("/").at(0) !== "image") {
