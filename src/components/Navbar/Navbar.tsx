@@ -11,6 +11,7 @@ import { notifications } from "@mantine/notifications";
 import NavLink from "../NavLink/NavLink";
 import useUser from "@/hooks/useUser";
 import { Loader } from "@mantine/core";
+import styles from "./navbar.module.scss";
 
 interface NavbarProps {
 	toIndex?: boolean;
@@ -67,7 +68,7 @@ export default function Navbar({ toIndex }: NavbarProps) {
 					</Link>
 				)}
 			</div>
-			<div className="flex gap-1.5">
+			<div className={`flex gap-1.5 overflow-x-scroll ${styles.navlinks}`}>
 				<NavLink
 					href="/"
 					disabled={false}
