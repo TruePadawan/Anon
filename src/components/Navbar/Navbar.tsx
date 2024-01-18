@@ -52,13 +52,13 @@ export default function Navbar({ toIndex }: NavbarProps) {
     return (
         <nav className="flex flex-col items-stretch gap-4">
             <div className="flex items-center justify-between">
-                <h1 className="text-5xl font-extrabold">
+                <h1 className="text-3xl sm:text-5xl font-extrabold">
                     <Link href="/">ANON</Link>
                 </h1>
                 {gettingUser && <Loader color="gray" variant="dots" />}
                 {hasUser && (
                     <ProfileMenu
-                        displayName={user.displayName}
+                        user={user}
                         onProfileMenuItemClicked={routeToProfile}
                         onSignoutMenuItemClicked={handleSignout}
                     />
@@ -68,7 +68,7 @@ export default function Navbar({ toIndex }: NavbarProps) {
                         href={toIndex ? "/" : "/sign-in"}
                         className="text-lg font-semibold hover:text-accent-color-1"
                     >
-                        {toIndex ? "HOMEPAGE" : "SIGN IN"}
+                        {toIndex ? "Home" : "Sign In"}
                     </Link>
                 )}
             </div>
