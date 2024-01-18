@@ -52,7 +52,7 @@ export default function Navbar({ toIndex }: NavbarProps) {
     return (
         <nav className="flex flex-col items-stretch gap-4">
             <div className="flex items-center justify-between">
-                <h1 className="text-3xl sm:text-5xl font-extrabold">
+                <h1 className="text-3xl font-extrabold sm:text-5xl">
                     <Link href="/">ANON</Link>
                 </h1>
                 {gettingUser && <Loader color="gray" variant="dots" />}
