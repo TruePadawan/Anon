@@ -1,0 +1,9 @@
+# Ignore cypress fixtures and e2e tests
+cypress
+
+public
+
+package.json
+package-lock.json
+
+README.md
