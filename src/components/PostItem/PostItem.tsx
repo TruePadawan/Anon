@@ -91,7 +91,7 @@ function Avatar(props: PostItemProps["avatar"]) {
 				<MantineAvatar
 					variant="filled"
 					radius="xl"
-					color={color || "dark"}
+					color="dark"
 					src={avatarUrl}
 				/>
 			)}
