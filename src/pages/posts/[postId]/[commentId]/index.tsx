@@ -11,84 +11,85 @@ import CommentsAPI, { CommentFull } from "@/lib/api/CommentsAPI";
 import Link from "next/link";
 
 interface PageProps {
-	commentData: CommentFull | null;
+    commentData: CommentFull | null;
 }
 
 const Post = (props: PageProps) => {
-	const { commentData } = props;
-	if (!commentData) {
-		return (
-			<>
-				<Navbar />
-				<main className="flex flex-col justify-center items-center grow">
-					<IconError404 size="10rem" />
-					<p className="text-xl font-semibold">COMMENT NOT FOUND</p>
-				</main>
-			</>
-		);
-	}
-	const postId = CommentsAPI.getPostId(commentData, "public");
-	const postUrl = `/posts/${postId}`;
-	return (
-		<>
-			<Navbar />
-			<main className="grow flex flex-col items-center">
-				<div className="max-w-4xl w-full flex flex-col gap-1">
-					<Button
-						className="self-start"
-						variant="subtle"
-						color="gray"
-						component={Link}
-						href={postUrl}
-						compact>
-						Go to post
-					</Button>
-					<div className="flex flex-col gap-3">
-						<CommentItem data={commentData} postType="public" />
-						<Divider label="Replies" labelPosition="center" />
-						<Comments
-							postType="public"
-							postId={postId}
-							where={{
-								parentId: commentData.id,
-								isDeleted: false,
-							}}
-							commentsAllowed={false}
-						/>
-					</div>
-				</div>
-			</main>
-		</>
-	);
+    const { commentData } = props;
+    if (!commentData) {
+        return (
+            <>
+                <Navbar />
+                <main className="flex grow flex-col items-center justify-center">
+                    <IconError404 size="10rem" />
+                    <p className="text-xl font-semibold">COMMENT NOT FOUND</p>
+                </main>
+            </>
+        );
+    }
+    const postId = CommentsAPI.getPostId(commentData, "public");
+    const postUrl = `/posts/${postId}`;
+    return (
+        <>
+            <Navbar />
+            <main className="flex grow flex-col items-center">
+                <div className="flex w-full max-w-4xl flex-col gap-1">
+                    <Button
+                        className="self-start"
+                        variant="subtle"
+                        color="gray"
+                        component={Link}
+                        href={postUrl}
+                        compact
+                    >
+                        Go to post
+                    </Button>
+                    <div className="flex flex-col gap-3">
+                        <CommentItem data={commentData} postType="public" />
+                        <Divider label="Replies" labelPosition="center" />
+                        <Comments
+                            postType="public"
+                            postId={postId}
+                            where={{
+                                parentId: commentData.id,
+                                isDeleted: false,
+                            }}
+                            commentsAllowed={false}
+                        />
+                    </div>
+                </div>
+            </main>
+        </>
+    );
 };
 
 export const getServerSideProps: GetServerSideProps<PageProps> = async (
-	context
+    context,
 ) => {
-	if (!context.params) {
-		return {
-			redirect: {
-				destination: "/",
-				permanent: false,
-			},
-		};
-	}
+    if (!context.params) {
+        return {
+            redirect: {
+                destination: "/",
+                permanent: false,
+            },
+        };
+    }
 
-	// query db for comment data
-	const commentId = context.params.commentId as string;
-	const commentData = await prisma.comment.findUnique({
-		where: {
-			id: commentId,
-		},
-		include: {
-			author: true,
-			parentComment: true,
-		},
-	});
+    // query db for comment data
+    const commentId = context.params.commentId as string;
+    const commentData = await prisma.comment.findUnique({
+        where: {
+            id: commentId,
+        },
+        include: {
+            author: true,
+            parentComment: true,
+        },
+    });
 
-	return {
-		props: { key: commentId, commentData },
-	};
+    return {
+        props: { key: commentId, commentData },
+    };
 };
 
 export default Post;

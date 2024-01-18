@@ -5,32 +5,32 @@ import { authOptions } from "@/lib/auth";
 import { getErrorMessage } from "@/lib/error-message";
 
 export default async function handler(
-	req: NextApiRequest,
-	res: NextApiResponse
+    req: NextApiRequest,
+    res: NextApiResponse,
 ) {
-	if (req.method !== "POST") {
-		return res
-			.status(400)
-			.json({ message: "Endpoint only accepts POST requests" });
-	} else if (!req.body) {
-		return res
-			.status(400)
-			.json({ message: "Prisma query params not provided" });
-	} else {
-		const session = await getServerSession(req, res, authOptions);
-		if (!session) {
-			res.status(401).json({ message: "Client not authenticated!?" });
-		} else {
-			try {
-				const queryParams = JSON.parse(req.body);
-				const group = await prisma.group.findUniqueOrThrow(queryParams);
-				res.status(200).json(group);
-			} catch (error: any) {
-				console.error(error);
-				res.status(500).json({
-					message: getErrorMessage(error),
-				});
-			}
-		}
-	}
+    if (req.method !== "POST") {
+        return res
+            .status(400)
+            .json({ message: "Endpoint only accepts POST requests" });
+    } else if (!req.body) {
+        return res
+            .status(400)
+            .json({ message: "Prisma query params not provided" });
+    } else {
+        const session = await getServerSession(req, res, authOptions);
+        if (!session) {
+            res.status(401).json({ message: "Client not authenticated!?" });
+        } else {
+            try {
+                const queryParams = JSON.parse(req.body);
+                const group = await prisma.group.findUniqueOrThrow(queryParams);
+                res.status(200).json(group);
+            } catch (error: any) {
+                console.error(error);
+                res.status(500).json({
+                    message: getErrorMessage(error),
+                });
+            }
+        }
+    }
 }
