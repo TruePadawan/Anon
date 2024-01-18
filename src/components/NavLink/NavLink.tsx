@@ -15,7 +15,7 @@ export default function NavLink(props: NavLinkProps) {
     const { href, disabled, active, children, ...otherProps } = props;
 
     const defaultStyles =
-        "flex flex-col flex-1 items-center gap-1 p-3 bg-primary-color-2 rounded-md basis-48 shrink-0";
+        "flex flex-col flex-1 items-center gap-1 bg-primary-color-2 rounded-md basis-32 shrink-0 p-2 sm:p-3";
     return (
         <>
             {disabled && (

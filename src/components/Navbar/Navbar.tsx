@@ -84,8 +84,8 @@ export default function Navbar({ toIndex }: NavbarProps) {
                     }
                     data-cy="home-page-link"
                 >
-                    <IconListDetails size={35} />
-                    <span className="font-semibold text-inherit">
+                    <IconListDetails className="h-7 w-7 sm:h-9 sm:w-9" />
+                    <span className="text-sm font-semibold text-inherit sm:text-base">
                         Public Posts
                     </span>
                 </NavLink>
@@ -95,8 +95,10 @@ export default function Navbar({ toIndex }: NavbarProps) {
                     active={router.pathname.includes("groups")}
                     data-cy="groups-page-link"
                 >
-                    <IconUsersGroup size={35} />
-                    <span className="font-semibold text-inherit">Groups</span>
+                    <IconUsersGroup className="h-7 w-7 sm:h-9 sm:w-9" />
+                    <span className="text-sm font-semibold text-inherit sm:text-base">
+                        Groups
+                    </span>
                 </NavLink>
                 <NavLink
                     href="/join-group"
@@ -104,8 +106,8 @@ export default function Navbar({ toIndex }: NavbarProps) {
                     active={router.pathname.includes("join-group")}
                     data-cy="join-group-page-link"
                 >
-                    <IconUsersPlus size={35} />
-                    <span className="font-semibold text-inherit">
+                    <IconUsersPlus className="h-7 w-7 sm:h-9 sm:w-9" />
+                    <span className="text-sm font-semibold text-inherit sm:text-base">
                         Join Group
                     </span>
                 </NavLink>
