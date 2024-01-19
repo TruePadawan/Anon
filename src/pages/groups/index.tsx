@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar/Navbar";
 import { GetServerSideProps } from "next";
 import {
     Button,
+    Drawer,
     Grid,
     Loader,
     Radio,
@@ -20,6 +21,7 @@ import Head from "next/head";
 import { useEffect, useRef, useState } from "react";
 import { notifications } from "@mantine/notifications";
 import { filterGroups } from "@/helpers/groups";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 
 interface PageProps {
     groups: Group[];
@@ -34,7 +36,9 @@ const GroupsPage = (props: PageProps) => {
     const [isFiltering, setIsFiltering] = useState(false);
     const [groupNameFilter, setGroupNameFilter] = useState("");
     const theme = useMantineTheme();
-
+    const matchesViewport = useMediaQuery("(min-width: 1280px)");
+    const [dialogIsOpen, { open: openDialog, close: closeDialog }] =
+        useDisclosure(false);
     /**
      * Apply debouncing to filter groups my name and the currently selected status
      */
@@ -104,40 +108,86 @@ const GroupsPage = (props: PageProps) => {
             <Navbar />
             <main className="flex grow gap-2">
                 {/* SIDEBAR */}
-                <aside className="flex h-max min-w-[20rem] flex-col gap-2 rounded-md bg-primary-color-2 p-2">
-                    <TextInput
-                        rightSection={inputRightSection}
-                        placeholder="Filter groups"
-                        aria-label="Filter groups"
-                        value={groupNameFilter}
-                        onChange={(event) =>
-                            setGroupNameFilter(event.currentTarget.value)
-                        }
-                        required
-                    />
-                    <Radio.Group
-                        name="membership_status"
-                        label="Membership status"
-                        value={membershipStatusRef.current}
-                        onChange={handleStatusChange}
-                        size="md"
+                {matchesViewport && (
+                    <aside className="flex h-max min-w-[20rem] flex-col gap-2 rounded-md bg-primary-color-2 p-2">
+                        <TextInput
+                            rightSection={inputRightSection}
+                            placeholder="Filter groups"
+                            aria-label="Filter groups"
+                            value={groupNameFilter}
+                            onChange={(event) =>
+                                setGroupNameFilter(event.currentTarget.value)
+                            }
+                            required
+                        />
+                        <Radio.Group
+                            name="membership_status"
+                            label="Membership status"
+                            value={membershipStatusRef.current}
+                            onChange={handleStatusChange}
+                            size="md"
+                        >
+                            <div className="flex flex-col gap-1.5 p-1">
+                                <Radio
+                                    value="JOINED"
+                                    label="Joined"
+                                    color="green"
+                                    disabled={isFiltering}
+                                />
+                                <Radio
+                                    value="PENDING"
+                                    label="Pending"
+                                    color="yellow"
+                                    disabled={isFiltering}
+                                />
+                            </div>
+                        </Radio.Group>
+                    </aside>
+                )}
+                {!matchesViewport && (
+                    <Drawer
+                        size="max-content"
+                        opened={dialogIsOpen}
+                        onClose={closeDialog}
                     >
-                        <div className="flex flex-col gap-1.5 p-1">
-                            <Radio
-                                value="JOINED"
-                                label="Joined"
-                                color="green"
-                                disabled={isFiltering}
+                        <aside className="flex h-max min-w-[20rem] flex-col gap-2 rounded-md bg-primary-color-2 p-2">
+                            <TextInput
+                                rightSection={inputRightSection}
+                                placeholder="Filter groups"
+                                aria-label="Filter groups"
+                                value={groupNameFilter}
+                                onChange={(event) =>
+                                    setGroupNameFilter(
+                                        event.currentTarget.value,
+                                    )
+                                }
+                                required
                             />
-                            <Radio
-                                value="PENDING"
-                                label="Pending"
-                                color="yellow"
-                                disabled={isFiltering}
-                            />
-                        </div>
-                    </Radio.Group>
-                </aside>
+                            <Radio.Group
+                                name="membership_status"
+                                label="Membership status"
+                                value={membershipStatusRef.current}
+                                onChange={handleStatusChange}
+                                size="md"
+                            >
+                                <div className="flex flex-col gap-1.5 p-1">
+                                    <Radio
+                                        value="JOINED"
+                                        label="Joined"
+                                        color="green"
+                                        disabled={isFiltering}
+                                    />
+                                    <Radio
+                                        value="PENDING"
+                                        label="Pending"
+                                        color="yellow"
+                                        disabled={isFiltering}
+                                    />
+                                </div>
+                            </Radio.Group>
+                        </aside>
+                    </Drawer>
+                )}
                 <div
                     className={classNames(
                         "flex grow",
@@ -151,19 +201,29 @@ const GroupsPage = (props: PageProps) => {
                     )}
                     {!isFiltering && (
                         <>
-                            <Button
-                                className="self-end"
-                                color="gray"
-                                sx={{
-                                    background: theme.colors.gray[8],
-                                    color: "white",
-                                }}
-                                variant="light"
-                                component={Link}
-                                href="/groups/create"
-                            >
-                                Create a group
-                            </Button>
+                            <div className="flex justify-between">
+                                {!matchesViewport && (
+                                    <Button
+                                        color="gray"
+                                        variant="light"
+                                        className="font-bold"
+                                        onClick={openDialog}
+                                    >
+                                        Search/Filter
+                                    </Button>
+                                )}
+                                <Button
+                                    color="gray"
+                                    sx={{
+                                        background: theme.colors.gray[8],
+                                        color: "white",
+                                    }}
+                                    component={Link}
+                                    href="/groups/create"
+                                >
+                                    Create a group
+                                </Button>
+                            </div>
                             {noGroupItems && (
                                 <div className="flex grow flex-col items-center justify-center">
                                     <IconSearchOff size={64} />

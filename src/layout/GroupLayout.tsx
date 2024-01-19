@@ -163,7 +163,7 @@ export default function GroupLayout(props: GroupLayoutProps) {
                 <Tabs.Panel value={props.tabValue}>
                     <div className="mt-1.5 flex justify-between gap-x-1">
                         <div className="grow">{props.children}</div>
-                        <aside className="flex w-full max-w-xl flex-col items-stretch gap-y-1">
+                        <aside className="hidden w-full max-w-md flex-col items-stretch gap-y-1 lg:flex xl:max-w-xl">
                             <ul className="flex flex-col gap-y-1.5 rounded-md bg-secondary-color p-1.5">
                                 {showAnonymousSection && (
                                     <li className="flex flex-col">

@@ -93,7 +93,10 @@ export default function EditGroupPage({ groupData }: PageProps) {
                     aria-labelledby="form-header"
                     className="flex w-full max-w-lg flex-col gap-4"
                 >
-                    <h2 id="form-header" className="text-center text-4xl">
+                    <h2
+                        id="form-header"
+                        className="text-center text-3xl md:text-4xl"
+                    >
                         Edit group
                     </h2>
                     <div className="flex flex-col gap-4">
