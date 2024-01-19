@@ -1,3 +1,4 @@
+import { classNames } from "@/helpers/global_helpers";
 import { Tooltip } from "@mantine/core";
 import Link from "next/link";
 
@@ -16,23 +17,26 @@ export default function NavLink(props: NavLinkProps) {
 
     const defaultStyles =
         "flex flex-col flex-1 items-center gap-1 bg-primary-color-2 rounded-md basis-32 shrink-0 p-2 sm:p-3";
+    const disabledLinkClasses = classNames(defaultStyles, "text-gray-500");
+    const enabledLinkClasses = classNames(
+        defaultStyles,
+        "text-accent-color-2-l hover:text-white",
+        "hover:bg-primary-color-2-l",
+        "active:bg-secondary-color",
+        active && "text-white",
+    );
     return (
         <>
             {disabled && (
                 <Tooltip.Floating label="You need an account!">
-                    <div
-                        className={`${defaultStyles} text-gray-500`}
-                        {...otherProps}
-                    >
+                    <div className={disabledLinkClasses} {...otherProps}>
                         {children}
                     </div>
                 </Tooltip.Floating>
             )}
             {!disabled && (
                 <Link
-                    className={`${defaultStyles} rounded-md text-accent-color-2-l hover:text-white ${
-                        active ? "text-white" : ""
-                    }`}
+                    className={enabledLinkClasses}
                     {...otherProps}
                     href={href}
                 >
