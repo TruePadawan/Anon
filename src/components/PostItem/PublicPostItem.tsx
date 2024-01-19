@@ -15,7 +15,7 @@ import {
     IconArrowsMaximize,
     IconMessageCircle,
 } from "@tabler/icons-react";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { Ref, forwardRef, useRef, useState } from "react";
 import { notifications } from "@mantine/notifications";
 import UpdatePost from "./UpdatePost";
@@ -132,7 +132,7 @@ const PublicPostItem = forwardRef(function PublicPostItem(
                             <PublicPostHeading postData={postData} />
                             <Menu>
                                 <Menu.Target data-cy="menu-target">
-                                    <ActionIcon>
+                                    <ActionIcon title="menu">
                                         <IconDots />
                                     </ActionIcon>
                                 </Menu.Target>
@@ -274,12 +274,14 @@ interface PublicPostHeadingProps {
 }
 
 function PublicPostHeading(props: PublicPostHeadingProps) {
+    const matches = useMediaQuery("(min-width: 768px)");
     const { author, createdAt, editedAt } = props.postData;
     const creationDate = moment(createdAt).fromNow(true);
+    const compactCreationDate = moment(createdAt).format("l");
     const editedAtDate = editedAt ? moment(editedAt).fromNow(true) : null;
 
     return (
-        <div className="flex items-center gap-0.5">
+        <div className="flex flex-wrap items-center gap-0.5">
             {author && (
                 <>
                     <Link href={`/users/${author.accountName}`}>
@@ -287,15 +289,19 @@ function PublicPostHeading(props: PublicPostHeadingProps) {
                             {author.displayName}
                         </span>
                     </Link>
-                    <Link href={`/users/${author.accountName}`}>
-                        <span className="text-sm text-gray-500">{`@${author.accountName}`}</span>
-                    </Link>
+                    {matches && (
+                        <Link href={`/users/${author.accountName}`}>
+                            <span className="text-sm text-gray-500">{`@${author.accountName}`}</span>
+                        </Link>
+                    )}
                 </>
             )}
             {!author && <span className="font-semibold">{`[deleted]`}</span>}
             <span>·</span>
-            <span className="text-sm text-gray-500">{creationDate}</span>
-            {editedAt && (
+            <span className="text-sm text-gray-500">
+                {matches ? creationDate : compactCreationDate}
+            </span>
+            {matches && editedAt && (
                 <>
                     <span>·</span>
                     <span className="text-sm text-gray-500">{`edited ${editedAtDate} ago`}</span>

@@ -15,7 +15,7 @@ import {
     IconArrowsMaximize,
     IconMessageCircle,
 } from "@tabler/icons-react";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { Ref, forwardRef, useRef, useState } from "react";
 import { notifications } from "@mantine/notifications";
 import UpdatePost from "./UpdatePost";
@@ -288,8 +288,10 @@ interface GroupPostHeadingProps {
 }
 
 function GroupPostHeading(props: GroupPostHeadingProps) {
+    const matches = useMediaQuery("(min-width: 768px)");
     const { author, createdAt, editedAt } = props.postData;
     const creationDate = moment(createdAt).fromNow(true);
+    const compactCreationDate = moment(createdAt).format("l");
     const editedAtDate = editedAt ? moment(editedAt).fromNow(true) : null;
 
     return (
@@ -310,17 +312,21 @@ function GroupPostHeading(props: GroupPostHeadingProps) {
                                     {author.displayName}
                                 </span>
                             </Link>
-                            <Link href={`/users/${author.accountName}`}>
-                                <span className="text-sm text-gray-500">{`@${author.accountName}`}</span>
-                            </Link>
+                            {matches && (
+                                <Link href={`/users/${author.accountName}`}>
+                                    <span className="text-sm text-gray-500">{`@${author.accountName}`}</span>
+                                </Link>
+                            )}
                         </>
                     )}
                 </>
             )}
             {!author && <span className="font-semibold">{`[deleted]`}</span>}
             <span>·</span>
-            <span className="text-sm text-gray-500">{creationDate}</span>
-            {editedAt && (
+            <span className="text-sm text-gray-500">
+                {matches ? creationDate : compactCreationDate}
+            </span>
+            {matches && editedAt && (
                 <>
                     <span>·</span>
                     <span className="text-sm text-gray-500">{`edited ${editedAtDate} ago`}</span>
