@@ -1,44 +1,44 @@
 @layer {
-  @tailwind base;
+    @tailwind base;
 }
 
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --primary-color-1: #111111;
-  --primary-color-1-light: #282828;
+    --primary-color-1: #111111;
+    --primary-color-1-light: #282828;
 
-  --primary-color-2: #161616;
-  --primary-color-2-light: #2D2D2D;
+    --primary-color-2: #161616;
+    --primary-color-2-light: #2d2d2d;
 
-  --secondary-color: #232323;
-  --secondary-color-light: #393939;
+    --secondary-color: #232323;
+    --secondary-color-light: #393939;
 
-  --accent-color-1: #3e3e3e;
-  --accent-color-1-light: #515151;
+    --accent-color-1: #3e3e3e;
+    --accent-color-1-light: #515151;
 
-  --accent-color-2: #b3b3b3;
-  --accent-color-2-light: #B9B9B9;
+    --accent-color-2: #b3b3b3;
+    --accent-color-2-light: #b9b9b9;
 }
 
 html {
-  font-family: 'Open Sans', sans-serif;
+    font-family: "Open Sans", sans-serif;
 }
 
 ul {
-  list-style: disc;
+    list-style: disc;
 }
 
 ol {
-  list-style: decimal;
+    list-style: decimal;
 }
 
 body {
-  background-color: var(--primary-color-1);
-  color: var(--accent-color-2);
+    background-color: var(--primary-color-1);
+    color: var(--accent-color-2);
 }
 
 button:disabled {
-  cursor: not-allowed;
+    cursor: not-allowed;
 }

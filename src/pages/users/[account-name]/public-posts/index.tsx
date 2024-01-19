@@ -9,102 +9,121 @@ import { UserProfile } from "@prisma/client";
 import { useEffect, useRef } from "react";
 import usePublicPosts from "@/hooks/usePublicPosts";
 import { useIntersection } from "@mantine/hooks";
-import useUser from "@/hooks/useUser";
 
 interface PublicPostsSectionProps {
-	profile: UserProfile | null;
+    profile: UserProfile | null;
 }
 
 const PublicPostsSection = (props: PublicPostsSectionProps) => {
-	const { profile } = props;
-	const { posts, isLoading, loadMorePosts } = usePublicPosts({
-		where: {
-			authorId: profile?.id,
-			isDeleted: false,
-		},
-		take: 10,
-	});
-	const intersectionRootElRef = useRef(null);
-	const { entry, ref: infiniteScrollTriggerElRef } = useIntersection({
-		threshold: 0.25,
-	});
-	const loadMorePostsRef = useRef(loadMorePosts);
-	const { user } = useUser();
+    const { profile } = props;
+    const { posts, isLoading, loadMorePosts } = usePublicPosts({
+        where: {
+            authorId: profile?.id,
+            isDeleted: false,
+        },
+        take: 10,
+    });
+    const intersectionRootElRef = useRef(null);
+    const { entry, ref: infiniteScrollTriggerElRef } = useIntersection({
+        threshold: 0.25,
+    });
+    const loadMorePostsRef = useRef(loadMorePosts);
 
-	// load more posts when the second to last post is in view
-	useEffect(() => {
-		const timeoutID = setTimeout(() => {
-			if (entry?.isIntersecting) {
-				loadMorePostsRef.current();
-			}
-		}, 800);
-		return () => clearTimeout(timeoutID);
-	}, [entry?.isIntersecting]);
+    // load more posts when the second to last post is in view
+    useEffect(() => {
+        const timeoutID = setTimeout(() => {
+            if (entry?.isIntersecting) {
+                loadMorePostsRef.current();
+            }
+        }, 800);
+        return () => clearTimeout(timeoutID);
+    }, [entry?.isIntersecting]);
 
-	if (profile === null) {
-		return (
-			<>
-				<Head>
-					<title key="title">ANON | Profile Not Found</title>
-				</Head>
-				<Navbar />
-				<div className="flex justify-center">
-					<h2 className="mt-2 text-2xl font-semibold">Profile Not Found</h2>
-				</div>
-			</>
-		);
-	}
-
-	return (
-		<>
-			<Head>
-				<title key="title">{`ANON | ${profile.displayName}`}</title>
-			</Head>
-			<Navbar />
-			<ProfileLayout tabValue="/public-posts" accountName={profile.accountName}>
-				<main
-					className="grow flex flex-col gap-4 items-center pt-8 h-full"
-					ref={intersectionRootElRef}>
-					{isLoading && (
-						<Loader variant="bars" color="gray" className="my-auto" />
-					)}
-					{!isLoading && (
-						<ul className="max-w-4xl w-full list-none flex flex-col gap-2">
-							{posts?.map((post, index) => {
-								const secondToLast = index == posts.length - 2;
-								return (
-									<PostItem
-										key={post.id}
-										ref={secondToLast ? infiniteScrollTriggerElRef : null}
-										postData={post}
-										showCommentsCount
-									/>
-								);
-							})}
-						</ul>
-					)}
-				</main>
-			</ProfileLayout>
-		</>
-	);
+    if (profile === null) {
+        return (
+            <>
+                <Head>
+                    <title key="title">ANON | Profile Not Found</title>
+                </Head>
+                <Navbar />
+                <div className="flex justify-center">
+                    <h2 className="mt-2 text-2xl font-semibold">
+                        Profile Not Found
+                    </h2>
+                </div>
+            </>
+        );
+    }
+    return (
+        <>
+            <Head>
+                <title key="title">{`ANON | ${profile.displayName}`}</title>
+            </Head>
+            <Navbar />
+            <ProfileLayout
+                tabValue="/public-posts"
+                accountName={profile.accountName}
+            >
+                <main
+                    className="flex justify-center pt-8"
+                    ref={intersectionRootElRef}
+                >
+                    {isLoading && (
+                        <Loader
+                            variant="bars"
+                            color="gray"
+                            className="my-auto"
+                        />
+                    )}
+                    {!isLoading && (
+                        <>
+                            {posts.length > 0 && (
+                                <ul className="flex w-full max-w-4xl list-none flex-col gap-2">
+                                    {posts.map((post, index) => {
+                                        const secondToLast =
+                                            index == posts.length - 2;
+                                        return (
+                                            <PostItem
+                                                key={post.id}
+                                                ref={
+                                                    secondToLast
+                                                        ? infiniteScrollTriggerElRef
+                                                        : null
+                                                }
+                                                postData={post}
+                                                showCommentsCount
+                                            />
+                                        );
+                                    })}
+                                </ul>
+                            )}
+                            {posts.length === 0 && (
+                                <p className="mt-4 text-xl font-semibold">No posts have been made!</p>
+                            )}
+                        </>
+                    )}
+                </main>
+            </ProfileLayout>
+        </>
+    );
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-	if (context.params === undefined) throw new Error("No account name in URL");
+    if (context.params === undefined) throw new Error("No account name in URL");
 
-	// Get profile data that belongs to what [account-name] resolves to.
-	const accountName = context.params["account-name"] as string;
-	const profile = await prisma.userProfile.findUnique({
-		where: {
-			accountName,
-		},
-	});
+    // Get profile data that belongs to what [account-name] resolves to.
+    const accountName = context.params["account-name"] as string;
+    const profile = await prisma.userProfile.findUnique({
+        where: {
+            accountName,
+        },
+    });
 
-	return {
-		props: {
-			profile,
-		},
-	};
+    return {
+        props: {
+            profile,
+        },
+    };
 };
 
 export default PublicPostsSection;

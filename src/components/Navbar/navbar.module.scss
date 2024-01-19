@@ -1,0 +1,25 @@
+.navlinks {
+    scrollbar-color: #282828 #b9b9b9;
+
+    &::-webkit-scrollbar {
+        height: 2px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background-color: #b9b9b9;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: #282828;
+    }
+
+    @media screen and (min-width: 640px) {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+
+        &::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
+    }
+}
