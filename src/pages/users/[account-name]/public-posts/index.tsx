@@ -9,7 +9,6 @@ import { UserProfile } from "@prisma/client";
 import { useEffect, useRef } from "react";
 import usePublicPosts from "@/hooks/usePublicPosts";
 import { useIntersection } from "@mantine/hooks";
-import useUser from "@/hooks/useUser";
 
 interface PublicPostsSectionProps {
     profile: UserProfile | null;
@@ -29,7 +28,6 @@ const PublicPostsSection = (props: PublicPostsSectionProps) => {
         threshold: 0.25,
     });
     const loadMorePostsRef = useRef(loadMorePosts);
-    const { user } = useUser();
 
     // load more posts when the second to last post is in view
     useEffect(() => {
@@ -56,7 +54,6 @@ const PublicPostsSection = (props: PublicPostsSectionProps) => {
             </>
         );
     }
-
     return (
         <>
             <Head>
@@ -68,7 +65,7 @@ const PublicPostsSection = (props: PublicPostsSectionProps) => {
                 accountName={profile.accountName}
             >
                 <main
-                    className="flex h-full grow flex-col items-center gap-4 pt-8"
+                    className="flex justify-center pt-8"
                     ref={intersectionRootElRef}
                 >
                     {isLoading && (
@@ -79,23 +76,31 @@ const PublicPostsSection = (props: PublicPostsSectionProps) => {
                         />
                     )}
                     {!isLoading && (
-                        <ul className="flex w-full max-w-4xl list-none flex-col gap-2">
-                            {posts?.map((post, index) => {
-                                const secondToLast = index == posts.length - 2;
-                                return (
-                                    <PostItem
-                                        key={post.id}
-                                        ref={
-                                            secondToLast
-                                                ? infiniteScrollTriggerElRef
-                                                : null
-                                        }
-                                        postData={post}
-                                        showCommentsCount
-                                    />
-                                );
-                            })}
-                        </ul>
+                        <>
+                            {posts.length > 0 && (
+                                <ul className="flex w-full max-w-4xl list-none flex-col gap-2">
+                                    {posts.map((post, index) => {
+                                        const secondToLast =
+                                            index == posts.length - 2;
+                                        return (
+                                            <PostItem
+                                                key={post.id}
+                                                ref={
+                                                    secondToLast
+                                                        ? infiniteScrollTriggerElRef
+                                                        : null
+                                                }
+                                                postData={post}
+                                                showCommentsCount
+                                            />
+                                        );
+                                    })}
+                                </ul>
+                            )}
+                            {posts.length === 0 && (
+                                <p className="mt-4 text-xl font-semibold">No posts have been made!</p>
+                            )}
+                        </>
                     )}
                 </main>
             </ProfileLayout>
