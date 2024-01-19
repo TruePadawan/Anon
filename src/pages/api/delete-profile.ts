@@ -19,7 +19,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         try {
             const profile = await prisma.userProfile.findUniqueOrThrow({
                 where: {
-                    id: session.user.id,
+                    userId: session.user.id,
                 },
                 select: {
                     id: true,
@@ -72,7 +72,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
                  */
             });
             // delete profile picture
-            await cloudinary.uploader.destroy(profile.id);
+            await cloudinary.uploader.destroy(
+                `anon/profile_pictures/${profile.id}`,
+            );
 
             // let posthog know that a profile has been deleted
             if (
