@@ -10,6 +10,7 @@ interface ProfileLayout {
 
 export default function ProfileLayout(props: ProfileLayout) {
     const router = useRouter();
+
     function tabChangeHandler(value: string) {
         router.push(`/users/${props.accountName}${value}`);
     }
@@ -17,8 +18,8 @@ export default function ProfileLayout(props: ProfileLayout) {
     const tabClasses = "text-lg";
     return (
         <Tabs
-            color="dark"
-            orientation="vertical"
+            color="gray"
+            variant="pills"
             value={props.tabValue}
             onTabChange={tabChangeHandler}
             className="grow"
