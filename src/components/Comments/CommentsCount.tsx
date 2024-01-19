@@ -11,7 +11,7 @@ export default function CommentsCount(props: CommentsCountProps) {
         fetchCommentCount,
     );
     return (
-        <p className="w-full text-center font-semibold">
+        <p className="w-full text-center text-sm font-semibold">
             {isLoading ? "Getting number of comments" : `Comments (${count})`}
         </p>
     );
