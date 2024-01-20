@@ -4,7 +4,7 @@ import {
 } from "@/helpers/global_helpers";
 import useInput from "@/hooks/useInput";
 import { Button, Loader, Skeleton, TextInput, Title } from "@mantine/core";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { getRandomColor, getRandomInt } from "@/helpers/create-profile";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -24,6 +24,7 @@ export default function CreateProfilePage() {
     });
     const displayNameInput = useInput([]);
     const [creatingProfile, setCreatingProfile] = useState(false);
+    const [signingOut, setSigningOut] = useState(false);
 
     if (status === "loading") {
         return (
@@ -92,8 +93,26 @@ export default function CreateProfilePage() {
         }
     }
 
+    async function handleSignout() {
+        try {
+            setSigningOut(true);
+            const { url } = await signOut({
+                redirect: false,
+                callbackUrl: "/",
+            });
+            router.push(url);
+        } catch (error: any) {
+            notifications.show({
+                color: "red",
+                title: "Signout Failed",
+                message: error.message,
+            });
+            setSigningOut(false);
+        }
+    }
+
     const formIsValid = accountNameInput.isValid && displayNameInput.isValid;
-    const btnsAreDisabled = !formIsValid || creatingProfile;
+    const btnsAreDisabled = !formIsValid || creatingProfile || signingOut;
     return (
         <main className="flex grow flex-col items-center justify-center gap-5">
             <Title order={1} id="form-header-text" className="font-semibold">
@@ -159,6 +178,7 @@ export default function CreateProfilePage() {
                         variant="light"
                         color="red"
                         size="lg"
+                        onClick={handleSignout}
                         disabled={btnsAreDisabled}
                     >
                         Signout
