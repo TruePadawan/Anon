@@ -227,7 +227,7 @@ const GroupsPage = (props: PageProps) => {
                             {noGroupItems && (
                                 <div className="flex grow flex-col items-center justify-center">
                                     <IconSearchOff size={64} />
-                                    <p className="text-xl">Such empty</p>
+                                    <p className="text-xl">No groups</p>
                                 </div>
                             )}
                             {hasGroupItems && (
