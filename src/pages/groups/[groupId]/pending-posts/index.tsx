@@ -11,6 +11,7 @@ import { getServerSession } from "next-auth";
 import { useEffect, useRef } from "react";
 import { GroupData } from "..";
 import PendingGroupPostItem from "@/components/PostItem/PendingGroupPostItem";
+import { IconNotesOff } from "@tabler/icons-react";
 
 interface GroupPageProps {
     data: GroupData;
@@ -54,7 +55,7 @@ export default function GroupPage(props: GroupPageProps) {
                 groupData={props.data}
                 currentUserIsAdmin={props.currentUserIsAdmin}
             >
-                <div className="flex h-full" ref={intersectionRootElRef}>
+                <div className="flex" ref={intersectionRootElRef}>
                     {isLoading && (
                         <Loader
                             className="mx-auto self-center"
@@ -88,9 +89,12 @@ export default function GroupPage(props: GroupPageProps) {
                         </ul>
                     )}
                     {noPosts && (
-                        <p className="mx-auto self-center text-xl font-semibold">
-                            No pending posts
-                        </p>
+                        <div className="mt-4 flex grow flex-col items-center justify-center gap-2">
+                            <IconNotesOff size={64} />
+                            <p className="text-lg font-semibold">
+                                No pending posts
+                            </p>
+                        </div>
                     )}
                 </div>
             </GroupLayout>

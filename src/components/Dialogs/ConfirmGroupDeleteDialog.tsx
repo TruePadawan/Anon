@@ -14,11 +14,11 @@ interface ConfirmGroupDeleteDialogProps {
 export default function ConfirmGroupDeleteDialog(
     props: ConfirmGroupDeleteDialogProps,
 ) {
-    const [buttonsAreDisabled, setBtnsAreDisabled] = useState(false);
+    const [isDeletingGroup, setIsDeletingGroup] = useState(false);
     const router = useRouter();
 
     async function deleteGroup() {
-        setBtnsAreDisabled(true);
+        setIsDeletingGroup(true);
         try {
             await GroupsAPI.delete(props.groupId);
             notifications.show({
@@ -32,8 +32,8 @@ export default function ConfirmGroupDeleteDialog(
                 title: "Failed to delete group",
                 message: getErrorMessage(error),
             });
+            setIsDeletingGroup(false);
         }
-        setBtnsAreDisabled(false);
     }
 
     return (
@@ -50,7 +50,7 @@ export default function ConfirmGroupDeleteDialog(
                 <Button
                     color="green"
                     onClick={deleteGroup}
-                    disabled={buttonsAreDisabled}
+                    disabled={isDeletingGroup}
                 >
                     Yes
                 </Button>
@@ -58,7 +58,7 @@ export default function ConfirmGroupDeleteDialog(
                     color="red"
                     variant="subtle"
                     onClick={props.onClose}
-                    disabled={buttonsAreDisabled}
+                    disabled={isDeletingGroup}
                 >
                     No
                 </Button>

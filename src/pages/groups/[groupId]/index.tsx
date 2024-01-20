@@ -11,6 +11,7 @@ import { Button, Loader } from "@mantine/core";
 import { useIntersection } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { Prisma } from "@prisma/client";
+import { IconNotesOff } from "@tabler/icons-react";
 import Placeholder from "@tiptap/extension-placeholder";
 import { useEditor } from "@tiptap/react";
 import { GetServerSideProps } from "next";
@@ -131,7 +132,7 @@ export default function GroupPage(props: GroupPageProps) {
                     <div className="flex grow">
                         {isLoading && (
                             <Loader
-                                className="mt-2 self-center"
+                                className="mx-auto mt-2 self-center"
                                 size="lg"
                                 color="gray"
                             />
@@ -164,9 +165,12 @@ export default function GroupPage(props: GroupPageProps) {
                             </ul>
                         )}
                         {noPosts && (
-                            <p className="mx-auto mt-3 self-center text-base font-semibold">
-                                No posts
-                            </p>
+                            <div className="mt-4 flex grow flex-col items-center justify-center gap-2">
+                                <IconNotesOff size={64} />
+                                <p className="text-lg font-semibold">
+                                    No posts
+                                </p>
+                            </div>
                         )}
                     </div>
                 </div>

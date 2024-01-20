@@ -135,9 +135,9 @@ const PublicPostsPage = () => {
                     </ul>
                 )}
                 {noPosts && (
-                    <div className="flex grow flex-col items-center justify-center gap-1">
+                    <div className="flex grow flex-col items-center justify-center gap-4">
                         <IconNotesOff size={64} />
-                        <p className="mt-4 text-lg font-semibold">
+                        <p className="text-lg font-semibold">
                             No public posts
                         </p>
                     </div>
