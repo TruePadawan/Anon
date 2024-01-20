@@ -6,6 +6,7 @@ import Head from "next/head";
 import { Session } from "next-auth";
 import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
+import { Analytics } from "@vercel/analytics/react";
 
 type AppPropsWithSession = AppProps<{ session: Session }>;
 export default function App({
@@ -34,6 +35,7 @@ export default function App({
                     <Notifications />
                 </SessionProvider>
             </MantineProvider>
+            <Analytics />
             <Script
                 src="https://kit.fontawesome.com/9ceb4dfb5e.js"
                 crossOrigin="anonymous"
