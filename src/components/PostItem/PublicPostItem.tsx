@@ -56,6 +56,7 @@ const PublicPostItem = forwardRef(function PublicPostItem(
     const [commentsAllowed, setCommentsAllowed] = useState(
         postData.commentsAllowed,
     );
+    const [isDeletingPost, setIsDeletingPost] = useState(false);
     const editorContentRef = useRef(editor?.getHTML());
 
     function startEditMode() {
@@ -81,6 +82,7 @@ const PublicPostItem = forwardRef(function PublicPostItem(
         if (!author) return;
 
         try {
+            setIsDeletingPost(true);
             await PublicPostAPI.remove(postData.id);
             setPostIsDeleted(true);
             editor?.commands.setContent(DELETED_POST_CONTENT);
@@ -91,6 +93,7 @@ const PublicPostItem = forwardRef(function PublicPostItem(
                 message: getErrorMessage(error),
             });
         }
+        setIsDeletingPost(false);
         closeConfirmDeleteModal();
     }
 
@@ -206,6 +209,7 @@ const PublicPostItem = forwardRef(function PublicPostItem(
                                                 color="green"
                                                 onClick={deletePost}
                                                 data-cy="delete-post"
+                                                disabled={isDeletingPost}
                                             >
                                                 Yes
                                             </Button>
@@ -214,6 +218,7 @@ const PublicPostItem = forwardRef(function PublicPostItem(
                                                 onClick={
                                                     closeConfirmDeleteModal
                                                 }
+                                                disabled={isDeletingPost}
                                             >
                                                 No
                                             </Button>

@@ -11,6 +11,7 @@ import Placeholder from "@tiptap/extension-placeholder";
 import { getErrorMessage } from "@/lib/error-message";
 import usePublicPosts from "@/hooks/usePublicPosts";
 import { useIntersection } from "@mantine/hooks";
+import { IconNotesOff } from "@tabler/icons-react";
 
 const PublicPostsPage = () => {
     const { user, isValidating: verifyingUser } = useUser();
@@ -85,6 +86,8 @@ const PublicPostsPage = () => {
         }
     }
 
+    const hasPosts = !isLoading && posts.length > 0;
+    const noPosts = !isLoading && posts.length === 0;
     return (
         <>
             <Navbar />
@@ -105,16 +108,16 @@ const PublicPostsPage = () => {
                         </Button>
                     </div>
                 )}
-                <ul className="flex w-full max-w-4xl flex-col gap-2">
-                    {isLoading && (
-                        <Loader
-                            className="mt-2 self-center"
-                            size="lg"
-                            color="gray"
-                        />
-                    )}
-                    {!isLoading &&
-                        posts.map((post, index) => {
+                {isLoading && (
+                    <Loader
+                        className="mt-2 self-center"
+                        size="lg"
+                        color="gray"
+                    />
+                )}
+                {hasPosts && (
+                    <ul className="flex w-full max-w-4xl flex-col gap-2">
+                        {posts.map((post, index) => {
                             const secondToLast = index == posts.length - 2;
                             return (
                                 <PublicPostItem
@@ -129,7 +132,16 @@ const PublicPostsPage = () => {
                                 />
                             );
                         })}
-                </ul>
+                    </ul>
+                )}
+                {noPosts && (
+                    <div className="flex grow flex-col items-center justify-center gap-1">
+                        <IconNotesOff size={64} />
+                        <p className="mt-4 text-lg font-semibold">
+                            No public posts
+                        </p>
+                    </div>
+                )}
             </main>
         </>
     );
