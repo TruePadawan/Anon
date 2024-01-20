@@ -111,13 +111,12 @@ model Comment {
 }
 
 model Group {
-  id         String      @id @default(auto()) @map("_id") @db.ObjectId
-  admin      UserProfile @relation(fields: [adminId], references: [id], onDelete: Cascade)
-  adminId    String      @db.ObjectId
-  name       String      @unique
-  desc       String?
-  banner_url String?
-  createdAt  Int
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  admin     UserProfile @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  adminId   String      @db.ObjectId
+  name      String      @unique
+  desc      String?
+  createdAt Int
 
   // group settings
   groupJoinId        String  @unique @default(uuid())
