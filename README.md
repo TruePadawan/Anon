@@ -5,7 +5,7 @@ I'm building this to improve my web dev skills and pick up some new tools, it's 
 
 ## Goals
 
-- Use TailwindCSS and see what all the noise is about
+- Use TailwindCSS
 - Review and improve on React.js, Next.js, TypeScript and I guess JavaScript
 - Improve my testing skills and learn how to use Cypress
 
