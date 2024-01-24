@@ -9,6 +9,7 @@ import { UserProfile } from "@prisma/client";
 import { useEffect, useRef } from "react";
 import usePublicPosts from "@/hooks/usePublicPosts";
 import { useIntersection } from "@mantine/hooks";
+import { IconNotesOff } from "@tabler/icons-react";
 
 interface PublicPostsSectionProps {
     profile: UserProfile | null;
@@ -98,7 +99,12 @@ const PublicPostsSection = (props: PublicPostsSectionProps) => {
                                 </ul>
                             )}
                             {posts.length === 0 && (
-                                <p className="mt-4 text-xl font-semibold">No posts have been made!</p>
+                                <div className="flex grow flex-col items-center justify-center gap-4">
+                                    <IconNotesOff size={64} />
+                                    <p className="text-lg font-semibold">
+                                        No public posts
+                                    </p>
+                                </div>
                             )}
                         </>
                     )}
