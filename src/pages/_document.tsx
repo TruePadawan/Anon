@@ -28,6 +28,43 @@ export default function Document() {
                     href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;800&display=swap"
                     rel="stylesheet"
                 />
+                <meta
+                    name="description"
+                    content="Anon provides a simple interface for creating groups and having discussions"
+                />
+                <meta
+                    property="og:url"
+                    content="https://anon-posts.vercel.app/"
+                />
+                <meta property="og:type" content="website" />
+                <meta property="og:title" content="ANON" />
+                <meta
+                    property="og:description"
+                    content="Anon provides a simple interface for creating groups and having discussions"
+                />
+                <meta
+                    property="og:image"
+                    content="https://i.imgur.com/mjtuRqf.png"
+                />
+
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta
+                    property="twitter:domain"
+                    content="anon-posts.vercel.app"
+                />
+                <meta
+                    property="twitter:url"
+                    content="https://anon-posts.vercel.app/"
+                />
+                <meta name="twitter:title" content="ANON" />
+                <meta
+                    name="twitter:description"
+                    content="Anon provides a simple interface for creating groups and having discussions"
+                />
+                <meta
+                    name="twitter:image"
+                    content="https://i.imgur.com/mjtuRqf.png"
+                />
             </Head>
             <body>
                 <Main />
