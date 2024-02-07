@@ -28,6 +28,20 @@ export default function Document() {
                     href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;800&display=swap"
                     rel="stylesheet"
                 />
+                <meta property="og:type" content="website" />
+                <meta
+                    property="og:image"
+                    content="https://i.imgur.com/mjtuRqf.png"
+                />
+                <meta property="og:image:alt" content="Anon home page" />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta
+                    name="twitter:image"
+                    content="https://i.imgur.com/mjtuRqf.png"
+                />
+                <meta name="twitter:image:alt" content="Anon home page" />
+                <meta name="twitter:site" content="@thetruepadawan" />
+                <meta name="twitter:creator" content="@thetruepadawan" />
             </Head>
             <body>
                 <Main />
