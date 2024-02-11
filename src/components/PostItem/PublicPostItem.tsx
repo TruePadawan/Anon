@@ -120,6 +120,7 @@ const PublicPostItem = forwardRef(function PublicPostItem(
 
     const isAuthor = currentUser && author && currentUser.id === author.id;
     const postIsEditable = !postIsDeleted && isAuthor;
+    const postUrl = `/posts/${postData.id}`;
     return (
         <li ref={ref} className="list-none">
             <PostItem className={className}>
@@ -144,7 +145,7 @@ const PublicPostItem = forwardRef(function PublicPostItem(
                                     <Menu.Item
                                         component={Link}
                                         icon={<IconArrowsMaximize size={16} />}
-                                        href={`/posts/${postData.id}`}
+                                        href={postUrl}
                                     >
                                         View full post
                                     </Menu.Item>
@@ -266,7 +267,11 @@ const PublicPostItem = forwardRef(function PublicPostItem(
                 </div>
                 <PostItem.Footer>
                     {showCommentsCount && (
-                        <CommentsCount postId={postData.id} postType="public" />
+                        <CommentsCount
+                            postId={postData.id}
+                            postType="public"
+                            postUrl={postUrl}
+                        />
                     )}
                 </PostItem.Footer>
             </PostItem>

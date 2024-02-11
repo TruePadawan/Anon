@@ -275,7 +275,10 @@ const CommentItem = forwardRef(function CommentItem(
                 )}
                 {props.showReplyCount && (
                     <PostItem.Footer>
-                        <ReplyCount commentId={props.data.id} />
+                        <ReplyCount
+                            commentId={props.data.id}
+                            repliesUrl={repliesUrl}
+                        />
                     </PostItem.Footer>
                 )}
             </PostItem>

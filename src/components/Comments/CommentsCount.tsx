@@ -6,13 +6,19 @@ import useSWR from "swr";
  * React component for rendering the number of comments under a post
  */
 export default function CommentsCount(props: CommentsCountProps) {
+    const { postType, postId, postUrl } = props;
     const { data: count, isLoading } = useSWR(
-        [props.postId, props.postType],
+        [postId, postType],
         fetchCommentCount,
     );
+
     return (
         <p className="w-full text-center text-sm font-semibold">
-            {isLoading ? "Getting number of comments" : `Comments (${count})`}
+            {isLoading ? (
+                "Getting number of comments"
+            ) : (
+                <a href={postUrl}>{`Comments (${count})`}</a>
+            )}
         </p>
     );
 }
@@ -20,11 +26,15 @@ export default function CommentsCount(props: CommentsCountProps) {
 /**
  * React component for rendering the number of replies under a comment
  */
-export function ReplyCount({ commentId }: ReplyCountProps) {
+export function ReplyCount({ commentId, repliesUrl }: ReplyCountProps) {
     const { data: count, isLoading } = useSWR(commentId, fetchReplyCount);
     return (
         <p className="w-full text-center text-sm">
-            {isLoading ? "Getting number of replies" : `Replies (${count})`}
+            {isLoading ? (
+                "Getting number of replies"
+            ) : (
+                <a href={repliesUrl}>{`Replies (${count})`}</a>
+            )}
         </p>
     );
 }
@@ -42,8 +52,10 @@ async function fetchReplyCount(commentId: string) {
 export interface CommentsCountProps {
     postId: string;
     postType: PostType;
+    postUrl: string;
 }
 
 export interface ReplyCountProps {
     commentId: string;
+    repliesUrl: string;
 }
