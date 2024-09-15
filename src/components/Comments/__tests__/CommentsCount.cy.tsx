@@ -26,7 +26,7 @@ describe("<ReplyCount />", () => {
         });
         cy.mount(
             <ResetSWRCache>
-                <ReplyCount commentId={commentId} />
+                <ReplyCount commentId={commentId} repliesUrl={"/"} />
             </ResetSWRCache>,
         );
 

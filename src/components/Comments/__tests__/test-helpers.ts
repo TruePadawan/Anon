@@ -46,11 +46,13 @@ export function getCommentsCountProps(): CommentsCountProps {
     return {
         postType: "public",
         postId: "64f3991b9817afec59137cea",
+        postUrl: "/",
     };
 }
 
 export function getReplyCountProps(): ReplyCountProps {
     return {
         commentId: "64f3991b9817afec59137cea",
+        repliesUrl: "/",
     };
 }
