@@ -25,7 +25,7 @@ I'm building this to improve my web dev skills and pick up some new tools, it's 
 Anon depends on a couple of environment variables
 - `GITHUB_ID`
 - `GITHUB_SECRET`  
-Follow [this](https://authjs.dev/getting-started/oauth-tutorial#2-configuring-oauth-provider) guide to set those up.
+Follow [this](https://authjs.dev/guides/configuring-github) guide to set those up.
 
 - `GOOGLE_CLIENT_ID`
 - `GOOGLE_CLIENT_SECRET`
