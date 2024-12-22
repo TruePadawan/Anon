@@ -294,8 +294,8 @@ interface GroupPostHeadingProps {
 function GroupPostHeading(props: GroupPostHeadingProps) {
     const matches = useMediaQuery("(min-width: 768px)");
     const { author, createdAt, editedAt } = props.postData;
-    const creationDate = moment(createdAt).fromNow(true);
-    const compactCreationDate = moment(createdAt).format("l");
+    const datePosted = moment(createdAt).fromNow(true);
+    const compactDatePosted = moment(createdAt).format("l");
     const editedAtDate = editedAt ? moment(editedAt).fromNow(true) : null;
 
     return (
@@ -328,7 +328,7 @@ function GroupPostHeading(props: GroupPostHeadingProps) {
             {!author && <span className="font-semibold">{`[deleted]`}</span>}
             <span>·</span>
             <span className="text-sm text-gray-500">
-                {matches ? creationDate : compactCreationDate}
+                {matches ? datePosted : compactDatePosted}
             </span>
             {matches && editedAt && (
                 <>

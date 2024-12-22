@@ -284,10 +284,10 @@ interface PublicPostHeadingProps {
 }
 
 function PublicPostHeading(props: PublicPostHeadingProps) {
-    const matches = useMediaQuery("(min-width: 768px)");
+    const matchesWidescreen = useMediaQuery("(min-width: 768px)");
     const { author, createdAt, editedAt } = props.postData;
-    const creationDate = moment(createdAt).fromNow(true);
-    const compactCreationDate = moment(createdAt).format("l");
+    const datePosted = moment(createdAt).fromNow(true);
+    const compactDatePosted = moment(createdAt).format("l");
     const editedAtDate = editedAt ? moment(editedAt).fromNow(true) : null;
 
     return (
@@ -299,7 +299,7 @@ function PublicPostHeading(props: PublicPostHeadingProps) {
                             {author.displayName}
                         </span>
                     </Link>
-                    {matches && (
+                    {matchesWidescreen && (
                         <Link href={`/users/${author.accountName}`}>
                             <span className="text-sm text-gray-500">{`@${author.accountName}`}</span>
                         </Link>
@@ -309,9 +309,9 @@ function PublicPostHeading(props: PublicPostHeadingProps) {
             {!author && <span className="font-semibold">{`[deleted]`}</span>}
             <span>·</span>
             <span className="text-sm text-gray-500">
-                {matches ? creationDate : compactCreationDate}
+                {matchesWidescreen ? datePosted : compactDatePosted}
             </span>
-            {matches && editedAt && (
+            {matchesWidescreen && editedAt && (
                 <>
                     <span>·</span>
                     <span className="text-sm text-gray-500">{`edited ${editedAtDate} ago`}</span>
