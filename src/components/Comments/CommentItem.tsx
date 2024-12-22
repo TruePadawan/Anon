@@ -20,7 +20,7 @@ import {
     CommentEditorExtensions,
     DELETED_COMMENT_CONTENT,
 } from "@/helpers/global_vars";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { forwardRef, useRef, useState, Ref } from "react";
 import { notifications } from "@mantine/notifications";
 import UpdateComment from "./UpdateComment";
@@ -291,8 +291,10 @@ interface CommentItemHeadingProps {
 }
 
 function CommentItemHeading(props: CommentItemHeadingProps) {
+    const matchesWidescreen = useMediaQuery("(min-width: 768px)");
     const { author, createdAt, editedAt } = props.commentData;
-    const creationDate = moment(createdAt).fromNow(true);
+    const datePosted = moment(createdAt).fromNow(true);
+    const compactDatePosted = moment(createdAt).format("l");
     const editedAtDate = editedAt ? moment(editedAt).fromNow(true) : null;
 
     return (
@@ -304,15 +306,20 @@ function CommentItemHeading(props: CommentItemHeadingProps) {
                             {author.displayName}
                         </span>
                     </Link>
-                    <Link href={`/users/${author.accountName}`}>
-                        <span className="text-sm text-gray-500">{`@${author.accountName}`}</span>
-                    </Link>
+                    {matchesWidescreen && (
+                        <Link href={`/users/${author.accountName}`}>
+                            <span className="text-sm text-gray-500">{`@${author.accountName}`}</span>
+                        </Link>
+
+                    )}
                 </>
             )}
             {!author && <span className="font-semibold">{`[deleted]`}</span>}
             <span>·</span>
-            <span className="text-sm text-gray-500">{creationDate}</span>
-            {editedAt && (
+            <span className="text-sm text-gray-500">
+                {matchesWidescreen ? datePosted : compactDatePosted}
+            </span>
+            {matchesWidescreen && editedAt && (
                 <>
                     <span>·</span>
                     <span className="text-sm text-gray-500">{`edited ${editedAtDate} ago`}</span>
